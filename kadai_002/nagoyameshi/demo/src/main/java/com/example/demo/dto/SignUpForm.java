@@ -1,16 +1,17 @@
 package com.example.demo.dto;
 
 
-import org.hibernate.validator.constraints.Length;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 public class SignUpForm {
     @NotBlank(message="ユーザー名を入力してください。")
     private String name;
+
+    private String nameForReservation;
 
     private String postalCode;
 
@@ -29,5 +30,9 @@ public class SignUpForm {
 
     @NotBlank(message="パスワード（確認用）を入力して下さい。")
     private String passwordConfirmation;
+
+    public Boolean isConfirmed(){
+        return this.password.equals(this.passwordConfirmation);
+    }
 
 }

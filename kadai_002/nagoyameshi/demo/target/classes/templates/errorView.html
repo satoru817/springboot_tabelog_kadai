@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head>
   <meta charset="UTF-8">
@@ -7,11 +7,12 @@
   <title>エラーページ</title>
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 <h1>エラーページ</h1>
 <p>システムエラーが発生しました。前のページに戻り、再度お試しください。</p>
 <p>繰り返し問題が発生する場合は、お手数ですがsupport@example.comまでお問い合わせください。</p>
 <a href="#" onclick="history.back();">前のページに戻る</a>
+<div th:replace="~{fragment::footer}"></div>
 </body>
 
 </html>

@@ -2,19 +2,17 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <div th:replace="~{fragment::meta}"></div>
-
     <div th:replace="~{fragment::styles}"></div>
     <title>login</title>
 </head>
-<body>
-<div class="container mt-5">
+<body class="d-flex flex-column min-vh-100">
+<div class="container mt-5 flex-grow-1">
     <div class="row justify-content-center">
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-7">
             <div th:if="${param.error}" class="alert alert-danger">
                 ログイン失敗しました。
             </div>
-            <div th:if="${param.loggedIn}" class="alert alert-success">
-                ログイン成功しました。
+            <div th:if="${userEnabled}" class="alert alert-success" th:text="${userEnabled}">
             </div>
             <div th:if="${passwordResetSuccess}" class="alert alert-success">
                 パスワード変更に成功しました。ログインしてください。
@@ -24,7 +22,7 @@
 
             <form th:action="@{/auth/login}" method="post">
                 <div class="mb-3">
-                    <label for="username" class="form-label">名前</label>
+                    <label for="username" class="form-label">ユーザー名かメールアドレス</label>
                     <input type="text" name="username" id="username" class="form-control" placeholder="ユーザー名かメールアドレスを入力してください" required autofocus>
                 </div>
 
@@ -38,6 +36,6 @@
         </div>
     </div>
 </div>
-
+<div th:replace="~{fragment::footer}"></div>
 </body>
 </html>

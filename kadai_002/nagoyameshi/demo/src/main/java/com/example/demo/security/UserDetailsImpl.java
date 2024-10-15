@@ -3,7 +3,6 @@ package com.example.demo.security;
 import com.example.demo.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -45,6 +44,6 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return user.getEnabled();
     }
 }

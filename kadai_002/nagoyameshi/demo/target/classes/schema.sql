@@ -13,7 +13,7 @@ create table if not exists users (
     postal_code varchar(10),
     address varchar(255),
     phone_number varchar(20),
-    enabled boolean not null,
+    enabled boolean,
     created_at datetime not null default current_timestamp,
     updated_at datetime not null default current_timestamp on update current_timestamp,
     foreign key(role_id) references roles(id),

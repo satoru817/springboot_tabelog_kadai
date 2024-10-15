@@ -1,11 +1,13 @@
 package com.example.demo.serviceTest;
+
 import com.example.demo.service.PasswordEncryptionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PasswordEncryptionServiceTest {
     private PasswordEncryptionService passwordEncryptionService;
