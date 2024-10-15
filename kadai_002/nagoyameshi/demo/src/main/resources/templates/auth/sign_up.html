@@ -18,7 +18,7 @@
 
           <h1 class="mb-4 text-center">会員登録</h1>
 
-          <form method="post" th:action="@{/userRegister}" th:object="${signUpForm}">
+          <form method="post" th:action="@{/userRegister}" th:object="${signUpForm}" id="registration_form">
 
             <div class="form-group row mb-3">
               <div class="col-md-5">
@@ -31,7 +31,8 @@
               </div>
               <div class="col-md-7">
                 <div th:if="${#fields.hasErrors('name')}" class="text-danger small mb-2" th:errors="*{name}"></div>
-                <input type="text" class="form-control" th:field="*{name}" autocomplete="name" autofocus placeholder="ユーザー名を入力してください">
+                <div class="text-danger small mb-2" style="display:none;" id="name_validation">名前には@を含まないで下さい</div>
+                <input type="text" class="form-control" th:field="*{name}" autocomplete="name" autofocus placeholder="ユーザー名を入力してください" required>
               </div>
             </div>
 
@@ -97,7 +98,8 @@
                 </label>
               </div>
               <div class="col-md-7">
-                <div th:if="${#fields.hasErrors('email')}" class="text-danger small mb-2" th:errors="*{email}"></div>
+                <div class="text-danger small mb-2" style="display:none;" id="email_validation">無効なemailアドレスです。</div>
+                <div th:if="${#fields.hasErrors('email')}" class="text-danger small mb-2" th:errors="*{email}" required></div>
                 <input type="text" class="form-control" th:field="*{email}" autocomplete="email" placeholder="taro.samurai@example.com">
               </div>
             </div>
@@ -112,8 +114,9 @@
                 </label>
               </div>
               <div class="col-md-7">
+                <div id="min_length_validation" class="text-danger small mb-2" style="display:none;">パスワードは8文字以上にしてください。</div>
                 <div th:if="${#fields.hasErrors('password')}" class="text-danger small mb-2" th:errors="*{password}"></div>
-                <input type="password" class="form-control" th:field="*{password}" autocomplete="new-password">
+                <input type="password" class="form-control" th:field="*{password}" autocomplete="new-password" required>
               </div>
             </div>
 
@@ -127,13 +130,15 @@
                 </label>
               </div>
               <div class="col-md-7">
+                <div id="password_validation" class="text-danger small mb-2" style="display:none;">パスワード（確認用）が一致しません。</div>
                 <div th:if="${#fields.hasErrors('passwordConfirmation')}" class="text-danger small mb-2" th:errors="*{passwordConfirmation}"></div>
-                <input type="password" class="form-control" th:field="*{passwordConfirmation}" autocomplete="new-password">
+                <input type="password" class="form-control" th:field="*{passwordConfirmation}" autocomplete="new-password" required>
               </div>
             </div>
             <div th:if="${passwordConfirmationError}" class="text-danger mb-3" th:text="${passwordConfirmationError}"></div>
             <div th:if="${sameUserFoundError}" class="text-danger mb-3" th:text="${sameUserFoundError}"></div>
             <div th:if="${tokenNotFound}" class="text-danger mb-3" th:text="${tokenNotFound}"></div>
+            <div class="text-danger mb-3" style="display:none;" id="input_mistakes">入力内容に不備があります。御確認下さい</div>
 
             <div class="form-group d-flex justify-content-center  my-4">
               <button type="submit" class="btn btn-primary w-50 ">認証メールを送る</button>
@@ -153,6 +158,8 @@
 <!-- フッター -->
 <div th:replace="~{fragment::footer}"></div>
 <div th:replace="~{fragment::scripts}"></div>
+<!--TODO:javascriptで実際に送る前にもvalidationを実施する-->
+<script src="js/script_sign_up.js"></script>
 </body>
 
 </html>

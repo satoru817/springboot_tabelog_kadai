@@ -1,6 +1,7 @@
 package com.example.demo.dto;
 
 
+import com.example.demo.validation.NoAtSymbol;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -8,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 
 @Data
 public class SignUpForm {
+    @NoAtSymbol//メールアドレスとの重複を防ぐためのカスタムアノテーション
     @NotBlank(message="ユーザー名を入力してください。")
     private String name;
 

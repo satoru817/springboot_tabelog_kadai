@@ -9,7 +9,7 @@ import com.example.demo.repository.LoginAttemptRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VerificationTokenRepository;
 import com.example.demo.service.*;
-import com.example.demo.validator.EmailValidator;
+import com.example.demo.validation.EmailValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

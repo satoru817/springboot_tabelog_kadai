@@ -1,4 +1,4 @@
-package com.example.demo.validator;
+package com.example.demo.validation;
 
 import org.springframework.stereotype.Component;
 
