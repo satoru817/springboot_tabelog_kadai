@@ -73,16 +73,13 @@
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-    console.log('CSRF Token:', csrfToken);
-    console.log('CSRF Header:', csrfHeader);
-
     fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             [csrfHeader]: csrfToken // CSRFトークンをヘッダーに追加
         },
-        body: JSON.stringify({ plan: 'PAID' }),
+        body: JSON.stringify({ plan: 'PAID' }),//現状この情報は使っていない。削除してもいい。
     })
     .then(response => response.json())
     .then(data => {

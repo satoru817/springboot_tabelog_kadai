@@ -1,3 +1,27 @@
-# Default ignored files
-/shelf/
-/workspace.xml
+# IntelliJ IDEA specific
+/.idea/
+/*.iml
+*.class
+*.log
+*.jar
+*.war
+
+# Build directories
+/target/
+/build/
+/out/
+
+# Environment-specific files
+.env
+*.env
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Ignore application.properties to avoid pushing secrets
+application.properties
+
+# Log files
+*.log
+
