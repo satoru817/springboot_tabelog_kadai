@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>Membership Upgrade</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-upgrade {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-upgrade:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Choose Your Membership Plan</h2>
+    <div class="row justify-content-center">
+        <!-- Free Plan -->
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-header">
+                    <h4>Free Plan</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">¥0 / month</h5>
+                    <ul class="list-unstyled">
+                        <li>Access to basic features</li>
+                        <li>Community support</li>
+                        <li>Limited usage</li>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-secondary" disabled>Current Plan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paid Plan -->
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-header">
+                    <h4>Paid Plan</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">¥300 / month</h5>
+                    <ul class="list-unstyled">
+                        <li>booking system</li>
+                        <li>favorite feature</li>
+                        <li>review feature</li>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-upgrade" onclick="startSubscription()">Upgrade Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://js.stripe.com/v3"></script>
+<script>
+    function startSubscription() {
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            [csrfHeader]: csrfToken // CSRFトークンをヘッダーに追加
+        },
+        body: JSON.stringify({ plan: 'PAID' }),//現状この情報は使っていない。削除してもいい。
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.sessionId) {
+            const stripe = Stripe('pk_test_51Pv9EXRopxX1etdHzZttNbnYsg8oSmZBfAEyZfHUaDabBazuhmtBWZFFsk99VqwTfkNHU4wDKrqBYtEVvbgNjRpN00kLWtdxTj');
+            stripe.redirectToCheckout({
+                sessionId:data.sessionId
+                });
+        } else {
+            alert('Failed to create subscription. Please try again.');
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

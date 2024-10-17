@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-
+//WebConfigの設定で、"/auth/login"に紐付けられている。
 @RequiredArgsConstructor
 @Component
 public class LoginAttemptInterceptor implements HandlerInterceptor {

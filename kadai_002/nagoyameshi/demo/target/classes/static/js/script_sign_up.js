@@ -15,7 +15,7 @@ const inputMistake = document.getElementById('input_mistakes');
 // イベントリスナー
 password.addEventListener('blur', validatePasswords);
 password.addEventListener('blur', validatePasswordLength);
-passwordConf.addEventListener('blur', validatePasswords);
+passwordConf.addEventListener('input', validatePasswords);
 name.addEventListener('input', nameValidator);
 email.addEventListener('blur', validateEmail);
 registrationForm.addEventListener('submit', (e) => {
