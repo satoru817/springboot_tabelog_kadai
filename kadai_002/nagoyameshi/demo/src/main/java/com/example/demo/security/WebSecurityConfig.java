@@ -23,7 +23,7 @@ public class WebSecurityConfig {
         http
                 // Authorize requests based on the URL patterns
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/userRegister**","/userRegister/**","/signUp**","/css/**", "/images/**", "/js/**", "/storage/**", "/","/passwordChange","/test","/auth/login**","/forgot_password**","/forgot_password/**","/doChangePassword","/auth/blocked")
+                        .requestMatchers("/userRegister**","/userRegister/**","/signUp**","/css/**", "/images/**", "/js/**", "/storage/**", "/","/passwordChange","/test","/auth/login**","/forgot_password**","/forgot_password/**","/doChangePassword","/auth/blocked","/stripe/webhook")
                         .permitAll()  // Publicly accessible
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN") // Only users with "ADMIN" role can access
@@ -44,10 +44,10 @@ public class WebSecurityConfig {
                 .logout(logout -> logout
                         .logoutSuccessUrl("/?loggedOut") // Redirect after successful logout
                         .permitAll() // Allow logout for all authenticated users
-                );
+                )
+                .csrf().ignoringRequestMatchers("/stripe/webhook");
 
-        // CSRF protection is enabled by default, but you can disable it if needed
-        // .csrf().disable();
+
 
         return http.build(); // Build the security filter chain
     }
