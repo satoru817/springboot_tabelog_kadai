@@ -33,7 +33,7 @@ public class SubscriptionController {
     @Value("${stripe.api-key}")
     private String stripeApiKey;
 
-    @Value("${stripe.webhook-secret")
+    @Value("${stripe.webhook-secret}")
     private String webhookSecret;
 
 
@@ -57,17 +57,27 @@ public class SubscriptionController {
     //todo:クレジットカード情報編集ができるようにするひつようが有る。
     @PostMapping("/stripe/webhook")
     public ResponseEntity<String> webhook(@RequestBody String payload, @RequestHeader("Stripe-Signature")String sigHeader){
+        log.info("webhookイベントを受け取っています。");
         Stripe.apiKey=stripeApiKey;//暗黙的に
+        log.info("stripeApiKey:{}",stripeApiKey);
+        log.info("sigHeader:{}",sigHeader);
+        log.info("payload:{}",payload);
+        log.info("webhookSecret:{}",webhookSecret);
         Event event = null;
 
         try{
+            log.info("webhookイベントを作ろうとしています");
             event = Webhook.constructEvent(payload,sigHeader,webhookSecret);
+            log.info("webhookイベントの詳細です:{}",event.getDataObjectDeserializer());
         }catch(SignatureVerificationException e){
+            log.info("webhookイベントは作ることができませんでした。");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        if("checkout.session.completed".equals(event.getType())){
-            stripeService.processSessionCompleted(event);
+        log.info("イベントのタイプは:{}",event.getType());
+        if("customer.subscription.created".equals(event.getType())){
+            stripeService.processSubscriptionCreated(event);
+            log.info("stripeService.processSessionCompletedは呼びだされています。");
             //todo:通知メールを送る必要が有る。
         }
 

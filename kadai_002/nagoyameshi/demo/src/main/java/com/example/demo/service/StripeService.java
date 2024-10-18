@@ -8,6 +8,7 @@ import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import com.stripe.model.Event;
 import com.stripe.model.StripeObject;
+import com.stripe.model.Subscription;
 import com.stripe.param.checkout.SessionRetrieveParams;
 import com.stripe.model.checkout.Session;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,8 @@ public class StripeService {
         Stripe.apiKey = stripeApiKey;
         log.info("stripe_secret_key:{}",stripeApiKey);
         String requestUrl = new String(httpServletRequest.getRequestURL());
-        String userId = String.valueOf(user.getUserId());
+        String userId = user.getUserId().toString();
+        log.info("createStripeSession,userId:{}",userId);
         SessionCreateParams params = SessionCreateParams.builder()
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .addLineItem(
@@ -71,48 +73,59 @@ public class StripeService {
 
     //サブスクリプション契約完了時のメソッド
     //TODO:userのROLEを変更。さらに、確認メールを送る。
-    public void processSessionCompleted(Event event) {
-        Optional<StripeObject> optionalStripeObject = event.getDataObjectDeserializer().getObject();//Stripe のJava SDKのメソッド JSON形式のデータをJavaのオブジェクトに変換する
-        optionalStripeObject.ifPresentOrElse(stripeObject ->{
-                    Session session = (Session)stripeObject;
-                    SessionRetrieveParams params = SessionRetrieveParams.builder().addExpand("payment_intent").build();
+    public void processSubscriptionCreated(Event event) {
+        Optional<StripeObject> optionalStripeObject = event.getDataObjectDeserializer().getObject();
 
-                    try {
-                        session = Session.retrieve(session.getId(),params,null);
+        optionalStripeObject.ifPresentOrElse(stripeObject -> {
+            // Check if the object is an instance of Subscription
+            if (stripeObject instanceof Subscription subscription) {
+                // Subscription object contains the relevant metadata
+                Map<String, String> metadata = subscription.getMetadata();
+                System.out.println("Metadata: " + metadata); // Log the metadata
 
-                        Map<String,String> metadata = session.getMetadata();
-                        String retrievedUserId = metadata.get("userId");
-                        int userId = 0;
-                        try{
-                            userId = Integer.parseInt(retrievedUserId);
-                        }catch(NumberFormatException e){
-                            e.printStackTrace();
-                        }
-                        
-                        Optional<User> optionalUser = userRepository.findById(userId);
-                        optionalUser.ifPresent(user -> {
-                            Optional<Role> optionalPaid = roleRepository.findRoleByName("ROLE_PAID_USER");
-                            optionalPaid.ifPresent(user::setRole);
-                            if(optionalPaid.isPresent()){
-                                SimpleMailMessage mailMessage = getSimpleMailMessage(user);
-                                javaMailSender.send(mailMessage);
-                            }
-                        });
+                String retrievedUserId = metadata.get("userId");
+                if (retrievedUserId == null || retrievedUserId.isEmpty()) {
+                    System.out.println("Retrieved userId is null or empty.");
+                    return; // Handle the error as needed
+                }
 
+                int userId;
+                try {
+                    userId = Integer.parseInt(retrievedUserId);
+                } catch (NumberFormatException e) {
+                    System.out.println("Error parsing userId: " + retrievedUserId);
+                    e.printStackTrace();
+                    return; // Handle the error as needed
+                }
 
-                    }catch(StripeException e) {
-                        e.printStackTrace();
+                Optional<User> optionalUser = userRepository.findById(userId);
+                optionalUser.ifPresent(user -> {
+                    Optional<Role> optionalPaid = roleRepository.findRoleByName("ROLE_PAID_USER");
+                    optionalPaid.ifPresent(user::setRole);
+                    userRepository.save(user);//upsert
+                    if (optionalPaid.isPresent()) {
+
+                        //TODO:subscription契約画面で入力したメールアドレスにも贈りたい。
+                        SimpleMailMessage mailMessage = getSimpleMailMessage(user);
+                        javaMailSender.send(mailMessage);
                     }
-                    System.out.println("ユーザーのROLE変更処理が成功しました。");
-                    System.out.println("Stripe API Version:"+event.getApiVersion());
-                    System.out.println("stripe-java Version:"+Stripe.VERSION);
-                },
-                ()->{
-                    System.out.println("ユーザーのROLE変更処理が失敗しました。");
-                    System.out.println("Stripe API Version:"+event.getApiVersion());
-                    System.out.println("stripe-java Version:"+Stripe.VERSION);
                 });
+
+            } else {
+                System.out.println("Expected Subscription but got: " + stripeObject.getClass().getSimpleName());
+            }
+
+            System.out.println("ユーザーのROLE変更処理が成功しました。");
+            System.out.println("Stripe API Version: " + event.getApiVersion());
+            System.out.println("stripe-java Version: " + Stripe.VERSION);
+        }, () -> {
+            System.out.println("ユーザーのROLE変更処理が失敗しました。");
+            System.out.println("Stripe API Version: " + event.getApiVersion());
+            System.out.println("stripe-java Version: " + Stripe.VERSION);
+        });
     }
+
+
 
     private static SimpleMailMessage getSimpleMailMessage(User user) {
         String recipientAddress = user.getEmail();
