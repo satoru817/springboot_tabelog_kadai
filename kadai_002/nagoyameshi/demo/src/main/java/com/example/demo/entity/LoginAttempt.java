@@ -12,6 +12,7 @@ public class LoginAttempt {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="login_attempt_id")
     private Integer id;
 
     @Column(name = "ip_address", nullable = false)

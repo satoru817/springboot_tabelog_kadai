@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name="user_id")
     private Integer userId;
 
     @ManyToOne
@@ -22,6 +22,9 @@ public class User {
 
     @Column(name="name", unique = true, nullable = false)
     private String name;
+
+    @Column(name="stripe_customer_id",nullable = true)
+    private String stripeCustomerId;
 
     @Column(name="name_for_reservation")
     private String nameForReservation;
@@ -45,10 +48,10 @@ public class User {
     private Boolean enabled;
 
     @CreationTimestamp
-    @Column(name="created_at", updatable = false)
+    @Column(name="created_at")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name="updated_at", updatable = false)
+    @Column(name="updated_at")
     private LocalDateTime updatedAt;
 }

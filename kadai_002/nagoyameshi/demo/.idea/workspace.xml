@@ -13,8 +13,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="HTML File" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -52,7 +52,7 @@
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "advanced.settings"
+    "settings.editor.selected.configurable": "preferences.general"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -66,9 +66,10 @@
   <component name="RunManager">
     <configuration name="DemoApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <envs>
+        <env name="MAIL_PASSWORD" value="oxyc vkrw ggio oqkp" />
         <env name="STRIPE_API_KEY" value="sk_test_51Pv9EXRopxX1etdHpOX9I6LFcIL8fasUHAo3TzizLPhSpZ3IQCrN1h0QIIf4hFL00kFfDCleOEKetmtzj1U6rG0d001LdbyHaO" />
         <env name="STRIPE_WEBHOOK_SECRET" value="whsec_2af17faa199ced9981a12b3d514d4ca45bcdf118626e4f2248b1a9ab17137f57" />
-        <env name="MAIL_PASSWORD" value="oxyc vkrw ggio oqkp" />
+        <env name="STRIPE_PRICE_ID" value="price_1Q6keRRopxX1etdHX2ADJHI6" />
       </envs>
       <option name="MAIN_CLASS_NAME" value="com.example.demo.DemoApplication" />
       <module name="demo" />
