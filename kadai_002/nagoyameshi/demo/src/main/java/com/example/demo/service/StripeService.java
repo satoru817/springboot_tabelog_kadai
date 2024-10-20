@@ -89,19 +89,14 @@ public class StripeService {
         }
     }
 
-    //atPeriodEndにtrueが入っていれば現在の請求期間が終了するまでサブスク継続。falseなら即時停止
-    //fixme:このメソッドがうまく動いていない。->DONE
-    public void cancelSubscription(String subscriptionId, boolean atPeriodEnd) throws StripeException {
+    public void cancelSubscription(String subscriptionId) throws StripeException {
         log.info("cancelSubscriptionは呼びだされています。");
-        Subscription subscription = Subscription.retrieve(subscriptionId);//entityではなくstripeのsubscription
 
-        log.info("subscriptionはretrieveされました。");
-        SubscriptionUpdateParams params = SubscriptionUpdateParams.builder()
-                .setCancelAtPeriodEnd(atPeriodEnd)
-                .build();
-
-        subscription.update(params);
+        // Subscriptionを直接削除する
+        Subscription subscription = Subscription.retrieve(subscriptionId);
+        subscription.cancel();//即時キャンセル
     }
+
 
     @Transactional
     public void processSubscriptionCreated(Event event) {

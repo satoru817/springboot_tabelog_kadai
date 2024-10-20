@@ -78,12 +78,8 @@ public class SubscriptionController {
         log.info("stripe サブスクリプションId:{}",subscriptionId);
 
         try {
-
-
             // Stripeサブスクリプションをキャンセル（次の支払日にキャンセルにする場合）
-            stripeService.cancelSubscription(subscriptionId, true);
-
-
+            stripeService.cancelSubscription(subscriptionId);
             // 成功メッセージを作成
             Map<String, String> successResponse = new HashMap<>();
             successResponse.put("success", "Subscription has been canceled. It will remain active until the end of the billing period.");
