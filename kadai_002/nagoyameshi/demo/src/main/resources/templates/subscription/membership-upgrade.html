@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +19,13 @@
         }
         .btn-upgrade:hover {
             background-color: #0056b3;
+        }
+        .btn-downgrade {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-downgrade:hover {
+            background-color: #c82333;
         }
     </style>
 </head>
@@ -40,7 +48,15 @@
                     </ul>
                 </div>
                 <div class="card-footer">
-                    <button class="btn btn-secondary" disabled>Current Plan</button>
+                    <!-- Paid User の場合、Free Planに切り替えるボタンを表示 -->
+                    <button sec:authorize="hasRole('ROLE_PAID_USER')"
+                            class="btn btn-downgrade"
+                            onclick="cancelSubscription()">Switch to Free Plan</button>
+
+                    <!-- Unpaid User の場合、Current Planとして表示 -->
+                    <button sec:authorize="hasRole('ROLE_UNPAID_USER')"
+                            class="btn btn-secondary"
+                            disabled>Current Plan</button>
                 </div>
             </div>
         </div>
@@ -54,13 +70,21 @@
                 <div class="card-body">
                     <h5 class="card-title">¥300 / month</h5>
                     <ul class="list-unstyled">
-                        <li>booking system</li>
-                        <li>favorite feature</li>
-                        <li>review feature</li>
+                        <li>Booking system</li>
+                        <li>Favorite feature</li>
+                        <li>Review feature</li>
                     </ul>
                 </div>
                 <div class="card-footer">
-                    <button class="btn btn-upgrade" onclick="startSubscription()">Upgrade Now</button>
+                    <!-- Unpaid User の場合、有料プランにアップグレードするボタンを表示 -->
+                    <button sec:authorize="hasRole('UNPAID_USER')"
+                            class="btn btn-upgrade"
+                            onclick="startSubscription()">Upgrade Now</button>
+
+                    <!-- Paid User の場合、Current Planとして表示 -->
+                    <button sec:authorize="hasRole('PAID_USER')"
+                            class="btn btn-secondary"
+                            disabled>Current Plan</button>
                 </div>
             </div>
         </div>
@@ -70,35 +94,59 @@
 <script src="https://js.stripe.com/v3"></script>
 <script>
     function startSubscription() {
-    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-    fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            [csrfHeader]: csrfToken // CSRFトークンをヘッダーに追加
-        },
-        body: JSON.stringify({ plan: 'PAID' }),//現状この情報は使っていない。削除してもいい。
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.sessionId) {
-            const stripe = Stripe('pk_test_51Pv9EXRopxX1etdHzZttNbnYsg8oSmZBfAEyZfHUaDabBazuhmtBWZFFsk99VqwTfkNHU4wDKrqBYtEVvbgNjRpN00kLWtdxTj');
-            stripe.redirectToCheckout({
-                sessionId:data.sessionId
+        fetch('/api/create-checkout-session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [csrfHeader]: csrfToken // CSRFトークンをヘッダーに追加
+            },
+            body: JSON.stringify({ plan: 'PAID' }), // 現状この情報は使っていない。削除してもいい。
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.sessionId) {
+                const stripe = Stripe('pk_test_51Pv9EXRopxX1etdHzZttNbnYsg8oSmZBfAEyZfHUaDabBazuhmtBWZFFsk99VqwTfkNHU4wDKrqBYtEVvbgNjRpN00kLWtdxTj');
+                stripe.redirectToCheckout({
+                    sessionId:data.sessionId
                 });
-        } else {
-            alert('Failed to create subscription. Please try again.');
-        }
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
-}
+            } else {
+                alert('Failed to create subscription. Please try again.');
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
 
+    function cancelSubscription() {
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        fetch('/api/cancel-subscription', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [csrfHeader]: csrfToken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Subscription has been canceled.');
+                // リロードして現在の状態を反映させる
+                window.location.reload();
+            } else {
+                alert('Failed to cancel subscription. Please try again.');
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
 </script>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

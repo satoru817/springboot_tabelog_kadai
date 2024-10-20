@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS cards (
 
 CREATE TABLE IF NOT EXISTS subscriptions (
     subscription_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
+    user_id INT NOT NULL UNIQUE,
     stripe_subscription_id VARCHAR(255) NOT NULL,
     card_id BIGINT NOT NULL,
     status VARCHAR(50) NOT NULL,

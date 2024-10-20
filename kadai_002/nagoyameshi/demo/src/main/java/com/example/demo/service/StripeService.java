@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,9 +17,9 @@ import com.stripe.model.Event;
 import com.stripe.model.PaymentMethod;
 import com.stripe.model.StripeObject;
 import com.stripe.model.Subscription;
-import com.stripe.param.PaymentMethodListParams;
-import com.stripe.param.checkout.SessionRetrieveParams;
+import com.stripe.param.SubscriptionUpdateParams;
 import com.stripe.model.checkout.Session;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,7 @@ import com.stripe.exception.StripeException;
 import com.stripe.param.checkout.SessionCreateParams;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -48,6 +50,12 @@ public class StripeService {
 
     @Value("${stripe.price-id}")
     private String priceId;
+
+    @PostConstruct//@PostConstruct の「Post」は、Beanのプロパティがすべて設定された後に実行されることを示しています。
+    public void init() {
+        Stripe.apiKey = stripeApiKey; // APIキーを設定
+    }
+
 
     public String createStripeSession(User user, HttpServletRequest httpServletRequest) {
         Stripe.apiKey = stripeApiKey;
@@ -81,6 +89,21 @@ public class StripeService {
         }
     }
 
+    //atPeriodEndにtrueが入っていれば現在の請求期間が終了するまでサブスク継続。falseなら即時停止
+    //fixme:このメソッドがうまく動いていない。->DONE
+    public void cancelSubscription(String subscriptionId, boolean atPeriodEnd) throws StripeException {
+        log.info("cancelSubscriptionは呼びだされています。");
+        Subscription subscription = Subscription.retrieve(subscriptionId);//entityではなくstripeのsubscription
+
+        log.info("subscriptionはretrieveされました。");
+        SubscriptionUpdateParams params = SubscriptionUpdateParams.builder()
+                .setCancelAtPeriodEnd(atPeriodEnd)
+                .build();
+
+        subscription.update(params);
+    }
+
+    @Transactional
     public void processSubscriptionCreated(Event event) {
         Optional<StripeObject> optionalStripeObject = event.getDataObjectDeserializer().getObject();
 
@@ -176,13 +199,51 @@ public class StripeService {
         newSubscription.setUser(user);
         newSubscription.setStripeSubscriptionId(subscription.getId());
         newSubscription.setStatus(subscription.getStatus());
-        newSubscription.setStartDate(LocalDate.ofEpochDay(subscription.getStartDate()));
-        newSubscription.setEndDate(LocalDate.ofEpochDay(subscription.getCurrentPeriodEnd()));
+
+        // 修正: エポック秒から LocalDate に変換
+        newSubscription.setStartDate(Instant.ofEpochSecond(subscription.getStartDate())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate());
+
+        newSubscription.setEndDate(Instant.ofEpochSecond(subscription.getCurrentPeriodEnd())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate());
+
         newSubscription.setCard(card); // Cardエンティティを設定
 
         subscriptionRepository.save(newSubscription);
         log.info("Subscription information saved for user: {}", user.getUserId());
     }
+
+
+    @Transactional
+    public void processSubscriptionDeleted(Event event) {
+        // イベントデータからサブスクリプションIDを取得
+        Subscription subscription = (Subscription) event.getData().getObject();
+        String subscriptionId = subscription.getId();
+
+        // データベースから該当のサブスクリプションを取得
+        com.example.demo.entity.Subscription dbSubscription = subscriptionRepository.findByStripeSubscriptionId(subscriptionId);
+        if (dbSubscription != null) {
+            // サブスクリプションを「キャンセル」状態に更新
+            dbSubscription.setStatus("canceled");
+            subscriptionRepository.save(dbSubscription);
+
+            // ユーザーのroleの変更処理
+            User user = dbSubscription.getUser();
+            Role unpaidRole = roleRepository.findRoleByName("ROLE_UNPAID_USER")
+                    .orElseThrow(() -> new RuntimeException("ROLE_UNPAID_USERが見つかりません"));
+
+            // ユーザーのroleを更新
+            user.setRole(unpaidRole);
+            userRepository.save(user);
+
+        } else {
+            log.warn("キャンセルされたサブスクリプションが見つかりません: {}", subscriptionId);
+        }
+    }
+
+
 
 
     private void updateUserRoleAndSendMail(User user, String stripeCustomerId) {
@@ -207,4 +268,6 @@ public class StripeService {
         mailMessage.setText(message);
         return mailMessage;
     }
+
+
 }
