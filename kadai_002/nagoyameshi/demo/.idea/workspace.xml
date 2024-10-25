@@ -197,7 +197,15 @@
       <option name="project" value="LOCAL" />
       <updated>1729740749027</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="サブスクリプション関連の実装が終わった">
+      <option name="closed" value="true" />
+      <created>1729832090872</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1729832090872</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -208,6 +216,7 @@
     <MESSAGE value="ログイン画面が動くことまで検証済み" />
     <MESSAGE value="ログインの失敗に関する実装は終わった。" />
     <MESSAGE value="即時キャンセル処理はできた" />
-    <option name="LAST_COMMIT_MESSAGE" value="即時キャンセル処理はできた" />
+    <MESSAGE value="サブスクリプション関連の実装が終わった" />
+    <option name="LAST_COMMIT_MESSAGE" value="サブスクリプション関連の実装が終わった" />
   </component>
 </project>
