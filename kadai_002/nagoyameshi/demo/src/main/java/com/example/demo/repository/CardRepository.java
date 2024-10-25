@@ -8,4 +8,8 @@ import java.util.List;
 
 public interface CardRepository extends JpaRepository<Card,Integer> {
     List<Card> findByUser(User user);
+
+    List<Card> getByUser(User user);
+
+    List<Card> findByUserAndIsDefault(User user,Boolean isDefault);
 }

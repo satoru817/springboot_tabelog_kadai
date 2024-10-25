@@ -78,6 +78,12 @@
                 <div class="card-footer">
                     <!-- Unpaid User の場合、有料プランにアップグレードするボタンを表示 -->
                     <button sec:authorize="hasRole('UNPAID_USER')"
+                            th:if="${ifUserHasCancelledSubscription}"
+                            class="btn btn-upgrade"
+                            onclick="resumeSubscription()">Resume Subscription</button>
+                    <!--以前サブスクを停止した人はすぐ再開できるようにする-->
+                    <button sec:authorize="hasRole('UNPAID_USER')"
+                            th:unless="${ifUserHasCancelledSubscription}"
                             class="btn btn-upgrade"
                             onclick="startSubscription()">Upgrade Now</button>
 
@@ -88,6 +94,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
@@ -134,10 +141,11 @@
         })
         .then(response => response.json())
         .then(data => {
+            console.log(data);
             if (data.success) {
                 alert('Subscription has been canceled.');
                 // リロードして現在の状態を反映させる
-                window.location.reload();
+                window.location.reload(true);
             } else {
                 alert('Failed to cancel subscription. Please try again.');
             }
@@ -146,6 +154,33 @@
             console.error('Error:', error);
         });
     }
+
+    function resumeSubscription() {
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    fetch('/api/resume-subscription', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            [csrfHeader]: csrfToken
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Subscription has been resumed.');
+            // リロードして現在の状態を反映させる
+            window.location.reload(true);
+        } else {
+            alert('Failed to resume subscription. Please try again.');
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+    }
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

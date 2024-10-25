@@ -8,6 +8,8 @@ import com.example.demo.event.ChangePasswordEventPublisher;
 import com.example.demo.repository.LoginAttemptRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VerificationTokenRepository;
+import com.example.demo.security.UserDetailsImpl;
+import com.example.demo.security.UserDetailsServiceImpl;
 import com.example.demo.service.*;
 import com.example.demo.validation.EmailValidator;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +19,12 @@ import org.springframework.core.Conventions;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,6 +33,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,6 +53,7 @@ public class AuthController {
     private final LoginAttemptRepository loginAttemptRepository;
     private final SignUpFormConverter signUpFormConverter;
     private final JavaMailSender javaMailSender;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @GetMapping("/auth/login")
     public String login(Model model,
@@ -57,9 +68,17 @@ public class AuthController {
     }
 
     @GetMapping("/auth/success")
-    public String success(){
+    public String success(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam(required = false) String subscription,HttpServletRequest request) {
+        // subscription パラメータが存在する場合にのみ処理を行う（upgrade時の処理)
+        if (subscription != null) {
+            userDetailsService.updateUserRolesAndSession(userDetails,request);
+        } else {
+            log.info("No subscription parameter found, skipping role update.");
+        }
+
         return "auth/success";
     }
+
 
     @PostMapping("/forgot_password")
     public String forgotPassword(RedirectAttributes redirectAttributes,

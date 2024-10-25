@@ -4,15 +4,19 @@ import com.example.demo.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+
 
 
 @AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
     @Getter
+    @Setter
     public User user;
 
     public Collection<GrantedAuthority> authorities;

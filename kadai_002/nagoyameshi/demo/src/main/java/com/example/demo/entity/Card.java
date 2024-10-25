@@ -31,10 +31,10 @@ public class Card {
     private String last4;
 
     @Column(name="exp_month")
-    private Byte expMonth;
+    private byte expMonth;
 
     @Column(name="exp_year")
-    private Short expYear;
+    private short expYear;
 
     @Column(name="is_default",nullable = false)
     private Boolean isDefault = false;

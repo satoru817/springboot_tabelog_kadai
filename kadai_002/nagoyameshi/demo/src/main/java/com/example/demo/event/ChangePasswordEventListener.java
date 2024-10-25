@@ -24,9 +24,11 @@ public class ChangePasswordEventListener {
         String token = UUID.randomUUID().toString();
 
         // verificationToken を作成または更新(Upsert)
-        VerificationToken verificationToken = new VerificationToken();
+        VerificationToken verificationToken = verificationTokenService.findByUser(user)
+                .orElse(new VerificationToken()); // Userに基づいてトークンを検索
+
         verificationToken.setToken(token);
-        verificationToken.setUser(user);
+
         verificationTokenService.save(verificationToken);
 
 

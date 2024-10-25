@@ -32,6 +32,10 @@ public class VerificationTokenService {
         return verificationTokenRepository.findByUser(user);
     }
 
+    public Optional<VerificationToken> findByUser(User user) {
+        return verificationTokenRepository.findByUser(user);
+    }
+
     public void save(VerificationToken verificationToken){
         verificationTokenRepository.save(verificationToken);
     }

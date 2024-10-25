@@ -2,9 +2,7 @@ package com.example.demo.service;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import com.example.demo.entity.Card;
 import com.example.demo.entity.Role;
@@ -13,18 +11,28 @@ import com.example.demo.repository.CardRepository;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.SubscriptionRepository;
 import com.example.demo.repository.UserRepository;
-import com.stripe.model.Event;
-import com.stripe.model.PaymentMethod;
-import com.stripe.model.StripeObject;
-import com.stripe.model.Subscription;
+import com.example.demo.security.UserDetailsImpl;
+import com.example.demo.security.UserDetailsServiceImpl;
+import com.stripe.model.*;
+import com.stripe.model.tax.Registration;
+import com.stripe.param.PaymentMethodAttachParams;
+import com.stripe.param.SetupIntentCreateParams;
 import com.stripe.param.SubscriptionUpdateParams;
 import com.stripe.model.checkout.Session;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
@@ -33,6 +41,8 @@ import com.stripe.param.checkout.SessionCreateParams;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -44,6 +54,7 @@ public class StripeService {
     private final CardRepository cardRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final PaymentMethodService paymentMethodService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Value("${stripe.api-key}")
     private String stripeApiKey;
@@ -71,7 +82,7 @@ public class StripeService {
                         .setQuantity(1L)
                         .build())
                 .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
-                .setSuccessUrl(requestUrl.replace("/api/create-checkout-session", "/auth/success?subscription"))
+                .setSuccessUrl(requestUrl.replace("/api/create-checkout-session", "/auth/success?subscription"))//todo:この遷移先でuserDetailsの更新をかける必要がある。
                 .setCancelUrl(requestUrl.replace("/api/create-checkout-session", "/upgrade"))
                 .setSubscriptionData(
                         SessionCreateParams.SubscriptionData.builder()
@@ -92,10 +103,40 @@ public class StripeService {
     public void cancelSubscription(String subscriptionId) throws StripeException {
         log.info("cancelSubscriptionは呼びだされています。");
 
-        // Subscriptionを直接削除する
-        Subscription subscription = Subscription.retrieve(subscriptionId);
-        subscription.cancel();//即時キャンセル
+        try {
+            // Subscriptionを直接削除する
+            Subscription subscription = Subscription.retrieve(subscriptionId);
+            String customerId = subscription.getCustomer();
+
+            // 顧客のカード情報を取得
+            Map<String, Object> params = new HashMap<>();
+            params.put("customer", customerId);
+            params.put("type", "card");
+
+            PaymentMethodCollection paymentMethods = PaymentMethod.list(params);
+
+            // カード情報のdetach
+            for (PaymentMethod paymentMethod : paymentMethods.getData()) {
+                try {
+                    paymentMethod.detach();
+                    log.info("Detached card: " + paymentMethod.getId());
+                } catch (StripeException e) {
+                    log.error("Failed to detach card: " + paymentMethod.getId(), e);
+                }
+            }
+
+            // サブスクリプションのキャンセル
+            subscription.cancel(); // 即時キャンセル
+            log.info("Subscription " + subscriptionId + " has been cancelled.");
+
+        } catch (StripeException e) {
+            log.error("Failed to cancel subscription: " + subscriptionId, e);
+            throw e;
+        }
     }
+
+
+
 
 
     @Transactional
@@ -138,7 +179,8 @@ public class StripeService {
         }
 
         optionalUser.ifPresent(user -> {
-            updateUserRoleAndSendMail(user, stripeCustomerId);
+            updateUserRoleAndSendMail(user,
+                    stripeCustomerId);
 
             // PaymentMethodServiceを使用して支払い方法を取得
             List<PaymentMethod> paymentMethods = null;
@@ -190,25 +232,37 @@ public class StripeService {
     }
 
     private void saveSubscriptionInformation(Subscription subscription, User user, Card card) {
-        com.example.demo.entity.Subscription newSubscription = new com.example.demo.entity.Subscription();
-        newSubscription.setUser(user);
+        // 既存のサブスクリプションをユーザーIDで検索
+        Optional<com.example.demo.entity.Subscription> existingSubscription = subscriptionRepository.findByUser(user);
+
+        // 新しいサブスクリプションを用意
+        com.example.demo.entity.Subscription newSubscription;
+
+        if (existingSubscription.isPresent()) {
+            // 既存のサブスクリプションが存在する場合はそのインスタンスを取得して更新
+            newSubscription = existingSubscription.get();
+        } else {
+            // 存在しない場合は新しいインスタンスを作成
+            newSubscription = new com.example.demo.entity.Subscription();
+            newSubscription.setUser(user);
+        }
+
+        // サブスクリプションの情報を設定
         newSubscription.setStripeSubscriptionId(subscription.getId());
         newSubscription.setStatus(subscription.getStatus());
-
-        // 修正: エポック秒から LocalDate に変換
         newSubscription.setStartDate(Instant.ofEpochSecond(subscription.getStartDate())
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate());
-
         newSubscription.setEndDate(Instant.ofEpochSecond(subscription.getCurrentPeriodEnd())
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate());
+        newSubscription.setCard(card);
 
-        newSubscription.setCard(card); // Cardエンティティを設定
-
+        // サブスクリプションを保存（新規作成または更新）
         subscriptionRepository.save(newSubscription);
         log.info("Subscription information saved for user: {}", user.getUserId());
     }
+
 
 
     @Transactional
@@ -264,5 +318,59 @@ public class StripeService {
         return mailMessage;
     }
 
+    //TODO:必ずしもいつも再開できるわけではないらしい。
+    public void resumeSubscription(String subscriptionId) throws StripeException {
+        Subscription subscription = Subscription.retrieve(subscriptionId);
+        subscription.resume();
+    }
+
+    //セットアップインテントを作成するためのサービスクラス
+    public String createSetupIntent(String customerId) throws StripeException {
+        SetupIntentCreateParams params = SetupIntentCreateParams.builder()
+                .setCustomer(customerId)
+                .build();
+
+        SetupIntent setupIntent = SetupIntent.create(params);
+        return setupIntent.getClientSecret(); // クライアントシークレットを返す
+    }
+
+    //新たなクレジットカード情報を顧客に結びつけるメソッド
+    public void attachPaymentMethodToCustomer(String paymentMethodId, String customerId) throws StripeException {
+        // PaymentMethodを顧客に追加する
+        PaymentMethod paymentMethod = PaymentMethod.retrieve(paymentMethodId);
+        PaymentMethodAttachParams params = PaymentMethodAttachParams.builder()
+                .setCustomer(customerId)
+                .build();
+        paymentMethod.attach(params);
+    }
+
+    public void savePaymentMethodToDatabase(PaymentMethod paymentMethod,String stripeCustomerId) {
+        // 必要な情報を取り出す
+        String brand = paymentMethod.getCard().getBrand();
+        String last4 = paymentMethod.getCard().getLast4();
+        Long expMonth = paymentMethod.getCard().getExpMonth();
+        Long expYear = paymentMethod.getCard().getExpYear();
+        String stripeCardId = paymentMethod.getId();
+
+        // stripeCustomerId でユーザーを検索
+        Optional<User> userOptional = userRepository.findByStripeCustomerId(stripeCustomerId);
+
+        // ユーザーが存在する場合のみ処理を進める
+        userOptional.ifPresent(user -> {
+            // Cardエンティティを作成し、情報をセット
+            log.info("userは存在します:{}",user.getName());
+            Card card = new Card();
+            card.setStripeCardId(stripeCardId);
+            card.setBrand(brand);
+            card.setUser(user);
+            card.setLast4(last4);
+            card.setExpMonth(expMonth.byteValue());
+            card.setExpYear(expYear.shortValue());
+            card.setIsDefault(false);
+
+            // カード情報をデータベースに保存
+            cardRepository.save(card);
+        });
+    }
 
 }

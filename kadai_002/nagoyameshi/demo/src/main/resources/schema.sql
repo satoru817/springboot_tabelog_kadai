@@ -62,6 +62,6 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(user_id),
-    CONSTRAINT fk_card_id FOREIGN KEY (card_id) REFERENCES cards(card_id)
+    CONSTRAINT fk_card_id FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE
 );
 
