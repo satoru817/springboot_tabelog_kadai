@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
-  <div th:replace="~{fragment::meta}"></div>
-
-  <div th:replace="~{fragment::styles}"></div>
+  <meta th:replace="~{fragment::headResources}"/>
 
   <title>会員情報</title>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
+<div th:replace="~{fragment::header}"></div>
 <div>
 
   <main>
@@ -158,8 +157,6 @@
 <!-- フッター -->
 <div th:replace="~{fragment::footer}"></div>
 <div th:replace="~{fragment::scripts}"></div>
-<!--TODO:javascriptで実際に送る前にもvalidationを実施する-->
-<script src="js/script_sign_up.js"></script>
 </body>
 
 </html>
