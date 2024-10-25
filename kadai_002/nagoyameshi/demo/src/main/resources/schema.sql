@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS roles (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL -- Example values: ROLE_PAID_USER, ROLE_UNPAID_USER, ROLE_ADMIN
+    name VARCHAR(50) NOT NULL UNIQUE -- Example values: ROLE_PAID_USER, ROLE_UNPAID_USER, ROLE_ADMIN
 );
 
 CREATE TABLE IF NOT EXISTS users (
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
     postal_code VARCHAR(10),
     address VARCHAR(255),
     phone_number VARCHAR(20),
-    enabled BOOLEAN,
+    enabled BOOLEAN DEFAULT FALSE,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_role_id FOREIGN KEY (role_id) REFERENCES roles(id)
@@ -65,3 +65,50 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     CONSTRAINT fk_card_id FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS categories (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS restaurants (
+    restaurant_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_id INT NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    image_name VARCHAR(255),
+    description VARCHAR(255) NOT NULL,
+    capacity INT NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    postal_code VARCHAR(50) NOT NULL,
+    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+);
+
+CREATE TABLE IF NOT EXISTS reservations (
+    reservation_id INT AUTO_INCREMENT PRIMARY KEY,
+    restaurant_id INT NOT NULL,
+    user_id INT NOT NULL,
+    date DATETIME NOT NULL,
+    number_of_people INT NOT NULL,
+    comment VARCHAR(50),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS reviews (
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    reservation_id INT NOT NULL,
+    star_count INT NOT NULL,
+    content VARCHAR(255),
+    FOREIGN KEY (reservation_id) REFERENCES reservations(reservation_id)
+);
+
+CREATE TABLE IF NOT EXISTS company_info (
+    UniqueID INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    postal_code VARCHAR(50),
+    address VARCHAR(255),
+    phone_number VARCHAR(50),
+    description VARCHAR(2047),
+    created_at DATETIME NOT NULL
+);
