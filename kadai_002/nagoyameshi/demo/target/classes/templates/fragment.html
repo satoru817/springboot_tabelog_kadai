@@ -38,22 +38,22 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <div class="btn-group me-2">
-        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="btn btn-custom dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           サブスクリプション関連
         </button>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="/upgrade">有料会員にアップグレード</a></li>
-          <li><a class="dropdown-item" href="/add_card">支払いカード追加</a></li>
-          <li><a class="dropdown-item" href="/cardView">支払いカード確認</a></li>
+          <li><a class="dropdown-custom" href="/upgrade">有料会員にアップグレード</a></li>
+          <li><a class="dropdown-custom" href="/add_card">支払いカード追加</a></li>
+          <li><a class="dropdown-custom" href="/cardView">支払いカード確認</a></li>
         </ul>
       </div>
       <div class="btn-group me-2">
-        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="btn btn-custom dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           認証関連
         </button>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="/auth/login">ログイン</a></li>
-          <li><a class="dropdown-item" href="/signUp">ユーザー登録</a></li>
+          <li><a class="dropdown-custom" href="/auth/login">ログイン</a></li>
+          <li><a class="dropdown-custom" href="/signUp">ユーザー登録</a></li>
         </ul>
       </div>
     </div>
@@ -62,7 +62,7 @@
 </div>
 <!-- フッターの部品化 -->
 <div th:fragment="footer" th:remove="tag">
-  <footer class="footer mt-auto py-3 bg-dark text-white">
+  <footer class="footer mt-auto py-3">
     <div class="container text-center">
       &copy; NAGOYAMESHI  All rights reserved.
     </div>

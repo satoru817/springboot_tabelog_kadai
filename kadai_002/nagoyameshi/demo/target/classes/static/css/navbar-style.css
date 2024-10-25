@@ -1,3 +1,67 @@
 .navbar-red{
     background-color:#A00000;
 }
+
+/* カスタムドロップダウンアイテムの通常時の背景色とテキストの色 */
+.dropdown-custom {
+  background-color: #e0e8cc; /* 通常時の背景色 (薄い抹茶色) */
+  color: #333; /* 通常時のテキスト色 */
+  padding: 8px 16px; /* 適切なパディング */
+  display: block; /* リンクをブロック要素に */
+  text-decoration: none; /* 下線を消す */
+}
+
+/* ホバー時の背景色とテキストの色 */
+.dropdown-custom:hover {
+  background-color: #668800; /* ホバー時の背景色 (基調の抹茶色) */
+  color: white; /* ホバー時のテキスト色 */
+}
+
+/* フォーカス時のスタイルも設定可能 */
+.dropdown-custom:focus {
+  background-color: #556600; /* フォーカス時の背景色 (濃い抹茶色) */
+  color: white; /* フォーカス時のテキスト色 */
+}
+
+/* 基本のカスタムボタンスタイル */
+.btn-custom {
+  background-color: #668800; /* ボタンの背景色 (基調の抹茶色) */
+  color: white; /* テキストの色 */
+  padding: 8px 16px; /* 適切なパディング */
+  border: none; /* ボーダーを消す */
+  border-radius: 4px; /* 角を丸くする */
+  font-size: 16px; /* フォントサイズ */
+  cursor: pointer; /* カーソルをポインターに */
+  transition: background-color 0.3s ease; /* スムーズなホバー効果 */
+}
+
+/* ホバー時のスタイル */
+.btn-custom:hover {
+  background-color: #556600; /* ホバー時の背景色 (濃い抹茶色) */
+  color: white; /* ホバー時のテキストの色 */
+}
+
+/* フォーカス時のスタイル */
+.btn-custom:focus {
+  outline: none; /* フォーカスのアウトラインを消す */
+  background-color: #445500; /* フォーカス時の背景色 (さらに濃い抹茶色) */
+}
+
+/* 無効状態のボタンスタイル */
+.btn-custom:disabled {
+  background-color: #b0b68a; /* 無効時の背景色 (薄い灰色がかった抹茶色) */
+  color: #666666; /* 無効時のテキスト色 */
+  cursor: not-allowed; /* 無効時のカーソル */
+}
+
+/* ドロップダウンが開いたときのスタイル */
+.btn-custom.dropdown-toggle.show {
+  background-color: #556600; /* ドロップダウンが開いたときの背景色 (濃い抹茶色) */
+  color: white; /* ドロップダウンが開いたときのテキスト色 */
+}
+
+.dropdown-menu {
+  background-color: #e0e8cc; /* 薄い抹茶色 */
+  border: none; /* ボーダーを消す */
+}
+

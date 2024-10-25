@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS reviews (
 );
 
 CREATE TABLE IF NOT EXISTS company_info (
-    UniqueID INT AUTO_INCREMENT PRIMARY KEY,
+    company_info_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     postal_code VARCHAR(50),
     address VARCHAR(255),

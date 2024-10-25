@@ -1,0 +1,95 @@
+.btn-primary {
+    background-color: #C66600; /* アクセントカラー2のオレンジ */
+    border-color: #C66600; /* ボーダーカラーも同じ色に */
+}
+
+.btn-primary:hover {
+    background-color: #A05200; /* ホバー時の色 */
+}
+
+/* 全体の設定 */
+body {
+    font-family: 'Noto Sans JP', sans-serif; /* 日本語フォントの設定 */
+    color: #552200; /* メインカラー */
+    background-color: #E9D0A6; /* サブカラー2（ベージュ） */
+    line-height: 1.6;
+}
+
+/* ヘッダー */
+header {
+    background-color: #A00000; /* サブカラー1（赤） */
+    color: #FFFFFF; /* 白色で文字を目立たせる */
+    padding: 1rem;
+    text-align: center;
+}
+
+/* ナビゲーションバー */
+nav {
+    background-color: #668800; /* アクセントカラー1（緑） */
+    padding: 0.5rem;
+}
+
+nav a {
+    color: #FFFFFF; /* ナビゲーションリンクの色 */
+    margin: 0 15px;
+    text-decoration: none;
+}
+
+/* ボタン */
+button {
+    background-color: #C66600; /* アクセントカラー2（オレンジ） */
+    color: #FFFFFF; /* ボタンのテキストカラー */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #A05200; /* ホバー時の色 */
+}
+
+/* コンテナ */
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* セクション */
+.section {
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #ffffff; /* 白色の背景 */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* フッター */
+footer {
+    background-color: #552200; /* メインカラー */
+    color: #FFFFFF; /* 白色 */
+    text-align: center;
+    padding: 1rem;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* アラートメッセージ */
+.alert {
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.alert-success {
+    background-color: #d4edda; /* 成功メッセージの背景 */
+    color: #155724; /* 成功メッセージの文字色 */
+}
+
+.alert-danger {
+    background-color: #f8d7da; /* エラーメッセージの背景 */
+    color: #721c24; /* エラーメッセージの文字色 */
+}
