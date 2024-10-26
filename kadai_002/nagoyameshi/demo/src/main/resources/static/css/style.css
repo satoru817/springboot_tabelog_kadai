@@ -93,3 +93,55 @@ footer {
     background-color: #f8d7da; /* エラーメッセージの背景 */
     color: #721c24; /* エラーメッセージの文字色 */
 }
+
+/* カード */
+.card {
+    background-color: #ffffff; /* 白色で清潔感を出す */
+    border: 1px solid #E9D0A6; /* サブカラー2（ベージュ）で優しい印象に */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.02); /* ホバー時に少し浮き上がる演出 */
+}
+
+/* カードヘッダー */
+.card-header {
+    background-color: #668800; /* アクセントカラー1（緑）で自然な印象を演出 */
+    color: #FFFFFF; /* 白色でテキストを目立たせる */
+    font-weight: 500;
+    padding: 10px 15px;
+    text-align: center;
+}
+
+/* カード本文 */
+.card-body {
+    padding: 15px;
+    color: #552200; /* メインカラー（茶色）で統一感を持たせる */
+}
+
+/* ボタン */
+.card .btn {
+    background-color: #C66600; /* アクセントカラー2（オレンジ） */
+    color: #FFFFFF;
+    border-radius: 5px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.card .btn:hover {
+    background-color: #A05200; /* ホバー時に少し濃いオレンジ */
+}
+
+/* アラートメッセージのカード */
+.card.alert-success {
+    border: 1px solid #d4edda; /* 成功メッセージカラー */
+    background-color: #e9f7ef; /* 成功メッセージの背景 */
+}
+
+.card.alert-danger {
+    border: 1px solid #f8d7da; /* エラーメッセージカラー */
+    background-color: #fbeaea; /* エラーメッセージの背景 */
+}

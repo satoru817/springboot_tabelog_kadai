@@ -3,54 +3,25 @@
 <head>
   <meta th:replace="~{fragment::headResources}"/>
   <title>会社概要</title>
-  <style>
-    .company-card {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        padding: 20px;
-        background-color: #ffffff;
-        transition: transform 0.3s ease;
-    }
-
-    .company-card:hover {
-        transform: translateY(-5px);
-    }
-
-    .company-title {
-        font-size: 24px;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .company-detail {
-        margin-bottom: 10px;
-        font-size: 16px;
-        color: #555;
-    }
-
-    .company-description {
-        font-size: 15px;
-        color: #666;
-    }
-  </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
 <div th:replace="~{fragment::header}"></div>
 
 <div class="container mt-5 flex-grow-1">
   <h1 class="text-center mb-4">会社概要</h1>
-  <div class="company-card mx-auto" style="max-width: 600px;">
-    <div class="company-title" th:text="${companyInfo.name}">会社名</div>
-    <div class="company-detail">
-      <strong>郵便番号:</strong> <span th:text="${companyInfo.postalCode}"></span>
-    </div>
-    <div class="company-detail">
-      <strong>住所:</strong> <span th:text="${companyInfo.address}"></span>
-    </div>
-    <div class="company-detail">
-      <strong>電話番号:</strong> <span th:text="${companyInfo.phoneNumber}"></span>
-    </div>
-    <div class="company-description mt-3" th:text="${companyInfo.description}">
+  <div class="card mx-auto" style="max-width: 600px;">
+    <div class="card-header" th:text="${companyInfo.name}">会社名</div>
+    <div class="card-body">
+      <div class="company-detail">
+        <strong>郵便番号:</strong> <span th:text="${companyInfo.postalCode}"></span>
+      </div>
+      <div class="company-detail">
+        <strong>住所:</strong> <span th:text="${companyInfo.address}"></span>
+      </div>
+      <div class="company-detail">
+        <strong>電話番号:</strong> <span th:text="${companyInfo.phoneNumber}"></span>
+      </div>
+      <div class="company-description mt-3" th:text="${companyInfo.description}"></div>
     </div>
   </div>
 </div>

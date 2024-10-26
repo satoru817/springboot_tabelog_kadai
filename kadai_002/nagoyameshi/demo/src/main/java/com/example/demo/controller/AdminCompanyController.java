@@ -43,7 +43,7 @@ public class AdminCompanyController {
             // フラッシュ属性にメッセージを追加
             redirectAttributes.addFlashAttribute("successMessage", "編集成功しました");
             // リダイレクト
-            return "redirect:/editCompanyInfo"; // 編集画面へのリダイレクト
+            return "redirect:/admin/company/editCompanyInfo"; // 編集画面へのリダイレクト
         }
     }
 

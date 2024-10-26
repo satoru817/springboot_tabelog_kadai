@@ -13,7 +13,7 @@
         <p th:text="${successMessage}"></p>
     </div>
 
-    <form th:action="@{/updateCompanyInfo}" method="post" th:object="${companyInfo}">
+    <form th:action="@{/admin/company/updateCompanyInfo}" method="post" th:object="${companyInfo}">
         <input type="hidden" th:field="*{companyInfoId}">
 
         <div class="mb-3">
