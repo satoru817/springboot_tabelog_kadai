@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta th:replace="~{fragment::headResources}"/>
+  <title>レストラン情報登録</title>
+</head>
+<body class="d-flex flex-column min-vh-100">
+<div th:replace="~{fragment::header}"></div>
+
+<div class="container mt-5 flex-grow-1">
+  <h1 class="text-center mb-4">レストラン情報登録</h1>
+  <div class="card">
+    <form th:action="@{/register-restaurant}" method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="name">レストラン名:</label>
+        <input type="text" id="name" name="name" class="form-control" required/>
+      </div>
+      <div class="form-group">
+        <label for="category_id">カテゴリー ID:</label>
+        <input type="number" id="category_id" name="category_id" class="form-control" required/>
+      </div>
+      <div class="form-group">
+        <label for="image">画像:</label>
+        <input type="file" id="image" name="image" accept="image/*" class="form-control" onchange="previewImage(event)" required/>
+        <img id="imagePreview" class="image-preview" alt="画像プレビュー" style="display: none;"/>
+      </div>
+      <div class="form-group">
+        <label for="description">説明:</label>
+        <textarea id="description" name="description" class="form-control" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="capacity">収容人数:</label>
+        <input type="number" id="capacity" name="capacity" class="form-control" required/>
+      </div>
+      <div class="form-group">
+        <label for="email">メールアドレス:</label>
+        <input type="email" id="email" name="email" class="form-control" required/>
+      </div>
+      <div class="form-group">
+        <label for="postal_code">郵便番号:</label>
+        <input type="text" id="postal_code" name="postal_code" class="form-control" required/>
+      </div>
+      <button type="submit" class="btn btn-primary">登録</button>
+    </form>
+  </div>
+</div>
+
+<div th:replace="~{fragment::scripts}"></div>
+<div th:replace="~{fragment::footer}"></div>
+
+<script>
+  function previewImage(event) {
+    const image = document.getElementById('imagePreview');
+    image.style.display = 'block';
+    image.src = URL.createObjectURL(event.target.files[0]);
+  }
+</script>
+</body>
+</html>

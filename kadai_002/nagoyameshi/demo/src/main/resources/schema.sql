@@ -72,15 +72,29 @@ CREATE TABLE IF NOT EXISTS categories (
 
 CREATE TABLE IF NOT EXISTS restaurants (
     restaurant_id INT AUTO_INCREMENT PRIMARY KEY,
-    category_id INT NOT NULL,
     name VARCHAR(50) NOT NULL,
-    image_name VARCHAR(255),
     description VARCHAR(255) NOT NULL,
     capacity INT NOT NULL,
     email VARCHAR(255) NOT NULL,
     postal_code VARCHAR(50) NOT NULL,
-    FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
+
+CREATE TABLE  IF NOT EXISTS category_restaurants(--１つのレストランが複数のカテゴリーを持てるようにする
+    category_restaurant_id INT AUTO_INCREMENT PRIMARY KEY,
+    restaurant_id INT NOT NULL,
+    category_id INT NOT NULL,
+    UNIQUE(restaurant_id,category_id),
+    FOREIGN KEY(restaurant_id) REFERENCES restaurants(restaurant_id),
+    FOREIGN KEY(category_id) REFERENCES category(category_id)
+);
+
+CREATE TABLE restaurant_images (--１つのレストランが複数のイメージを持てるようにする。
+    restaurant_image_id INT PRIMARY KEY AUTO_INCREMENT,
+    restaurant_id INT NOT NULL,
+    image_name VARCHAR(255) NOT NULL,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id)
+);
+
 
 CREATE TABLE IF NOT EXISTS reservations (
     reservation_id INT AUTO_INCREMENT PRIMARY KEY,
