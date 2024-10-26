@@ -5,38 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2b3b768d-ba7a-4700-8bfa-0f34397c0aad" name="Changes" comment="会員登録機能まで">
-      <change beforePath="$PROJECT_DIR$/../.$nagoyameshi_ER.drawio.bkp" beforeDir="false" afterPath="$PROJECT_DIR$/../.$nagoyameshi_ER.drawio.bkp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.$nagoyameshi_ER.drawio.dtmp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/controller/SubscriptionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/controller/SubscriptionController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/dto/ApiResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/dto/ApiResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/dto/PaymentMethodRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/dto/PaymentMethodRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/entity/Card.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/entity/Card.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/event/ChangePasswordEventListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/event/ChangePasswordEventListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/repository/CardRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/repository/CardRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/repository/SubscriptionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/repository/SubscriptionRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/repository/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/security/UserDetailsImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/security/UserDetailsImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/security/UserDetailsServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/security/UserDetailsServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/service/StripeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/service/StripeService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/service/VerificationTokenService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/service/VerificationTokenService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/subscription/add_card.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/subscription/add_card.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/subscription/card_view.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/subscription/card_view.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/subscription/membership-upgrade.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/subscription/membership-upgrade.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/controller/AuthController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/controller/AuthController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/controller/SubscriptionController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/controller/SubscriptionController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/entity/Card.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/entity/Card.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/event/ChangePasswordEventListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/event/ChangePasswordEventListener.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/repository/CardRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/repository/CardRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/repository/SubscriptionRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/repository/SubscriptionRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/repository/UserRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/repository/UserRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/security/UserDetailsImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/security/UserDetailsImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/security/UserDetailsServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/security/UserDetailsServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/service/StripeService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/service/StripeService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/service/VerificationTokenService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/service/VerificationTokenService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/templates/subscription/membership-upgrade.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/subscription/membership-upgrade.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../nagoyameshi_ER.drawio" beforeDir="false" afterPath="$PROJECT_DIR$/../nagoyameshi_ER.drawio" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/controller/AdminCompanyController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/controller/AdminCompanyController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/entity/CompanyInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/entity/CompanyInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/service/CompanyInfoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/service/CompanyInfoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/validation/NoAtSymbol.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/validation/NoAtSymbol.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/company_info_edit.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/company_info_edit.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/admin/company/company_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/admin/company/company_edit.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/controller/AdminCompanyController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/controller/AdminCompanyController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/entity/CompanyInfo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/entity/CompanyInfo.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/service/CompanyInfoService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/service/CompanyInfoService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/validation/NoAtSymbol.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/validation/NoAtSymbol.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/static/js/company_info_edit.js" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/static/js/company_info_edit.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/admin/company/company_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/admin/company/company_edit.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,8 +33,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
-        <option value="Class" />
         <option value="HTML File" />
+        <option value="Class" />
       </list>
     </option>
   </component>

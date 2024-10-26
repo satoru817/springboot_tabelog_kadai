@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 
 // @NoAtSymbol アノテーションの定義
 @Constraint(validatedBy = NoAtSymbolValidator.class) // バリデータを指定
-@Target({ ElementType.FIELD, ElementType.METHOD })
+@Target({ ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NoAtSymbol {
     String message() default "ユーザー名には@を含めないでください。"; // バリデーションメッセージ

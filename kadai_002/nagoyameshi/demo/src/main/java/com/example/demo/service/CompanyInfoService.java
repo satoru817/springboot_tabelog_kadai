@@ -13,4 +13,8 @@ public class CompanyInfoService {
     public CompanyInfo getCompanyInfo(){
         return companyInfoRepository.findFirstByOrderByCompanyInfoIdAsc();
     }
+
+    public void updateCompanyInfo(CompanyInfo companyInfo) {
+        companyInfoRepository.save(companyInfo);
+    }
 }

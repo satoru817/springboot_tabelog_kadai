@@ -9,32 +9,41 @@
 
 <div class="container mt-5 flex-grow-1">
     <h1 class="text-center mb-4">会社情報編集</h1>
+    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+        <p th:text="${successMessage}"></p>
+    </div>
 
     <form th:action="@{/updateCompanyInfo}" method="post" th:object="${companyInfo}">
         <input type="hidden" th:field="*{companyInfoId}">
+
         <div class="mb-3">
             <label for="name" class="form-label">会社名</label>
             <input type="text" id="name" class="form-control" th:field="*{name}" placeholder="会社名を入力してください" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
         </div>
 
         <div class="mb-3">
             <label for="postal_code" class="form-label">郵便番号</label>
             <input type="text" id="postal_code" class="form-control" th:field="*{postalCode}" placeholder="郵便番号を入力してください" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('postalCode')}" th:errors="*{postalCode}"></div>
         </div>
 
         <div class="mb-3">
             <label for="address" class="form-label">住所</label>
             <input type="text" id="address" class="form-control" th:field="*{address}" placeholder="住所を入力してください" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
         </div>
 
         <div class="mb-3">
             <label for="phone_number" class="form-label">電話番号</label>
             <input type="tel" id="phone_number" class="form-control" th:field="*{phoneNumber}" placeholder="電話番号を入力してください" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
         </div>
 
         <div class="mb-3">
             <label for="description" class="form-label">説明</label>
             <textarea id="description" class="form-control" th:field="*{description}" placeholder="会社についての説明を入力してください" rows="3" required></textarea>
+            <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
         </div>
 
         <button type="submit" class="btn btn-primary w-100">保存</button>
@@ -43,5 +52,6 @@
 
 <div th:replace="~{fragment::scripts}"></div>
 <div th:replace="~{fragment::footer}"></div>
+<script src="js/company_info_edit.js"></script>
 </body>
 </html>

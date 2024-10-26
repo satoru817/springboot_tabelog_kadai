@@ -19,5 +19,5 @@ VALUES
 (9, 2, 'user4', 'User Four', '$2a$10$grD31u7s0L1t78SVWanVfeVD6k8EQj88Jzrka.JiwFTmy9JvqS.MS', 'user4@example.com', '9012345', '901 User Lane', '012-3456-7898', true),
 (10, 1, 'admin3', NULL, '$2a$10$02.Bd7VMHJ1Y96z4q..d0.IFZdYgpNMtWe4cxB5HVKFsGAIW5PSly', 'admin3@example.com', '0123456', '012 Admin Street', '012-3456-7899', true);
 
-INSERT IGNORE INTO company_info (company_info_id,name, postal_code, address, phone_number, description, created_at) VALUES
-(1,'サンプル株式会社', '123-4567', '東京都新宿区西新宿1-1-1', '03-1234-5678', 'サンプル株式会社は、最新のテクノロジーを活用したソリューションを提供する企業です。', NOW());
+INSERT IGNORE INTO company_info (company_info_id,name, postal_code, address, phone_number, description) VALUES
+(1,'サンプル株式会社', '123-4567', '東京都新宿区西新宿1-1-1', '03-1234-5678', 'サンプル株式会社は、最新のテクノロジーを活用したソリューションを提供する企業です。');
