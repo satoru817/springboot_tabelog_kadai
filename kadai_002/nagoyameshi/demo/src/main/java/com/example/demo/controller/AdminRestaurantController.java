@@ -62,8 +62,8 @@ public class AdminRestaurantController {
         return "redirect:/admin/restaurant/category/crud"; // 修正
     }
 
-    @PostMapping("/category/delete/{id}")
-    public String deleteCategory(@PathVariable Integer id) {
+    @PostMapping("/category/delete")
+    public String deleteCategory(@RequestParam(name="categoryId") Integer id) {
         categoryService.delete(id);
         return "redirect:/admin/restaurant/category/crud"; // 修正
     }

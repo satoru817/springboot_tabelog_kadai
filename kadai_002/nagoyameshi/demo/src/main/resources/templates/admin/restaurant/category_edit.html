@@ -4,63 +4,73 @@
     <div th:replace="~{fragment::headResources}"></div>
     <title>カテゴリ管理</title>
     <style>
-        .checkbox-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px; /* ボタンの間隔 */
-}
+        #categoryList {
+            display: flex;
+            flex-wrap: wrap; /* 複数のボタンが横に並ぶ */
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 10px;
+        }
 
-.category-button {
-    display: flex;
-    align-items: center;
-}
+        .category-button {
+            display: flex;
+            align-items: center;
+            border: 1px solid #b5c48f;
+            border-radius: 5px;
+            background-color: #c0d9a0;
+            margin: 5px; /* ボタン間のスペースを追加 */
+            padding: 5px 10px; /* サイズ調整 */
+            cursor: pointer;
+            flex: 0 1 auto; /* ボタンが横に並ぶ */
+        }
 
-.category-button input {
-    display: none; /* チェックボックスを隠す */
-}
+        .category-name {
+            margin-right: 2mm; /* カテゴリ名とボタンの間に隙間を追加 */
+        }
 
-.category-button label {
-    padding: 10px 20px; /* パディングを追加 */
-    border: 1px solid #b5c48f; /* 抹茶の濃い色のボーダー */
-    border-radius: 5px; /* 角を丸める */
-    cursor: pointer; /* ポインタを表示 */
-    background-color: #c0d9a0; /* 抹茶の薄い色 */
-    color: #3b3b3b; /* 濃い抹茶色の文字 */
-    transition: background-color 0.3s, color 0.3s; /* 背景色と文字色の変化をスムーズに */
-}
+        .category-button .btn {
+            padding: 3px 8px; /* ボタンを小さくする */
+            margin: 0 2px; /* ボタン間のスペースを少し追加 */
+            font-size: 0.8rem; /* ボタンのフォントサイズを小さく */
+            border-radius: 8px !important; /* ボタンの角を丸く */
+            background-color: #e1bfb8; /* 和風の淡いピンク色に変更 */
+            border-color: #c9a09c; /* 和風デザインに合った色の枠線 */
+            color: #333; /* テキスト色を落ち着いたトーンに */
+        }
 
-/* ホバー時のスタイル */
-.category-button label:hover {
-    background-color: #9cb77a; /* ホバー時の色 */
-}
+        .round-btn{
+            border-radius: 8px !important;
+        }
 
-/* チェック時のスタイル */
-.category-button input:checked + label {
-    background-color: #7f9e5b; /* 濃い抹茶色 */
-    color: white; /* チェック時の文字色 */
-}
-
+        .category-button .btn:hover {
+            background-color: #d9ada6; /* 和風カラーでのホバー時の色変更 */
+        }
     </style>
+
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100" id="createNewCategory">
 <div th:replace="~{fragment::header}"></div>
 
-    <div class="wrapper">
+<div class="wrapper">
     <main>
-        <h2>カテゴリ管理</h2>
+
         <div class="row justify-content-center">
             <div class="col-xl-5 col-lg-6 col-md-8">
-
-                <div class="checkbox-buttons">
-                    <div th:each="category : ${categories}">
-                        <div class="category-button">
-                            <input type="checkbox" name="categories" th:value="${category.categoryId}"
-                                   th:data-id="${category.categoryId}"
-                                   onclick="openEditModal(this)">
-                            <label th:for="'category-' + ${category.categoryId}"
-                                   th:text="${category.categoryName}"></label>
-                            <button class="btn btn-danger btn-sm float-end"
-                                    th:onclick="openDeleteModal(event, ${category.categoryId}, '${category.categoryName}')">
+                <h2>カテゴリ管理</h2>
+                <div class="checkbox-buttons" id="categoryList">
+                    <div th:each="category : ${categories}" class="category-group">
+                        <div class="category-button btn-group">
+                            <span class="category-name" th:text="${category.categoryName}"></span>
+                            <button class="btn btn-secondary round-btn"
+                                    th:data-id="${category.categoryId}"
+                                    th:data-name="${category.categoryName}"
+                                    onclick="openEditModal(this)">
+                                編集
+                            </button>
+                            <button class="btn btn-danger round-btn"
+                                    th:data-id="${category.categoryId}"
+                                    th:data-name="${category.categoryName}"
+                                    onclick="openDeleteModal(this)">
                                 削除
                             </button>
                         </div>
@@ -150,7 +160,6 @@
                 </div>
             </div>
         </div>
-
     </main>
 </div>
 
@@ -160,26 +169,28 @@
 <script>
     // 編集モーダルを開く関数
     function openEditModal(element) {
-        const categoryId = $(element).data('id');
-        const categoryName = $(element).text();
+        const categoryId = element.getAttribute('data-id');
+        const categoryName = element.getAttribute('data-name');
         $('#editCategoryId').val(categoryId);
         $('#editCategoryName').val(categoryName);
         $('#editModal').modal('show');
     }
 
     // 削除モーダルを開く関数
-    function openDeleteModal(event, categoryId, categoryName) {
-        event.stopPropagation(); // Prevent triggering edit modal
+    function openDeleteModal(element) {
+        const categoryId = element.getAttribute('data-id');
+        const categoryName = element.getAttribute('data-name');
         $('#deleteCategoryId').val(categoryId);
         $('#deleteCategoryName').text(categoryName);
         $('#deleteModal').modal('show');
     }
 
-    // 新規作成モーダルを右クリックで表示
-    $(document).on('contextmenu', '#category-list', function(e) {
+    // 右クリックで新規作成モーダルを表示 (イベントの修正)
+    $(document).on('contextmenu', '#createNewCategory', function(e) {
         e.preventDefault();
         $('#createModal').modal('show');
     });
+
 </script>
 </body>
 </html>
