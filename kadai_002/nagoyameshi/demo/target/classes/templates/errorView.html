@@ -4,11 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <div th:replace="~{fragment::styles}"></div>
+  <div th:replace="~{fragment::headResources}"></div>
   <title>エラーページ</title>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
+<div th:replace="~{fragment::header}"></div>
 <h1>エラーページ</h1>
 <p>システムエラーが発生しました。前のページに戻り、再度お試しください。</p>
 <p>繰り返し問題が発生する場合は、お手数ですがsupport@example.comまでお問い合わせください。</p>

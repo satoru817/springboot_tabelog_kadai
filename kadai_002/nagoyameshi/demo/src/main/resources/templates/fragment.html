@@ -26,7 +26,6 @@
     <link rel="manifest" href="/site.webmanifest">
   </div>
 
-
   <title>部品化用のHTMLファイル</title>
 </head>
 
@@ -65,6 +64,16 @@
           <li><a class="dropdown-custom" href="/CompanyInfo">会社情報</a></li>
         </ul>
       </div>
+      <div class="btn-group me-2">
+        <button class="btn btn-custom dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          レストラン
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-custom" href="/admin/restaurant/register">レストラン情報登録</a></li>
+          <li><a class="dropdown-custom" href="/admin/restaurant/category/crud">カテゴリー編集</a></li>
+        </ul>
+      </div>
+
     </div>
   </nav>
 
@@ -80,6 +89,8 @@
 
 <!-- script要素の部品化 -->
 <div th:fragment="scripts" th:remove="tag">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Bootstrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 </div>

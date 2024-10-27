@@ -75,24 +75,42 @@ CREATE TABLE IF NOT EXISTS restaurants (
     name VARCHAR(50) NOT NULL,
     description VARCHAR(255) NOT NULL,
     capacity INT NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     postal_code VARCHAR(50) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(50) NOT NULL UNIQUE,
+    monday_opening_time TIME,
+    monday_closing_time TIME,
+    tuesday_opening_time TIME,
+    tuesday_closing_time TIME,
+    wednesday_opening_time TIME,
+    wednesday_closing_time TIME,
+    thursday_opening_time TIME,
+    thursday_closing_time TIME,
+    friday_opening_time TIME,
+    friday_closing_time TIME,
+    saturday_opening_time TIME,
+    saturday_closing_time TIME,
+    sunday_opening_time TIME,
+    sunday_closing_time TIME
 );
+
 
 CREATE TABLE  IF NOT EXISTS category_restaurants(--１つのレストランが複数のカテゴリーを持てるようにする
     category_restaurant_id INT AUTO_INCREMENT PRIMARY KEY,
     restaurant_id INT NOT NULL,
     category_id INT NOT NULL,
     UNIQUE(restaurant_id,category_id),
-    FOREIGN KEY(restaurant_id) REFERENCES restaurants(restaurant_id),
-    FOREIGN KEY(category_id) REFERENCES category(category_id)
+    FOREIGN KEY(restaurant_id) REFERENCES restaurants(restaurant_id) ON DELETE CASCADE,
+    FOREIGN KEY(category_id) REFERENCES categories(category_id) ON DELETE CASCADE
 );
 
-CREATE TABLE restaurant_images (--１つのレストランが複数のイメージを持てるようにする。
+CREATE TABLE IF NOT EXISTS restaurant_images (--１つのレストランが複数のイメージを持てるようにする。
     restaurant_image_id INT PRIMARY KEY AUTO_INCREMENT,
     restaurant_id INT NOT NULL,
     image_name VARCHAR(255) NOT NULL,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id)
+    UNIQUE(restaurant_id,image_name),
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id) ON DELETE CASCADE
 );
 
 
@@ -105,8 +123,8 @@ CREATE TABLE IF NOT EXISTS reservations (
     comment VARCHAR(50),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS reviews (
@@ -114,7 +132,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     reservation_id INT NOT NULL,
     star_count INT NOT NULL,
     content VARCHAR(255),
-    FOREIGN KEY (reservation_id) REFERENCES reservations(reservation_id)
+    FOREIGN KEY (reservation_id) REFERENCES reservations(reservation_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS company_info (
