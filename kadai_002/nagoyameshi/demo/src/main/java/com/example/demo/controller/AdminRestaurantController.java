@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Conventions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,28 @@ public class AdminRestaurantController {
     private final RestaurantRepository restaurantRepository;
     private final CategoryRestaurantRepository categoryRestaurantRepository;
     private final RestaurantImageRepository restaurantImageRepository;
+
+    //レストラン一覧画面(管理者用)
+    //詳細画面へのリンク、削除ボタン、検索ボックスが必要
+    //新規登録ボタンがあってもいい。
+    @GetMapping
+    public String index(Model model,
+                        @PageableDefault(page=0,size=10,sort="restaurantId",direction = Sort.Direction.ASC) Pageable pageable,
+                        @RequestParam(name="keyword",required = false)String keyword){
+        Page<Restaurant> restaurantsPage;
+
+        if(keyword != null && !keyword.isEmpty()) {
+            restaurantsPage = restaurantRepository.findByNameLike("%"+keyword+"%", pageable);
+        }else {
+            restaurantsPage = restaurantRepository.findAll(pageable);
+        }
+
+
+        model.addAttribute("restaurantsPage",restaurantsPage);
+
+        return "admin/restaurant/index";
+
+    }
 
     @GetMapping("/category/crud")
     public String registerRestaurantCategory(Model model){
@@ -125,18 +148,7 @@ public class AdminRestaurantController {
         }
     }
 
-    //レストラン一覧画面(管理者用)
-    //詳細画面へのリンク、削除ボタン、検索ボックスが必要
-    //新規登録ボタンがあってもいい。
-    @GetMapping
-    public String index(Model model, @PageableDefault(page=0,size=10,sort="restaurantId") Pageable pageable){
-        Page<Restaurant> restaurantPage = restaurantRepository.findAll(pageable);
 
-        model.addAttribute("restaurantPage",restaurantPage);
-
-        return "admin/restaurant/index";
-
-    }
 
     // UUIDを使って生成したファイル名を返す
     public String generateNewFileName(String fileName) {

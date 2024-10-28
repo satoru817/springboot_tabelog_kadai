@@ -9,6 +9,7 @@
   padding: 8px 16px; /* 適切なパディング */
   display: block; /* リンクをブロック要素に */
   text-decoration: none; /* 下線を消す */
+  border-radius:8px;
 }
 
 /* ホバー時の背景色とテキストの色 */
