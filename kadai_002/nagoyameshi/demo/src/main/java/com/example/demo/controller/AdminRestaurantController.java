@@ -14,6 +14,9 @@ import com.example.demo.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Conventions;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -22,6 +25,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -111,32 +115,27 @@ public class AdminRestaurantController {
             restaurantRepository.save(newRestaurant);
 
             // レストランのカテゴリー情報の保存
-            for(Integer selectedCategoryId : selectedCategoryIds){
-                CategoryRestaurant categoryRestaurant = new CategoryRestaurant();
-                categoryRestaurant.setRestaurant(newRestaurant);
-                categoryRestaurant.setCategory(categoryRepository.getReferenceById(selectedCategoryId));
-                categoryRestaurantRepository.save(categoryRestaurant);
-            }
+            saveCategoryRestaurant(selectedCategoryIds,newRestaurant);
 
             // レストランの画像の保存
             List<MultipartFile> images = restaurantRegistryForm.getImages();
-            for(MultipartFile image : images){
-                RestaurantImage restaurantImage = new RestaurantImage();
-                String imageName = image.getOriginalFilename();
-                String hashedImageName = generateNewFileName(imageName);
-                Path filePath = Paths.get("src/main/resources/static/images/" + hashedImageName);
-                try {
-                    copyImageFile(image, filePath);
-                    restaurantImage.setImageName(hashedImageName);
-                    restaurantImage.setRestaurant(newRestaurant);
-                    restaurantImageRepository.save(restaurantImage);
-                } catch (IOException e) {
-                    log.error("画像の保存中にエラーが発生しました: {}", e.getMessage());
-                }
-            }
+            saveImagesOfRestaurant(images,newRestaurant);
 
             return "ユーザーの見る詳細画面へのパス";
         }
+    }
+
+    //レストラン一覧画面(管理者用)
+    //詳細画面へのリンク、削除ボタン、検索ボックスが必要
+    //新規登録ボタンがあってもいい。
+    @GetMapping
+    public String index(Model model, @PageableDefault(page=0,size=10,sort="restaurantId") Pageable pageable){
+        Page<Restaurant> restaurantPage = restaurantRepository.findAll(pageable);
+
+        model.addAttribute("restaurantPage",restaurantPage);
+
+        return "admin/restaurant/index";
+
     }
 
     // UUIDを使って生成したファイル名を返す
@@ -150,4 +149,33 @@ public class AdminRestaurantController {
     public void copyImageFile(MultipartFile imageFile, Path filePath) throws IOException {
         Files.copy(imageFile.getInputStream(), filePath);
     }
+
+    //複数のレストラン画像を保存する
+    public void saveImagesOfRestaurant(List<MultipartFile> images,Restaurant restaurant){
+        for(MultipartFile image : images){
+            RestaurantImage restaurantImage = new RestaurantImage();
+            String imageName = image.getOriginalFilename();
+            String hashedImageName = generateNewFileName(imageName);
+            Path filePath = Paths.get("src/main/resources/static/images/" + hashedImageName);
+            try {
+                copyImageFile(image, filePath);
+                restaurantImage.setImageName(hashedImageName);
+                restaurantImage.setRestaurant(restaurant);
+                restaurantImageRepository.save(restaurantImage);
+            } catch (IOException e) {
+                log.error("画像の保存中にエラーが発生しました: {}", e.getMessage());
+            }
+        }
+    }
+    //categoryRestaurantを保存する
+    public void saveCategoryRestaurant(List<Integer> categoryIds,Restaurant restaurant){
+        for(Integer selectedCategoryId : categoryIds){
+            CategoryRestaurant categoryRestaurant = new CategoryRestaurant();
+            categoryRestaurant.setRestaurant(restaurant);
+            categoryRestaurant.setCategory(categoryRepository.getReferenceById(selectedCategoryId));
+            categoryRestaurantRepository.save(categoryRestaurant);
+        }
+    }
+
+
 }
