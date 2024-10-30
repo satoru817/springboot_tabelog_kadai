@@ -1,6 +1,7 @@
 const imageUpload = document.getElementById('imageUpload');
 const imagePreview = document.getElementById('imagePreview');
 const fileCountDisplay = document.getElementById('fileCountDisplay'); // ファイル数表示用の要素を取得
+const categoryCheckBoxes = document.getElementsByClassName('categories');
 
 imageUpload.addEventListener('change', function() {
     const files = Array.from(this.files);
@@ -29,3 +30,15 @@ imageUpload.addEventListener('change', function() {
         reader.readAsDataURL(file);
     });
 });
+
+
+for(const checkbox of categoryCheckBoxes){
+    checkbox.addEventListener('change',function(){
+        const checkedBox = document.querySelectorAll('.categories:checked');
+        if(checkedBox.length>5){
+            this.checked = false;
+            alert('5つまでしか選択できません。');
+        }
+    })
+}
+

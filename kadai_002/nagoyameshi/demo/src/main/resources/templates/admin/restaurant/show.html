@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragment::headResources}"></div>
+    <!-- slickの読み込み -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+    <title>詳細</title>
+</head>
+<body class="d-flex flex-column min-vh-100">
+<div class="wrapper">
+    <!-- ヘッダー -->
+    <div th:replace="~{fragment::header}"></div>
+
+    <main>
+        <div class="container pt-4 pb-5 container">
+            <div class="row justify-content-center">
+                <div class="col-xl-5 col-lg-6 col-md-8">
+                    <nav class="mb-4 breadcrumb" style="--bs-breadcrumb-divider:'>';" aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a th:href="@{/admin/restaurants}">
+                                レストラン一覧</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                レストラン詳細
+                            </li>
+                        </ol>
+                    </nav>
+
+                    <h1 class="mb-4 text-center" th:text="${restaurant.getName()}"></h1>
+
+                    <div class="d-flex justify-content-end align-items-end mb-3">
+                        <div>
+                            <a th:href="@{/admin/restaurants/__${restaurant.restaurantId}__/edit}">編集</a>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 carousel" >
+                        <div th:each="restaurantImage:${restaurantImages}">
+                            <img  th:src="@{/images/__${restaurantImage.imageName}__}"
+                                 class="w-100" alt="レストラン画像">
+                        </div>
+                    </div>
+
+                    <div class="container mb-4">
+                        <div class="row pb-2 mb-2 border-bottom">
+                            <div class="col-4">
+                                <span class="fw-bold">ID</span>
+                            </div>
+
+                            <div class="col">
+                                <span th:text="${restaurant.restaurantId}"></span>
+                            </div>
+                        </div>
+
+                        <div class="row pb-2 mb-2 border-bottom">
+                            <div class="col-4">
+                              <span class="fw-bold">レストラン名</span>
+                            </div>
+
+                            <div class="col">
+                                <span th:text="${restaurant.getName()}"></span>
+                            </div>
+                        </div>
+
+                        <div class="row pb-2 mb-2 border-bottom">
+                            <div class="col-4">
+                                <span class="fw-bold">カテゴリ名</span>
+                            </div>
+
+                            <div class="col">
+                                <span th:text="${restaurant.getName()}"></span>
+                            </div>
+                        </div>
+
+                        <div class="row pb-2 mb-2 border-bottom">
+                            <div class="col-4">
+                                <span class="fw-bold">説明</span>
+                            </div>
+
+                            <div class="col">
+                               <span class="pre-wrap" th:text="${restaurant.getDescription()}"></span>
+                            </div>
+                        </div>
+
+                        <div class="row pb-2 mb-2 border-bottom">
+                            <div class="col-4">
+                                <span class="fw-bold">最大人数</span>
+                            </div>
+
+                            <div class="col">
+                                <span th:text="${restaurant.capacity+'人'}"></span>
+                            </div>
+                        </div>
+
+                        <div class="row pb-2 mb-2 border-bottom">
+                            <div class="col-4">
+                                <span class="fw-bold">郵便番号</span>
+                            </div>
+
+                            <div class="col">
+                                <span th:text="${restaurant.getPostalCode()}"></span>
+                            </div>
+                        </div>
+
+                        <div class="row pb-2 mb-2 border-bottom">
+                            <div class="col-4">
+                                <span class="fw-bold">住所</span>
+                            </div>
+
+                            <div class="col">
+                                <span th:text="${restaurant.getAddress()}"></span>
+                            </div>
+                        </div>
+
+                        <div class="row pb-2 mb-2 border-bottom">
+                            <div class="col-4">
+                                <span class="fw-bold">電話番号</span>
+                            </div>
+
+                            <div class="col">
+                                <span th:text="${restaurant.getPhoneNumber()}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+</div>
+<!-- フッター -->
+<div th:replace="~{fragment::footer}"></div>
+<!-- BootStrap -->
+<div th:replace="~{fragment::scripts}"></div>
+<!-- slickの読み込み -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script th:src="@{/js/show.js}"></script>
+
+</body>
+</html>

@@ -70,6 +70,18 @@ public class AdminRestaurantController {
 
     }
 
+    @GetMapping("/{id}")
+    public String show(@PathVariable("id")Integer restaurantId,Model model){
+        Restaurant restaurant = restaurantRepository.getReferenceById(restaurantId);
+        List<CategoryRestaurant> categoryRestaurants = categoryRestaurantRepository.findAllByRestaurant(restaurant);
+        List<RestaurantImage> restaurantImages = restaurantImageRepository.findAllByRestaurant(restaurant);
+
+        model.addAttribute("restaurant",restaurant);
+        model.addAttribute("categoryRestaurants",categoryRestaurants);
+        model.addAttribute("restaurantImages",restaurantImages);
+        return "admin/restaurant/show";
+    }
+
     @GetMapping("/category/crud")
     public String registerRestaurantCategory(Model model){
         List<Category> categories = categoryService.fetchAll();

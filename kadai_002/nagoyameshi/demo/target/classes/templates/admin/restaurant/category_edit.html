@@ -1,52 +1,8 @@
 <!DOCTYPE html>
-<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<html lang="ja" xmlns:th="https://www.thymeleaf.org">
 <head>
-    <div th:replace="~{fragment::headResources}"></div>
+    <meta th:replace="~{fragment::headResources}"></meta>
     <title>カテゴリ管理</title>
-    <style>
-        #categoryList {
-            display: flex;
-            flex-wrap: wrap; /* 複数のボタンが横に並ぶ */
-            align-items: center;
-            justify-content: flex-start;
-            margin-bottom: 10px;
-        }
-
-        .category-button {
-            display: flex;
-            align-items: center;
-            border: 1px solid #b5c48f;
-            border-radius: 5px;
-            background-color: #c0d9a0;
-            margin: 5px; /* ボタン間のスペースを追加 */
-            padding: 5px 10px; /* サイズ調整 */
-            cursor: pointer;
-            flex: 0 1 auto; /* ボタンが横に並ぶ */
-        }
-
-        .category-name {
-            margin-right: 2mm; /* カテゴリ名とボタンの間に隙間を追加 */
-        }
-
-        .category-button .btn {
-            padding: 3px 8px; /* ボタンを小さくする */
-            margin: 0 2px; /* ボタン間のスペースを少し追加 */
-            font-size: 0.8rem; /* ボタンのフォントサイズを小さく */
-            border-radius: 8px !important; /* ボタンの角を丸く */
-            background-color: #e1bfb8; /* 和風の淡いピンク色に変更 */
-            border-color: #c9a09c; /* 和風デザインに合った色の枠線 */
-            color: #333; /* テキスト色を落ち着いたトーンに */
-        }
-
-        .round-btn{
-            border-radius: 8px !important;
-        }
-
-        .category-button .btn:hover {
-            background-color: #d9ada6; /* 和風カラーでのホバー時の色変更 */
-        }
-    </style>
-
 </head>
 <body class="d-flex flex-column min-vh-100" id="createNewCategory">
 <div th:replace="~{fragment::header}"></div>
@@ -56,18 +12,18 @@
 
         <div class="row justify-content-center">
             <div class="col-xl-5 col-lg-6 col-md-8">
-                <h2>カテゴリ管理</h2>
+                <h1 class="mb-4 text-center">カテゴリ管理</h1>
                 <div class="checkbox-buttons" id="categoryList">
                     <div th:each="category : ${categories}" class="category-group">
                         <div class="category-button btn-group">
                             <span class="category-name" th:text="${category.categoryName}"></span>
-                            <button class="btn btn-secondary round-btn"
+                            <button class="btn btn-secondary round-btn hidden-btn"
                                     th:data-id="${category.categoryId}"
                                     th:data-name="${category.categoryName}"
-                                    onclick="openEditModal(this)">
+                                    onclick="openEditModal(this)" >
                                 編集
                             </button>
-                            <button class="btn btn-danger round-btn"
+                            <button class="btn btn-danger round-btn hidden-btn"
                                     th:data-id="${category.categoryId}"
                                     th:data-name="${category.categoryName}"
                                     onclick="openDeleteModal(this)">
@@ -166,31 +122,7 @@
 <div th:replace="~{fragment::footer}"></div>
 <div th:replace="~{fragment::scripts}"></div>
 
-<script>
-    // 編集モーダルを開く関数
-    function openEditModal(element) {
-        const categoryId = element.getAttribute('data-id');
-        const categoryName = element.getAttribute('data-name');
-        $('#editCategoryId').val(categoryId);
-        $('#editCategoryName').val(categoryName);
-        $('#editModal').modal('show');
-    }
+<script th:src="@{/js/category_edit.js}"></script>
 
-    // 削除モーダルを開く関数
-    function openDeleteModal(element) {
-        const categoryId = element.getAttribute('data-id');
-        const categoryName = element.getAttribute('data-name');
-        $('#deleteCategoryId').val(categoryId);
-        $('#deleteCategoryName').text(categoryName);
-        $('#deleteModal').modal('show');
-    }
-
-    // 右クリックで新規作成モーダルを表示 (イベントの修正)
-    $(document).on('contextmenu', '#createNewCategory', function(e) {
-        e.preventDefault();
-        $('#createModal').modal('show');
-    });
-
-</script>
 </body>
 </html>
