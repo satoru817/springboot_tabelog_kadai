@@ -42,7 +42,7 @@
               </div>
             </div>
 
-            <div th:each="restaurantImage : ${restaurantImages}">
+            <div th:each="restaurantImage : ${restaurantImages}" th:id="restaurantImage__${restaurantImage.restaurantImageId}__">
               <img  th:src="@{/images/__${restaurantImage.imageName}__}" class="existingImage">
               <button type="button" th:onclick="|deleteImage(${restaurantImage.restaurantImageId})|">削除</button>
             </div>

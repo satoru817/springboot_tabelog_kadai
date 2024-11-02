@@ -11,6 +11,8 @@ import com.example.demo.repository.RestaurantImageRepository;
 import com.example.demo.repository.RestaurantRepository;
 import com.example.demo.service.CategoryService;
 import com.example.demo.service.RestaurantService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Conventions;
@@ -279,11 +281,16 @@ public class AdminRestaurantController {
             log.info("imagesはすべてemptyでした。");
         }
     }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     //categoryRestaurantを保存する
+    @Transactional
     public void saveCategoryRestaurant(List<Integer> categoryIds,Restaurant restaurant){
-        List<CategoryRestaurant> prevCategoryRestaurant = categoryRestaurantRepository.findAllByRestaurant(restaurant);
-        categoryRestaurantRepository.deleteAll(prevCategoryRestaurant);//以前のを全て削除
+        List<CategoryRestaurant> prevCategoryRestaurants = categoryRestaurantRepository.findAllByRestaurant(restaurant);
+        log.info("prevCategoryRestaurants:{}",prevCategoryRestaurants);
+        categoryRestaurantRepository.deleteAll(prevCategoryRestaurants);//以前のを全て削除
+        entityManager.flush(); // Flush the changes to the database
 
         for(Integer selectedCategoryId : categoryIds){
             CategoryRestaurant categoryRestaurant = new CategoryRestaurant();

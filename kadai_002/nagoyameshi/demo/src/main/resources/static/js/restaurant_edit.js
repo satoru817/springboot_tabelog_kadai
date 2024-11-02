@@ -12,6 +12,7 @@ $('.carousel').slick({
 });
 
 function deleteImage(restaurantImageId) {
+    const deleteImage = document.getElementById(`restaurantImage${restaurantImageId}`);
     const restaurantId = document.getElementById('restaurantId').value;
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
@@ -25,8 +26,7 @@ function deleteImage(restaurantImageId) {
         })
         .then(response => {
             if (response.ok) {
-                // 成功時に編集ページにリダイレクトする
-                window.location.href = `../${restaurantId}/edit`;
+                deleteImage.remove();
             } else {
                 alert("画像の削除に失敗しました。");
             }
