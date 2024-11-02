@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
-    <div th:replace="~{fragment::headResources}"></div>
     <!-- slickの読み込み -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+    <div th:replace="~{fragment::headResources}"></div>
     <title>詳細</title>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -18,7 +18,7 @@
                 <div class="col-xl-5 col-lg-6 col-md-8">
                     <nav class="mb-4 breadcrumb" style="--bs-breadcrumb-divider:'>';" aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0">
-                            <li class="breadcrumb-item"><a th:href="@{/admin/restaurants}">
+                            <li class="breadcrumb-item"><a th:href="@{/admin/restaurant}">
                                 レストラン一覧</a></li>
                             <li class="breadcrumb-item active" aria-current="page">
                                 レストラン詳細
@@ -30,7 +30,7 @@
 
                     <div class="d-flex justify-content-end align-items-end mb-3">
                         <div>
-                            <a th:href="@{/admin/restaurants/__${restaurant.restaurantId}__/edit}">編集</a>
+                            <a th:href="@{/admin/restaurant/__${restaurant.restaurantId}__/edit}">編集</a>
                         </div>
                     </div>
 
@@ -40,6 +40,7 @@
                                  class="w-100" alt="レストラン画像">
                         </div>
                     </div>
+                    <div class="arrow_box"></div>
 
                     <div class="container mb-4">
                         <div class="row pb-2 mb-2 border-bottom">
@@ -66,9 +67,10 @@
                             <div class="col-4">
                                 <span class="fw-bold">カテゴリ名</span>
                             </div>
-
-                            <div class="col">
-                                <span th:text="${restaurant.getName()}"></span>
+                            <div class="d-flex justify-content-center gap-2">
+                                <div class="btn" th:each="category:${categories}">
+                                    <span th:text="${category.getCategoryName()}"></span>
+                                </div>
                             </div>
                         </div>
 

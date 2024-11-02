@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.RestaurantRegistryForm;
+import com.example.demo.dto.RestaurantCrudForm;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.CategoryRestaurant;
 import com.example.demo.entity.Restaurant;
@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -77,9 +78,27 @@ public class AdminRestaurantController {
         List<RestaurantImage> restaurantImages = restaurantImageRepository.findAllByRestaurant(restaurant);
 
         model.addAttribute("restaurant",restaurant);
-        model.addAttribute("categoryRestaurants",categoryRestaurants);
+        model.addAttribute("categories",getCategories(categoryRestaurants));
         model.addAttribute("restaurantImages",restaurantImages);
         return "admin/restaurant/show";
+    }
+
+    private List<Category> getCategories(List<CategoryRestaurant> categoryRestaurants){
+        List<Category> categories = new ArrayList<>();
+        for(CategoryRestaurant categoryRestaurant:categoryRestaurants){
+            categories.add(categoryRestaurant.getCategory());
+        }
+
+        return  categories;
+    }
+
+    private List<Integer> getCategoryIds(List<CategoryRestaurant> categoryRestaurants){
+        List<Integer> categoryIds = new ArrayList<>();
+        for(CategoryRestaurant categoryRestaurant:categoryRestaurants){
+            categoryIds.add(categoryRestaurant.getCategory().getCategoryId());
+        }
+
+        return  categoryIds;
     }
 
     @GetMapping("/category/crud")
@@ -109,9 +128,9 @@ public class AdminRestaurantController {
 
     @GetMapping("/register")
     public String restaurantRegister(Model model){
-        if(!model.containsAttribute("restaurantRegistryForm")){
-            RestaurantRegistryForm restaurantRegistryForm = new RestaurantRegistryForm();
-            model.addAttribute("restaurantRegistryForm",restaurantRegistryForm);
+        if(!model.containsAttribute("restaurantCrudForm")){
+            RestaurantCrudForm restaurantCrudForm = new RestaurantCrudForm();
+            model.addAttribute("restaurantCrudForm",restaurantCrudForm);
         }
         List<Category> categories = categoryService.fetchAll();
         model.addAttribute("categories",categories);
@@ -122,42 +141,98 @@ public class AdminRestaurantController {
     @Transactional
     @PostMapping("/register")
     public String restaurantRegisterExec(@RequestParam("categories") List<Integer> selectedCategoryIds,
-                                         @ModelAttribute @Validated RestaurantRegistryForm restaurantRegistryForm,
+                                         @ModelAttribute @Validated RestaurantCrudForm restaurantCrudForm,
                                          BindingResult result,
                                          RedirectAttributes redirectAttributes){
+
+        log.info("selectedCategoryIds:{}",selectedCategoryIds);
         if(result.hasErrors()){
-            redirectAttributes.addFlashAttribute("restaurantRegistryForm",restaurantRegistryForm);
+            redirectAttributes.addFlashAttribute("restaurantCrudForm",restaurantCrudForm);
             redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
-                    + Conventions.getVariableName(restaurantRegistryForm),result);
+                    + Conventions.getVariableName(restaurantCrudForm),result);
             redirectAttributes.addFlashAttribute("selectedCategoryIds",selectedCategoryIds);
             return "redirect:/admin/restaurant/register"; // 修正
         } else {
             // 同一のメールアドレスまたは電話番号を持つレストランが存在しないか調べる
             Optional<Restaurant> existingRestaurant = restaurantRepository.findByEmailOrPhoneNumber(
-                    restaurantRegistryForm.getEmail(),
-                    restaurantRegistryForm.getPhoneNumber()
+                    restaurantCrudForm.getEmail(),
+                    restaurantCrudForm.getPhoneNumber()
             );
 
             if (existingRestaurant.isPresent()) {
                 result.rejectValue("email", "error.email", "このメールアドレスまたは電話番号は既に使用されています。");
                 redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
-                        + Conventions.getVariableName(restaurantRegistryForm), result);
+                        + Conventions.getVariableName(restaurantCrudForm), result);
                 return "redirect:/admin/restaurant/register"; // 修正
             }
 
             // レストランの保存
-            Restaurant newRestaurant = restaurantRegistryForm.convertToRestaurant();
+            Restaurant newRestaurant = restaurantCrudForm.convertToRestaurant();
             restaurantRepository.save(newRestaurant);
 
             // レストランのカテゴリー情報の保存
             saveCategoryRestaurant(selectedCategoryIds,newRestaurant);
 
             // レストランの画像の保存
-            List<MultipartFile> images = restaurantRegistryForm.getImages();
+            List<MultipartFile> images = restaurantCrudForm.getImages();
             saveImagesOfRestaurant(images,newRestaurant);
 
             return "ユーザーの見る詳細画面へのパス";
         }
+    }
+
+    @GetMapping("/{id}/edit")
+    public String editRestaurant(@PathVariable("id")Integer restaurantId,
+                                 Model model){
+        Restaurant restaurant = restaurantRepository.getReferenceById(restaurantId);
+        RestaurantCrudForm restaurantCrudForm = RestaurantCrudForm.convertToRestaurantCrudForm(restaurant);
+        List<Category> allCategories = categoryRepository.findAll();
+        List<CategoryRestaurant> categoryRestaurants = categoryRestaurantRepository.findAllByRestaurant(restaurant);
+        List<Integer> selectedCategoryIds = getCategoryIds(categoryRestaurants);
+        List<RestaurantImage> restaurantImages = restaurantImageRepository.findAllByRestaurant(restaurant);
+
+        model.addAttribute("restaurantCrudForm",restaurantCrudForm);
+        model.addAttribute("allCategories",allCategories);
+        model.addAttribute("selectedCategoryIds",selectedCategoryIds);
+        model.addAttribute("restaurantImages",restaurantImages);
+
+        return "admin/restaurant/restaurant_edit";
+
+    }
+//
+    @Transactional
+    @PostMapping("/{id}/update")
+    public String updateRestaurant(@PathVariable("id")Integer restaurantId,
+                                   @RequestParam("categories")List<Integer> selectedCategoryIds,
+                                   @Validated RestaurantCrudForm restaurantCrudForm,
+                                   BindingResult result,
+                                   RedirectAttributes redirectAttributes
+                                   ){
+        if(result.hasErrors()){
+            redirectAttributes.addFlashAttribute("restaurantCrudForm",restaurantCrudForm);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
+            +Conventions.getVariableName(restaurantCrudForm),result);
+            redirectAttributes.addFlashAttribute("selectedCategoryIds",selectedCategoryIds);
+        }else{
+            Restaurant restaurant = restaurantCrudForm.convertToRestaurant();
+            restaurantRepository.save(restaurant);//restaurantIdをセットしているのでupsert処理になる。
+
+            saveCategoryRestaurant(selectedCategoryIds,restaurant);
+
+            List<MultipartFile> images = restaurantCrudForm.getImages();
+            saveImagesOfRestaurant(images,restaurant);
+        }
+        return "redirect:/admin/restaurant/"+restaurantId+"/edit";
+
+    }
+
+    //画像削除メソッド
+    //レストランと画像の結び付きを切っている。画像自体は削除していない。
+    @DeleteMapping("/delete-image")
+    @ResponseBody
+    public void deleteImage(@RequestParam("restaurantImageId") Integer restaurantImageId) {
+        RestaurantImage image = restaurantImageRepository.getReferenceById(restaurantImageId);
+        restaurantImageRepository.delete(image);
     }
 
 
@@ -175,24 +250,41 @@ public class AdminRestaurantController {
     }
 
     //複数のレストラン画像を保存する
-    public void saveImagesOfRestaurant(List<MultipartFile> images,Restaurant restaurant){
-        for(MultipartFile image : images){
-            RestaurantImage restaurantImage = new RestaurantImage();
-            String imageName = image.getOriginalFilename();
-            String hashedImageName = generateNewFileName(imageName);
-            Path filePath = Paths.get("src/main/resources/static/images/" + hashedImageName);
-            try {
-                copyImageFile(image, filePath);
-                restaurantImage.setImageName(hashedImageName);
-                restaurantImage.setRestaurant(restaurant);
-                restaurantImageRepository.save(restaurantImage);
-            } catch (IOException e) {
-                log.error("画像の保存中にエラーが発生しました: {}", e.getMessage());
+    public void saveImagesOfRestaurant(List<MultipartFile> images, Restaurant restaurant) {
+        log.info("saveImagesOfRestaurantは呼びだされています。");
+
+        // 空でないファイルがあるか確認
+        boolean hasNonEmptyFile = images.stream().anyMatch(file -> !file.isEmpty());
+        if (hasNonEmptyFile) {
+            log.info("imagesには空でないファイルがあります: {}", images);
+            for (MultipartFile image : images) {
+                if (!image.isEmpty()) {  // 各ファイルが空でないか確認
+                    RestaurantImage restaurantImage = new RestaurantImage();
+                    String imageName = image.getOriginalFilename();
+                    String hashedImageName = generateNewFileName(imageName);
+                    Path filePath = Paths.get("src/main/resources/static/images/" + hashedImageName);
+                    try {
+                        copyImageFile(image, filePath);
+                        restaurantImage.setImageName(hashedImageName);
+                        restaurantImage.setRestaurant(restaurant);
+                        restaurantImageRepository.save(restaurantImage);
+                    } catch (IOException e) {
+                        log.error("画像の保存中にエラーが発生しました: {}", e.getMessage());
+                    }
+                } else {
+                    log.info("空のファイルが含まれていました。");
+                }
             }
+        } else {
+            log.info("imagesはすべてemptyでした。");
         }
     }
+
     //categoryRestaurantを保存する
     public void saveCategoryRestaurant(List<Integer> categoryIds,Restaurant restaurant){
+        List<CategoryRestaurant> prevCategoryRestaurant = categoryRestaurantRepository.findAllByRestaurant(restaurant);
+        categoryRestaurantRepository.deleteAll(prevCategoryRestaurant);//以前のを全て削除
+
         for(Integer selectedCategoryId : categoryIds){
             CategoryRestaurant categoryRestaurant = new CategoryRestaurant();
             categoryRestaurant.setRestaurant(restaurant);

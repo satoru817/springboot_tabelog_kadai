@@ -248,14 +248,13 @@ footer {
     border-radius: 5px;
     background-color: var(--primary-red);
     color: var(--primary-white);
-    margin: 5px; /* ボタン間のスペースを追加 */
-    padding: 5px 10px; /* サイズ調整 */
     cursor: pointer;
     flex: 0 1 auto; /* ボタンが横に並ぶ */
 }
 
 .category-name {
     margin-right: 2mm; /* カテゴリ名とボタンの間に隙間を追加 */
+    padding: 8px;
 }
 
 .category-button .btn {
@@ -275,8 +274,26 @@ footer {
     background-color: #d9ada6; /* 和風カラーでのホバー時の色変更 */
 }
 
+#category_label{
+    padding: 10px 20px; /* パディングを追加 */
+    border: 1px solid #b5c48f; /* 抹茶の濃い色のボーダー */
+    border-radius: 5px; /* 角を丸める */
+    cursor: pointer; /* ポインタを表示 */
+    background-color: var(--primary-black);
+    color: var(--primary-white);
+    transition: background-color 0.3s, color 0.3s; /* 背景色と文字色の変化をスムーズに */
+}
+
+#category_label:hover{
+    background-color: var(--medium-gray);
+    color: var(--primary-white);
+}
 
 
+.category-button input:checked + #category_label{
+     background-color: var(--light-gray);
+     color: var(--primary-black);
+}
 .hidden-btn {
     opacity: 0; /* 初期状態は透明 */
     width: 0; /* 幅を0にする */
@@ -291,9 +308,75 @@ footer {
     opacity: 1; /* 表示時は不透明 */
     width: auto; /* 幅を自動にする */
     height:auto;
-    padding:auto;
+    padding:0px 8px !important;
 }
 
+/*レストラン登録時の画像プレビューの設定*/
+.image-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.image-preview img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+/*カルーセルの矢印の設定*/
+
+.arrow_box {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 20px 0 0;
+    position: relative;
+}
+
+.prev-arrow,
+.next-arrow {
+    display: block;
+    width: 50px;
+    height: 50px;
+    background: coral;
+    border-radius: 50%;
+    transition: all .3s ease;
+    cursor: pointer;
+    position:relative;
+}
+
+.prev-arrow {
+    transform: rotate(180deg);
+    margin-right: 20px;
+}
+
+.prev-arrow::before,
+.next-arrow::before{
+    position:absolute;
+    content: "";
+    width:10px;
+    height:10px;
+    border-right: 2px solid #FFF;
+    border-top: 2px solid #FFF;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    margin:auto;
+    transform:rotate(45deg);
+}
+
+.breadcrumb{
+    background-color:coral;
+}
+
+.page-link{
+    margin:0;
+}
 
 
 
@@ -302,3 +385,22 @@ footer {
 	max-width:1200px;
 	}
 }
+
+.checkbox-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* ボタンの間隔 */
+}
+
+.category-button {
+    display: flex;
+    align-items: center;
+}
+
+.category-button input {
+    display: none; /* チェックボックスを隠す */
+}
+
+
+
+

@@ -83,35 +83,39 @@
                         </tbody>
                     </table>
 
-                    <!-- ページネーション -->
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <span>Page <strong th:text="${restaurantsPage.number + 1}">1</strong> of <strong th:text="${restaurantsPage.totalPages}">1</strong></span>
-
-                        <nav aria-label="Page navigation" class="pagination">
-                            <ul class="pagination">
-                                <li class="page-item" th:if="${restaurantsPage.hasPrevious()}">
-                                    <a class="page-link" th:href="@{/admin/restaurant(page=${restaurantsPage.number - 1}, keyword=${keyword})}" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
+                    <!-- ページネーション 未完成-->
+                    <div th:if="${restaurantsPage.totalPages > 1}" class="d-flex justify-content-center mt-4">
+                        <nav class="p-0 m-0 rounded-3" aria-label="レストラン一覧ページ">
+                            <ul class="pagination p-0 m-0">
+                                <li class="page-item">
+                                    <span th:if="${restaurantsPage.isFirst()}" class="page-link disabled">前</span>
+                                    <a th:unless="${restaurantsPage.isFirst()}"
+                                       th:href="@{/admin/restaurant(page=${restaurantsPage.number - 1}, keyword=${keyword})}"
+                                       class="page-link">前</a>
                                 </li>
-                                <li class="page-item" th:each="page : ${#numbers.sequence(0, restaurantsPage.totalPages - 1)}">
-                                    <a th:if="${page != restaurantsPage.number}" class="page-link" th:href="@{/admin/restaurant(page=${page}, keyword=${keyword})}" th:text="${page + 1}"></a>
-                                    <span th:if="${page == restaurantsPage.number}" class="page-link active" th:text="${page + 1}"></span>
+                                <li th:each="page : ${#numbers.sequence(0, restaurantsPage.totalPages - 1)}"
+                                    class="page-item">
+                                    <span th:if="${page == restaurantsPage.number}" class="page-link active"
+                                          th:text="${page + 1}"></span>
+                                    <a th:unless="${page == restaurantsPage.number}"
+                                       th:href="@{/admin/restaurant(page=${page}, keyword=${keyword})}"
+                                       class="page-link" th:text="${page + 1}"></a>
                                 </li>
-                                <li class="page-item" th:if="${restaurantsPage.hasNext()}">
-                                    <a class="page-link" th:href="@{/admin/restaurant(page=${restaurantsPage.number + 1}, keyword=${keyword})}" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
+                                <li class="page-item">
+                                    <span th:if="${restaurantsPage.isLast()}" class="page-link disabled">次</span>
+                                    <a th:unless="${restaurantsPage.isLast()}"
+                                       th:href="@{/admin/restaurant(page=${restaurantsPage.number+1},keyword=${keyword})}"
+                                       class="page-link">次</a>
                                 </li>
                             </ul>
                         </nav>
                     </div>
 
+
                 </div>
             </div>
         </div>
     </main>
-
 
 
 </div>

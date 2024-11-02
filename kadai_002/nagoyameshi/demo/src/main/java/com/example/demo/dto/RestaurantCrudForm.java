@@ -7,9 +7,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Data
-public class RestaurantRegistryForm {
+public class RestaurantCrudForm {
+    private Integer restaurantId;//registryのときは使わないfield.updateのときに使うから存在する。
+
     @NotBlank(message = "レストラン名を入力してください")
     private String name;
 
@@ -55,6 +58,7 @@ public class RestaurantRegistryForm {
 
     public Restaurant convertToRestaurant() {
         Restaurant restaurant = new Restaurant();
+        Optional.ofNullable(this.restaurantId).ifPresent(restaurant::setRestaurantId);
         restaurant.setAddress(this.address);
         restaurant.setName(this.name);
         restaurant.setEmail(this.email);
@@ -81,4 +85,35 @@ public class RestaurantRegistryForm {
 
         return restaurant;
     }
+
+    public static RestaurantCrudForm convertToRestaurantCrudForm(Restaurant restaurant) {
+        RestaurantCrudForm form = new RestaurantCrudForm();
+        form.setRestaurantId(restaurant.getRestaurantId());
+        form.setAddress(restaurant.getAddress());
+        form.setName(restaurant.getName());
+        form.setEmail(restaurant.getEmail());
+        form.setCapacity(restaurant.getCapacity());
+        form.setPhoneNumber(restaurant.getPhoneNumber());
+        form.setDescription(restaurant.getDescription());
+        form.setPostalCode(restaurant.getPostalCode());
+
+        // 曜日ごとの開店時間と閉店時間を設定
+        form.setMondayOpeningTime(restaurant.getMondayOpeningTime());
+        form.setMondayClosingTime(restaurant.getMondayClosingTime());
+        form.setTuesdayOpeningTime(restaurant.getTuesdayOpeningTime());
+        form.setTuesdayClosingTime(restaurant.getTuesdayClosingTime());
+        form.setWednesdayOpeningTime(restaurant.getWednesdayOpeningTime());
+        form.setWednesdayClosingTime(restaurant.getWednesdayClosingTime());
+        form.setThursdayOpeningTime(restaurant.getThursdayOpeningTime());
+        form.setThursdayClosingTime(restaurant.getThursdayClosingTime());
+        form.setFridayOpeningTime(restaurant.getFridayOpeningTime());
+        form.setFridayClosingTime(restaurant.getFridayClosingTime());
+        form.setSaturdayOpeningTime(restaurant.getSaturdayOpeningTime());
+        form.setSaturdayClosingTime(restaurant.getSaturdayClosingTime());
+        form.setSundayOpeningTime(restaurant.getSundayOpeningTime());
+        form.setSundayClosingTime(restaurant.getSundayClosingTime());
+
+        return form;
+    }
+
 }

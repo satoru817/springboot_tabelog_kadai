@@ -1,5 +1,3 @@
-//TODO:nameに@が含まれているとき、及び、２つのpasswordが異なるときはjs側でもエラーを出し、submitできないようにする。
-//TODO:パスワードが8文字以下の場合もエラーを出すようにしよう。メールのvalidationも先にやっとこう
 
 const name = document.getElementById('name');
 const password = document.getElementById('password');

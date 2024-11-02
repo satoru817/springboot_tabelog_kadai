@@ -3,6 +3,8 @@
 <head>
   <meta th:replace="~{fragment::headResources}"></meta>
   <title>レストラン登録</title>
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
 </head>
 <body class="d-flex flex-column min-vh-100">
 <div th:replace="~{fragment::header}"></div>
@@ -16,7 +18,7 @@
 
           <h1 class="mb-4 text-center">レストラン情報登録</h1>
 
-          <form id="restaurantForm" enctype="multipart/form-data" th:action="@{/admin/restaurant/register}" method="post" th:object="${restaurantRegistryForm}">
+          <form id="restaurantForm" enctype="multipart/form-data" th:action="@{/admin/restaurant/register}" method="post" th:object="${restaurantCrudForm}">
 
             <div class="form-group row mb-3">
               <div class="col-md-4">
@@ -147,16 +149,20 @@
             </div>
 
             <h2>カテゴリを選択(５個まで）</h2>
-            <div class="checkbox-buttons">
+            <div class="checkbox-buttons d-flex justify-content-center flex-wrap gap-2">
               <div th:each="category : ${categories}">
-                <div class="category-button">
-                  <input type="checkbox" name="categories" class="categories" th:value="${category.categoryId}"
+                <div class="category-button btn-group d-flex align-items-center">
+                  <input type="checkbox" name="categories" class="categories"
+                         th:value="${category.categoryId}"
                          th:id="'category-' + ${category.categoryId}"
-                         th:checked="${selectedCategoryIds != null} ? ${selectedCategoryIds.contains(category.categoryId)} : false">
-                  <label th:for="'category-' + ${category.categoryId}" th:text="${category.categoryName}"></label>
+                         th:checked="${selectedCategoryIds != null && selectedCategoryIds.contains(category.categoryId)}">
+                  <label th:for="'category-' + ${category.categoryId}"
+                         th:text="${category.categoryName}"
+                          id="category_label"></label>
                 </div>
               </div>
             </div>
+
 
             <h2>画像をアップロード（最大10枚）</h2>
             <div class="form-group mb-3">
