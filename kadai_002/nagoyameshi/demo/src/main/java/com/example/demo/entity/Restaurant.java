@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -79,4 +80,58 @@ public class Restaurant {
 
     @Column(name = "sunday_closing_time")
     private LocalTime sundayClosingTime;
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)//cascadeType.Allとすると、restaurantが保存、削除されるとそれに関連するRestaurantImageも自動で処理される。
+        //FetchType.LAZYにすると必要なときにのみ読み込まれるようになる。
+    private List<RestaurantImage> images;
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CategoryRestaurant> categoryRestaurants; // 中間テーブルとの関連を追加
+
+    public String getOpeningHoursForDay(String day) {
+        LocalTime openingTime = null;
+        LocalTime closingTime = null;
+
+        switch (day.toLowerCase()) {
+            case "monday":
+                openingTime = mondayOpeningTime;
+                closingTime = mondayClosingTime;
+                break;
+            case "tuesday":
+                openingTime = tuesdayOpeningTime;
+                closingTime = tuesdayClosingTime;
+                break;
+            case "wednesday":
+                openingTime = wednesdayOpeningTime;
+                closingTime = wednesdayClosingTime;
+                break;
+            case "thursday":
+                openingTime = thursdayOpeningTime;
+                closingTime = thursdayClosingTime;
+                break;
+            case "friday":
+                openingTime = fridayOpeningTime;
+                closingTime = fridayClosingTime;
+                break;
+            case "saturday":
+                openingTime = saturdayOpeningTime;
+                closingTime = saturdayClosingTime;
+                break;
+            case "sunday":
+                openingTime = sundayOpeningTime;
+                closingTime = sundayClosingTime;
+                break;
+        }
+
+        if (openingTime != null && closingTime != null) {
+            if (openingTime.equals(closingTime)) {//営業開始と終了時刻が同じ場合は休業とする。
+                return "休業";
+            }
+            return openingTime + " 〜 " + closingTime;
+        }
+        return "未設定"; // 営業時間が設定されていない場合
+    }
+
+    //fixme:日付をまたいだ営業に今の所対応できていない。
+
 }

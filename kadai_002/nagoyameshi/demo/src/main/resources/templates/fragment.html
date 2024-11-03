@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org">
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
   <div th:fragment="headResources" th:remove="tag">
     <!-- Meta要素 -->
@@ -59,7 +59,7 @@
           会社情報
         </button>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-custom" href="/admin/company/editCompanyInfo">会社情報編集</a></li>
+          <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" href="/admin/company/editCompanyInfo">会社情報編集</a></li>
           <li><a class="dropdown-custom" href="/CompanyInfo">会社情報</a></li>
         </ul>
       </div>
@@ -68,8 +68,9 @@
           レストラン
         </button>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-custom" href="/admin/restaurant">レストラン情報一覧(管理者用)</a></li>
-          <li><a class="dropdown-custom" href="/admin/restaurant/register">レストラン情報登録</a></li>
+          <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" href="/admin/restaurant">レストラン情報一覧(管理者用)</a></li>
+          <li><a class="dropdown-custom" href="/restaurant">レストラン情報一覧</a></li>
+          <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" href="/admin/restaurant/register">レストラン情報登録</a></li>
           <li><a class="dropdown-custom" href="/admin/restaurant/category/crud">カテゴリー編集</a></li>
 
         </ul>

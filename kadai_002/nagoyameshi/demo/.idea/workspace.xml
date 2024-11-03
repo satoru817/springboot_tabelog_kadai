@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
+    <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2b3b768d-ba7a-4700-8bfa-0f34397c0aad" name="Changes" comment="会員登録機能まで">
@@ -34,13 +34,14 @@
   </component>
   <component name="CompilerWorkspaceConfiguration">
     <option name="MAKE_PROJECT_ON_SAVE" value="true" />
+    <option name="PARALLEL_COMPILATION" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
-        <option value="Class" />
         <option value="HTML File" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -82,9 +83,10 @@
     "git-widget-placeholder": "b1",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/satoru/document/kadai",
-    "project.structure.last.edited": "Project",
+    "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
+    "settings.build.tools.auto.reload": "ALL",
     "settings.editor.selected.configurable": "project.propCompiler"
   },
   "keyToStringList": {

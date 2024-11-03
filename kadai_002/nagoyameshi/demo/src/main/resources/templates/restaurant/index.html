@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+  <meta th:replace="~{fragment::headResources}">
+
+  <title>レストラン一覧</title>
+</head>
+
+<body>
+<div class="wrapper">
+  <!-- ヘッダー -->
+  <div th:replace="~{fragment::header}"></div>
+
+  <main>
+    <div class="container container pb-5">
+      <div class="row justify-content-center">
+        <nav class="my-3 p-0 rounded-4" style="--bs-breadcrumb-divider:'>';" aria-label="breadcrumb">
+          <ol class="breadcrumb mb-0 p-2 rounded-4">
+            <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+            <li class="breadcrumb-item active" aria-current="page">レストラン一覧</li>
+          </ol>
+        </nav>
+
+        <div class="col-xl-3 col-lg-4 col-md-12">
+            <form method="get" th:action="@{/restaurant}" class="w-100 mb-3">
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" name="restaurantName" th:value="${restaurantName}" placeholder="レストラン名">
+                <button type="submit" class="btn text-white shadow-sm btn">検索</button>
+              </div>
+
+              <div class="card mb-3">
+                <div class="card-header">
+                  カテゴリで絞り込む(複数選択可)
+                </div>
+                <div class="card-body">
+                  <div class="d-flex justify-content-center flex-wrap gap-2">
+                    <div th:each="category : ${categories}">
+                      <div class="btn-group d-flex align-items-center">
+                        <input type="checkbox" name="categoryId" class="categories"
+                               th:value="${category.categoryId}"
+                               th:id="'category-' + ${category.categoryId}"
+                               th:checked="${categoryIds != null && categoryIds.contains(category.categoryId)}">
+                        <label th:for="'category-' + ${category.categoryId}"
+                               th:text="${category.categoryName}"
+                               ></label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-3">
+                <div class="card-header">
+                  区から絞り込む(複数選択可）
+                </div>
+                <div class="card-body">
+                  <div class="checkbox-buttons d-flex justify-content-center flex-wrap gap-2">
+                    <div th:each="ward : ${nagoyaWards}">
+                      <div class="ward-button btn-group d-flex align-items-center">
+                        <input type="checkbox" name="ward" class="wards"
+                               th:value="${ward}"
+                               th:id="'ward-' + ${ward}"
+                               th:checked="${wards != null && wards.contains(ward)}">
+                        <label th:for="'ward-' + ${ward}"
+                               th:text="${ward}"
+                               id="ward_label"></label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-3">
+                <div class="card-header">
+                  人数で探す
+                </div>
+                <div class="card-body">
+                  <div class="form-group mb-3">
+                    <select class="form-control form-select" name="num">
+                      <option value="" hidden>選択してください</option>
+                      <option value="10" th:selected="${num == 10 || num == null}">10人以下</option>
+                      <option value="20" th:selected="${num == 20}">20人以下</option>
+                      <option value="30" th:selected="${num == 30}">30人以下</option>
+                      <option value="31" th:selected="${num == 31}">31人以上</option>
+                    </select>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <button type="submit" class="btn text-white shadow-sm w-100 btn">検索</button>
+              </div>
+            </form>
+          </div>
+
+
+
+          <div class="col">
+          <div class="d-flex justify-content-between flex-wrap">
+            <p th:if="${restaurantPage.getTotalPages()>1}" class="fs-5 mb-3" th:text="${'検索結果:'+restaurantPage.getTotalElements()+'件'+'('+(restaurantPage.getNumber()+1) + '/' + restaurantPage.getTotalPages()+'ページ)'}"></p>
+            <p th:unless="${restaurantPage.getTotalPages()>1}" class="fs-5 mb-3" th:text="${'検索結果:'+restaurantPage.getTotalElements()+'件'}"></p>
+          </div>
+
+          <div class="mb-3" th:each="restaurant:${restaurantPage}">
+            <a th:href="@{/restaurant/__${restaurant.getRestaurantId()}__}" class="link-dark card-link">
+              <div class="card h-100">
+                <div class="row g-0">
+                  <div class="col-md-4">
+                    <div th:id="carouselExampleIndicators__${restaurant.getRestaurantId()}__"  class="carousel slide" data-bs-ride="carousel">
+                      <div class="carousel-inner">
+                        <div class="carousel-item active">
+                          <img th:if="${restaurant.images.size() > 0}" th:src="@{/images/__${restaurant.images[0].imageName}__}" class="card-img-top horizontal-card-image" alt="店舗画像">
+                          <img th:unless="${restaurant.images.size() > 0}" th:src="@{/images/noImage.png}" class="card-img-top horizontal-card-image" alt="NO IMAGE">
+                        </div>
+                        <div th:each="image, iterStat : ${restaurant.images}" th:if="${iterStat.index > 0}" class="carousel-item">
+                          <img th:src="@{/images/__${image.imageName}__}" class="card-img-top horizontal-card-image" alt="店舗画像">
+                        </div>
+                      </div>
+                      <button class="carousel-control-prev" type="button" th:attr="data-bs-target='#carouselExampleIndicators__${restaurant.getRestaurantId()}__'" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                      </button>
+                      <button class="carousel-control-next" type="button" th:attr="data-bs-target='#carouselExampleIndicators__${restaurant.getRestaurantId()}__'"  data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="col-md-5">
+                    <div class="card-body">
+                      <h3 class="card-title mb-3" th:text="${restaurant.getName()}"></h3>
+
+                      <hr class="mb-3">
+
+                      <p class="card-text mb-2">
+                        <span th:text="${restaurant.getDescription()}"></span>
+                      </p>
+
+                      <p class="card-text mb-2">
+                        <small class="text-muted" th:text="${'〒'+restaurant.getPostalCode()}"></small>
+                        <small class="text-muted" th:text="${restaurant.getAddress()}"></small>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="card-body">
+                      <h5 class="card-title mb-3 mt-3">営業時間</h5>
+                      <p class="card-text">
+                        <strong>月曜日:</strong> <span th:text="${restaurant.getOpeningHoursForDay('monday')}"></span><br>
+                        <strong>火曜日:</strong> <span th:text="${restaurant.getOpeningHoursForDay('tuesday')}"></span><br>
+                        <strong>水曜日:</strong> <span th:text="${restaurant.getOpeningHoursForDay('wednesday')}"></span><br>
+                        <strong>木曜日:</strong> <span th:text="${restaurant.getOpeningHoursForDay('thursday')}"></span><br>
+                        <strong>金曜日:</strong> <span th:text="${restaurant.getOpeningHoursForDay('friday')}"></span><br>
+                        <strong>土曜日:</strong> <span th:text="${restaurant.getOpeningHoursForDay('saturday')}"></span><br>
+                        <strong>日曜日:</strong> <span th:text="${restaurant.getOpeningHoursForDay('sunday')}"></span><br>
+                      </p>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- ページネーション -->
+          <div th:if="${restaurantPage.getTotalPages()>1}" class="d-flex justify-content-center">
+            <nav aria-label="レストラン一覧ページ" class="p-0 rounded-3">
+              <ul class="pagination m-0 p-0">
+                <li class="page-item">
+                  <span th:if="${restaurantPage.isFirst()}" class="page-link disabled">前</span>
+                  <a th:unless="${restaurantPage.isFirst()}" th:href="@{/restaurant(page=${restaurantPage.getNumber()-1},restaurantName=${restaurantName},ward=${wards},categoryId=${categoryIds},num=${num})}" class="page-link page-link">前</a>
+                </li>
+                <li th:each="i:${#numbers.sequence(0,restaurantPage.getTotalPages()-1)}" class="page-item">
+                  <span th:if="${i==restaurantPage.getNumber()}" class="page-link active active" th:text="${i+1}"></span>
+                  <a th:unless="${i==restaurantPage.getNumber()}" th:href="@{/restaurant(page=${i},restaurantName=${restaurantName},ward=${wards},categoryId=${categoryIds},num=${num})}" class="page-link page-link" th:text="${i+1}"></a>
+                </li>
+                <li class="page-item">
+                  <span th:if="${restaurantPage.isLast()}" class="page-link disabled">次</span>
+                  <a th:unless="${restaurantPage.isLast()}" th:href="@{/restaurant(page=${restaurantPage.getNumber()+1},restaurantName=${restaurantName},ward=${wards},categoryId=${categoryIds},num=${num})}" class="page-link page-link">次</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- フッター -->
+  <div th:replace="~{fragment::footer}"></div>
+</div>
+
+<div th:replace="~{fragment::scripts}"></div>
+</body>
+</html>
