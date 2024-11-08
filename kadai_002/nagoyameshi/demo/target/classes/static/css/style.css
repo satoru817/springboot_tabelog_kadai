@@ -27,7 +27,7 @@ header {
 }
 
 /* ナビゲーションバー */
-nav {
+.navbar-red {
     background-color: var(--primary-red);
     padding: 0.5rem;
 }
@@ -222,10 +222,7 @@ footer {
     color: var(--primary-white); /* ホバー時の文字色 */
 }
 
-/* navbar-red クラスのスタイル */
-.navbar {
-    background-color: var(--primary-red); /* ナビゲーションバーの背景色 */
-}
+
 
 .navbar .navbar-toggler {
     color: var(--primary-white); /* ナビゲーションの文字色 */
@@ -372,6 +369,9 @@ footer {
 
 .breadcrumb{
     background-color:coral;
+    border-radius: var(--bs-border-radius-xl)!important;
+    padding: .5rem ! important;
+    margin-bottom: 0 !important;
 }
 
 .page-link{
@@ -435,3 +435,40 @@ footer {
 }
 
 
+.card-img-show{
+    height:350px !important;
+}
+
+.select-logic label{
+    border-radius:8px;
+    background-color: var(--primary-gold);
+    padding: 0 8px;
+    box-shadow: var(--box-shadow);
+}
+
+.select-logic input:checked+label{
+    background-color: coral;
+}
+
+.select-logic label:hover{
+ background-color: #8b7500;
+}
+
+
+.see-all-photos-btn {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  background-color: rgba(0, 0, 0, 0.6);
+  /* 半透明の背景で視認性を向上 */
+  color: #fff;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.see-all-photos-btn:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+  /* ホバー時の背景色 */
+}

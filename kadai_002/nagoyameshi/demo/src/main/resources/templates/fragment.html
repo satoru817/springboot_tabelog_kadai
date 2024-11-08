@@ -19,10 +19,10 @@
     <link th:href="@{/css/style.css}" rel="stylesheet">
 
     <!-- Faviconの設定 -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/site.webmanifest}">
   </div>
 
   <title>部品化用のHTMLファイル</title>
@@ -40,9 +40,9 @@
           サブスクリプション関連
         </button>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-custom" href="/upgrade">有料会員にアップグレード</a></li>
-          <li><a class="dropdown-custom" href="/add_card">支払いカード追加</a></li>
-          <li><a class="dropdown-custom" href="/cardView">支払いカード確認</a></li>
+          <li><a class="dropdown-custom" th:href="@{/upgrade}">有料会員にアップグレード</a></li>
+          <li><a class="dropdown-custom" th:href="@{/add_card}">支払いカード追加</a></li>
+          <li><a class="dropdown-custom" th:href="@{/cardView}">支払いカード確認</a></li>
         </ul>
       </div>
       <div class="btn-group me-2">
@@ -50,8 +50,12 @@
           認証関連
         </button>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-custom" href="/auth/login">ログイン</a></li>
-          <li><a class="dropdown-custom" href="/signUp">ユーザー登録</a></li>
+          <li><a sec:authorize="!isAnonymous()" class="dropdown-custom"  onclick="event.preventDefault();document.getElementById('logout-form').submit();">
+            ログアウト
+          </a> <form class="d-none" id="logout-form" th:action="@{/logout}" method="post" ></form>
+          </li>
+          <li><a sec:authorize="isAnonymous()" class="dropdown-custom" th:href="@{/auth/login}">ログイン</a></li>
+          <li><a sec:authorize="isAnonymous()" class="dropdown-custom" th:href="@{/signUp}">ユーザー登録</a></li>
         </ul>
       </div>
       <div class="btn-group me-2">
@@ -59,8 +63,8 @@
           会社情報
         </button>
         <ul class="dropdown-menu">
-          <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" href="/admin/company/editCompanyInfo">会社情報編集</a></li>
-          <li><a class="dropdown-custom" href="/CompanyInfo">会社情報</a></li>
+          <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/company/editCompanyInfo}">会社情報編集</a></li>
+          <li><a class="dropdown-custom" th:href="@{/CompanyInfo}">会社情報</a></li>
         </ul>
       </div>
       <div class="btn-group me-2">
@@ -68,11 +72,19 @@
           レストラン
         </button>
         <ul class="dropdown-menu">
-          <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" href="/admin/restaurant">レストラン情報一覧(管理者用)</a></li>
-          <li><a class="dropdown-custom" href="/restaurant">レストラン情報一覧</a></li>
-          <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" href="/admin/restaurant/register">レストラン情報登録</a></li>
-          <li><a class="dropdown-custom" href="/admin/restaurant/category/crud">カテゴリー編集</a></li>
+          <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant}">レストラン情報一覧(管理者用)</a></li>
+          <li><a class="dropdown-custom" th:href="@{/restaurant}">レストラン情報一覧</a></li>
+          <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant/register}">レストラン情報登録</a></li>
+          <li><a class="dropdown-custom" th:href="@{/admin/restaurant/category/crud}">カテゴリー編集</a></li>
 
+        </ul>
+      </div>
+      <div class="btn-group me-2">
+        <button class="btn btn-custom dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          予約関連
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-custom" th:href="@{/reservation/show}">予約一覧(ユーザー用)</a></li>
         </ul>
       </div>
 

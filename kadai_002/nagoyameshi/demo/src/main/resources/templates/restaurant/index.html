@@ -45,6 +45,16 @@
                                ></label>
                       </div>
                     </div>
+                    <div class="select-logic d-flex justify-content-center gap-2">
+                      <input type="radio" name="logic" value="and" id="AND" class="d-none"
+                             th:checked="${logic != null and logic == 'and'}">
+                      <label for="AND">AND検索</label>
+
+                      <input type="radio" name="logic" value="or" id="OR" class="d-none"
+                             th:checked="${logic == null or (logic != null and logic == 'or')}">
+                      <label for="OR">OR検索</label>
+                    </div>
+
                   </div>
                 </div>
               </div>
@@ -142,19 +152,25 @@
                         <small class="text-muted" th:text="${'〒'+restaurant.getPostalCode()}"></small>
                         <small class="text-muted" th:text="${restaurant.getAddress()}"></small>
                       </p>
+                      <p class="card-text">
+                        <small class="mr-2 text-muted" th:each="categoryRestaurant : ${restaurant.getCategoryRestaurants()}"
+                               th:text="${categoryRestaurant.getCategory().getCategoryName()}"></small>
+                      </p>
                     </div>
                   </div>
                   <div class="col-md-3">
                     <div class="card-body">
                       <h5 class="card-title mb-3 mt-3">営業時間</h5>
                       <p class="card-text">
-                        <strong>月曜日:</strong> <span th:text="${restaurant.getOpeningHoursForDay('monday')}"></span><br>
-                        <strong>火曜日:</strong> <span th:text="${restaurant.getOpeningHoursForDay('tuesday')}"></span><br>
-                        <strong>水曜日:</strong> <span th:text="${restaurant.getOpeningHoursForDay('wednesday')}"></span><br>
-                        <strong>木曜日:</strong> <span th:text="${restaurant.getOpeningHoursForDay('thursday')}"></span><br>
-                        <strong>金曜日:</strong> <span th:text="${restaurant.getOpeningHoursForDay('friday')}"></span><br>
-                        <strong>土曜日:</strong> <span th:text="${restaurant.getOpeningHoursForDay('saturday')}"></span><br>
-                        <strong>日曜日:</strong> <span th:text="${restaurant.getOpeningHoursForDay('sunday')}"></span><br>
+                        <small>
+                          月曜日: <span th:text="${restaurant.getOpeningHoursForDay('monday')}"></span><br>
+                          火曜日: <span th:text="${restaurant.getOpeningHoursForDay('tuesday')}"></span><br>
+                          水曜日: <span th:text="${restaurant.getOpeningHoursForDay('wednesday')}"></span><br>
+                          木曜日: <span th:text="${restaurant.getOpeningHoursForDay('thursday')}"></span><br>
+                          金曜日: <span th:text="${restaurant.getOpeningHoursForDay('friday')}"></span><br>
+                          土曜日: <span th:text="${restaurant.getOpeningHoursForDay('saturday')}"></span><br>
+                          日曜日: <span th:text="${restaurant.getOpeningHoursForDay('sunday')}"></span><br>
+                        </small>
                       </p>
                     </div>
                   </div>
@@ -170,15 +186,22 @@
               <ul class="pagination m-0 p-0">
                 <li class="page-item">
                   <span th:if="${restaurantPage.isFirst()}" class="page-link disabled">前</span>
-                  <a th:unless="${restaurantPage.isFirst()}" th:href="@{/restaurant(page=${restaurantPage.getNumber()-1},restaurantName=${restaurantName},ward=${wards},categoryId=${categoryIds},num=${num})}" class="page-link page-link">前</a>
+                  <a th:unless="${restaurantPage.isFirst()}"
+                     th:href="@{/restaurant(page=${restaurantPage.getNumber()-1},restaurantName=${restaurantName},ward=${wards},categoryId=${categoryIds},num=${num},logic=${logic})}"
+                     class="page-link page-link">前</a>
                 </li>
                 <li th:each="i:${#numbers.sequence(0,restaurantPage.getTotalPages()-1)}" class="page-item">
                   <span th:if="${i==restaurantPage.getNumber()}" class="page-link active active" th:text="${i+1}"></span>
-                  <a th:unless="${i==restaurantPage.getNumber()}" th:href="@{/restaurant(page=${i},restaurantName=${restaurantName},ward=${wards},categoryId=${categoryIds},num=${num})}" class="page-link page-link" th:text="${i+1}"></a>
+                  <a th:unless="${i==restaurantPage.getNumber()}"
+                     th:href="@{/restaurant(page=${i},restaurantName=${restaurantName},ward=${wards},categoryId=${categoryIds},num=${num},logic=${logic})}"
+                     class="page-link page-link"
+                     th:text="${i+1}"></a>
                 </li>
                 <li class="page-item">
                   <span th:if="${restaurantPage.isLast()}" class="page-link disabled">次</span>
-                  <a th:unless="${restaurantPage.isLast()}" th:href="@{/restaurant(page=${restaurantPage.getNumber()+1},restaurantName=${restaurantName},ward=${wards},categoryId=${categoryIds},num=${num})}" class="page-link page-link">次</a>
+                  <a th:unless="${restaurantPage.isLast()}"
+                     th:href="@{/restaurant(page=${restaurantPage.getNumber()+1},restaurantName=${restaurantName},ward=${wards},categoryId=${categoryIds},num=${num},logic=${logic})}"
+                     class="page-link page-link">次</a>
                 </li>
               </ul>
             </nav>
