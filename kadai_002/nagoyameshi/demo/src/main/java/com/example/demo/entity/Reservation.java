@@ -6,6 +6,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.FetchType.*;
+
 @Data
 @Entity
 @Table(name="reservations")
@@ -40,6 +42,11 @@ public class Reservation {
     @Column(name="updated_at")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+
+    @OneToOne(mappedBy="reservation", fetch= FetchType.LAZY)
+    private Review review;
+
 
     @PrePersist
     protected void onCreate() {

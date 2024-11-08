@@ -10,6 +10,7 @@ import com.example.demo.repository.CategoryRestaurantRepository;
 import com.example.demo.repository.RestaurantImageRepository;
 import com.example.demo.repository.RestaurantRepository;
 import com.example.demo.service.CategoryService;
+import com.example.demo.service.ImageService;
 import com.example.demo.service.RestaurantService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -50,6 +51,7 @@ public class AdminRestaurantController {
     private final RestaurantRepository restaurantRepository;
     private final CategoryRestaurantRepository categoryRestaurantRepository;
     private final RestaurantImageRepository restaurantImageRepository;
+    private final ImageService imageService;
 
     //レストラン一覧画面(管理者用)
     //詳細画面へのリンク、削除ボタン、検索ボックスが必要
@@ -177,7 +179,7 @@ public class AdminRestaurantController {
 
             // レストランの画像の保存
             List<MultipartFile> images = restaurantCrudForm.getImages();
-            saveImagesOfRestaurant(images,newRestaurant);
+            imageService.saveImagesOfRestaurant(restaurantImageRepository,images,newRestaurant);
 
             return "ユーザーの見る詳細画面へのパス";
         }
@@ -222,7 +224,7 @@ public class AdminRestaurantController {
             saveCategoryRestaurant(selectedCategoryIds,restaurant);
 
             List<MultipartFile> images = restaurantCrudForm.getImages();
-            saveImagesOfRestaurant(images,restaurant);
+            imageService.saveImagesOfRestaurant(restaurantImageRepository,images,restaurant);
         }
         return "redirect:/admin/restaurant/"+restaurantId+"/edit";
 
@@ -238,49 +240,6 @@ public class AdminRestaurantController {
     }
 
 
-
-    // UUIDを使って生成したファイル名を返す
-    public String generateNewFileName(String fileName) {
-        String extension = fileName.substring(fileName.lastIndexOf("."));
-        String newFileName = UUID.randomUUID().toString() + extension; // UUID + 拡張子
-        return newFileName;
-    }
-
-    // 画像ファイルを指定したファイルにコピーする
-    public void copyImageFile(MultipartFile imageFile, Path filePath) throws IOException {
-        Files.copy(imageFile.getInputStream(), filePath);
-    }
-
-    //複数のレストラン画像を保存する
-    public void saveImagesOfRestaurant(List<MultipartFile> images, Restaurant restaurant) {
-        log.info("saveImagesOfRestaurantは呼びだされています。");
-
-        // 空でないファイルがあるか確認
-        boolean hasNonEmptyFile = images.stream().anyMatch(file -> !file.isEmpty());
-        if (hasNonEmptyFile) {
-            log.info("imagesには空でないファイルがあります: {}", images);
-            for (MultipartFile image : images) {
-                if (!image.isEmpty()) {  // 各ファイルが空でないか確認
-                    RestaurantImage restaurantImage = new RestaurantImage();
-                    String imageName = image.getOriginalFilename();
-                    String hashedImageName = generateNewFileName(imageName);
-                    Path filePath = Paths.get("src/main/resources/static/images/" + hashedImageName);
-                    try {
-                        copyImageFile(image, filePath);
-                        restaurantImage.setImageName(hashedImageName);
-                        restaurantImage.setRestaurant(restaurant);
-                        restaurantImageRepository.save(restaurantImage);
-                    } catch (IOException e) {
-                        log.error("画像の保存中にエラーが発生しました: {}", e.getMessage());
-                    }
-                } else {
-                    log.info("空のファイルが含まれていました。");
-                }
-            }
-        } else {
-            log.info("imagesはすべてemptyでした。");
-        }
-    }
     @PersistenceContext
     private EntityManager entityManager;
 

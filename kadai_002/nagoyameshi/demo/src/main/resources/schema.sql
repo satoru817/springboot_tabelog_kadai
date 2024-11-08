@@ -132,8 +132,18 @@ CREATE TABLE IF NOT EXISTS reviews (
     reservation_id INT NOT NULL,
     star_count INT NOT NULL,
     content VARCHAR(255),
+    UNIQUE KEY(reservation_id),--１つの予約に付きレビューは1件しかできないようにしている
+    CHECK(star_count > 0 AND star_count < 6),
     FOREIGN KEY (reservation_id) REFERENCES reservations(reservation_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS review_photos (
+    review_photo_id INT AUTO_INCREMENT PRIMARY KEY,
+    review_id INT NOT NULL,
+    image_name VARCHAR(255) NOT NULL,
+    UNIQUE KEY(review_id,image_name),
+    FOREIGN KEY (review_id) REFERENCES reviews(review_id) ON DELETE CASCADE--reviewが消去されたら対応するreview_photoも消えるようにする。
+)
 
 CREATE TABLE IF NOT EXISTS company_info (
     company_info_id INT AUTO_INCREMENT PRIMARY KEY,

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragment::headResources}"></div>
+    <script th:src="@{/js/review_create.js}"></script>
+
+    <title>レビュー投稿画面</title>
+</head>
+<body>
+<div class="wrapper">
+    <div th:replace="~{fragment::header}"></div>
+
+    <main>
+        <div class="container pt-4 pb-5 container">
+            <div class="row justify-content-center">
+                <div class="col-xl-5 col-lg-7 col-md-8">
+
+                    <h1 th:text="${review.reservation.restaurant.name}+'をレビュー'"></h1>
+
+                    <form method="post"
+                          th:action="@{/review/upsert}" enctype="multipart/form-data">
+                        <input type="hidden" th:field="*{reviewId}">
+
+                        <div class="form-group row mb-3">
+                            <div class="col-md-4">
+                                <label for="star_count"
+                                       class="col-form-label text-md-left fw-bold">評価</label>
+                            </div>
+                            <div class="col-md-8 eval-select">
+                                <select class="form-select" name="star_count"
+                                        th:field="*{star_count}">
+                                    <option value="5" selected>&#9733;&#9733;&#9733;&#9733;&#9733;</option>
+                                    <option value="4">&#9733;&#9733;&#9733;&#9733;</option>
+                                    <option value="3">&#9733;&#9733;&#9733;</option>
+                                    <option value="2">&#9733;&#9733;</option>
+                                    <option value="1">&#9733;</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group row mb-3">
+                            <div class="col-md-4">
+                                <label for="comment"
+                                       class="col-form-label text-md-left fw-bold">コメント</label>
+                            </div>
+                            <div class="col-md-8">
+                                <textarea class="form-control" name="comment" cols="35"
+                                          th:field="*{comment}"
+                                          rows="5"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-3">
+                            <div class="col-md-4">
+                                <label for="'#photoInput'+${reservation.reservationId}"
+                                       class="col-form-label text-md-left fw-bold">写真を追加する</label>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="photo-upload">
+                                    <label for="images" class="upload-label">
+                                        <div class="upload-box">
+                                            <span class="plus-icon">+</span>
+                                        </div>
+                                    </label>
+                                    <button class="btn btn-outline-primary shadow"
+                                            onclick="document.getElementById('images').click()">画像を選択(10枚まで）
+                                    </button>
+                                    <!--jsで１つのレビューにおける写真の合計投稿枚数が10を超えないように調整する。-->
+                                    <input type="file"  th:field="*{images}"
+                                           class="form-control d-none" multiple accept="image/*"
+                                           onchange="previewFiles(event)">
+                                </div>
+                                <div id="photoPreview" class="d-flex mt-3 flex-wrap">
+                                    <!--ここにすでに投稿されている写真を表示。また、その写真をクリックしたら、消去モーダルが出るようにする。-->
+                                    <div th:each="photo:${review.photos}" class="m-0 p-0">
+                                        <img  th:src="@{images/__${photo.imageName}__}" class="preview-img existing-img" data-bs-toggle="modal"
+                                        th:data-bs-target="'#delete'+${photo.imageName}">
+                                        <div class="modal fade" th:id="'delete'+${photo.imageName}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h1 class="modal-title fs-5" id="exampleModalLabel">この画像を削除しますか？</h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <img th:src="@{images/__${photo.imageName}__}" >
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <form th:action="@{/review/deleteImage}">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            <input type="hidden" name="reviewPhotoId"  th:value="${photo.reviewPhotoId}">
+                                                            <button type="submit" class="btn btn-primary">delete</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group d-flex justify-content-center my-4">
+                            <button type="submit"
+                                    class="btn btn-outline-primary shadow w-50 ">投稿
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+
+
+</html>

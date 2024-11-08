@@ -1,5 +1,6 @@
 // ページロード時に日時と人数をローカルストレージから取得
 //TODO:条件分岐を加えて下さい。
+//TODO:今日が選択されたときの時間の選択肢に関する問題を解決してください。
 document.addEventListener('DOMContentLoaded', function() {
   const savedDate = localStorage.getItem('reservationDate');
   const savedTime = localStorage.getItem('reservationTime');
