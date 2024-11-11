@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS review_photos (
     image_name VARCHAR(255) NOT NULL,
     UNIQUE KEY(review_id,image_name),
     FOREIGN KEY (review_id) REFERENCES reviews(review_id) ON DELETE CASCADE--reviewが消去されたら対応するreview_photoも消えるようにする。
-)
+);
 
 CREATE TABLE IF NOT EXISTS company_info (
     company_info_id INT AUTO_INCREMENT PRIMARY KEY,

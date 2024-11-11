@@ -142,6 +142,16 @@
                     <div class="card-body">
                       <h3 class="card-title mb-3" th:text="${restaurant.getName()}"></h3>
 
+                      <p class="star-rating">
+                        <span class="stars-outer m-1">
+                          <span class="stars-inner"
+                                th:style="'width: ' + ${(restaurant.averageStar / 5 * 100)} + '%'">
+                          </span>
+                        </span>
+                        <span th:if="${restaurant.averageStar != 0.0}"  th:text="${#numbers.formatDecimal(restaurant.averageStar, 1, 1)} + ' / 5.0'"></span>
+                        <small  class="text-muted" th:if="${restaurant.averageStar == 0.0}">No review posted yet.</small>
+                      </p>
+
                       <hr class="mb-3">
 
                       <p class="card-text mb-2">
@@ -215,6 +225,6 @@
   <div th:replace="~{fragment::footer}"></div>
 </div>
 
-<div th:replace="~{fragment::scripts}"></div>
+
 </body>
 </html>

@@ -24,13 +24,16 @@ public class Review {
     @EqualsAndHashCode.Exclude//循環参照によるstackOverFlowを防ぐ
     private Reservation reservation;
 
+    @Transient
+    private Integer reservationId;
+
     @Column(name = "star_count", nullable = false)
     private int starCount;
 
     @Column(name = "content", length = 255)
     private String content;
 
-    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "review", cascade = CascadeType.REMOVE)
     private List<ReviewPhoto> photos;
 
     @Transient

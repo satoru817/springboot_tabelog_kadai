@@ -21,7 +21,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class ImageService {
-    private static final String IMAGE_DIRECTORY = "src/main/resources/static/images";
+    private static final String IMAGE_DIRECTORY = "src/main/resources/static/images/";
 
     // UUIDを使って生成したファイル名を返す
     public String generateNewFileName(String fileName) {
@@ -70,31 +70,34 @@ public class ImageService {
     //複数のReviewPhotoを作成して保存する。
     public void saveImageOfReview(Review review, ReviewPhotoRepository reviewPhotoRepository){
         List<MultipartFile> images = review.getImages();
-        // 空でないファイルがあるか確認
-        boolean hasNonEmptyFile = images.stream().anyMatch(file -> !file.isEmpty());
-        if(hasNonEmptyFile){
-            for(MultipartFile image: images){
-                if(!image.isEmpty()){
-                    ReviewPhoto reviewPhoto = new ReviewPhoto();
-                    String imageName = image.getOriginalFilename();
-                    assert imageName != null;
-                    String hashedImageName = generateNewFileName(imageName);
-                    Path filePath = Paths.get(IMAGE_DIRECTORY + hashedImageName);
-                    try{
-                        copyImageFile(image,filePath);
-                        reviewPhoto.setReview(review);
-                        reviewPhoto.setImageName(hashedImageName);
-                        reviewPhotoRepository.save(reviewPhoto);
-                    }catch(IOException e){
-                        log.error("画像の保存中にエラーが発生しました。:{}",e.getMessage());
+        if(images!=null&&!images.isEmpty()){
+           // 空でないファイルがあるか確認
+            boolean hasNonEmptyFile = images.stream().anyMatch(file -> !file.isEmpty());
+            if(hasNonEmptyFile){
+                for(MultipartFile image: images){
+                    if(!image.isEmpty()){
+                        ReviewPhoto reviewPhoto = new ReviewPhoto();
+                        String imageName = image.getOriginalFilename();
+                        assert imageName != null;
+                        String hashedImageName = generateNewFileName(imageName);
+                        Path filePath = Paths.get(IMAGE_DIRECTORY + hashedImageName);
+                        try{
+                            copyImageFile(image,filePath);
+                            reviewPhoto.setReview(review);
+                            reviewPhoto.setImageName(hashedImageName);
+                            reviewPhotoRepository.save(reviewPhoto);
+                        }catch(IOException e){
+                            log.error("画像の保存中にエラーが発生しました。:{}",e.getMessage());
+                        }
+                    }else{
+                        log.info("空の画像ファイルが含まれていました。");
                     }
-                }else{
-                    log.info("空の画像ファイルが含まれていました。");
                 }
+            }else{
+                log.info("imagesは全て空でした。");
             }
-        }else{
-            log.info("imagesは全て空でした。");
         }
+
     }
 
 

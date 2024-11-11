@@ -2,7 +2,8 @@
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
     <div th:replace="~{fragment::headResources}"></div>
-    <script th:src="@{/js/review_create.js}"></script>
+    <script th:src="@{/js/review_create.js}" defer></script>
+
 
     <title>レビュー投稿画面</title>
 </head>
@@ -15,21 +16,26 @@
             <div class="row justify-content-center">
                 <div class="col-xl-5 col-lg-7 col-md-8">
 
+                    <!-- Flash メッセージを表示する部分 -->
+                    <div th:if="${message}" class="alert alert-warning" role="alert" th:text="${message}"></div>
+
                     <h1 th:text="${review.reservation.restaurant.name}+'をレビュー'"></h1>
 
                     <form method="post"
-                          th:action="@{/review/upsert}" enctype="multipart/form-data">
+                          th:action="@{/review/upsert}" enctype="multipart/form-data"
+                          th:object="${review}" id="uploadForm">
+                        <input type="hidden" th:field="*{reservationId}"><!--隠しフィールドでreviewIdを送る-->
                         <input type="hidden" th:field="*{reviewId}">
 
                         <div class="form-group row mb-3">
                             <div class="col-md-4">
-                                <label for="star_count"
+                                <label for="starCount"
                                        class="col-form-label text-md-left fw-bold">評価</label>
                             </div>
                             <div class="col-md-8 eval-select">
                                 <select class="form-select" name="star_count"
-                                        th:field="*{star_count}">
-                                    <option value="5" selected>&#9733;&#9733;&#9733;&#9733;&#9733;</option>
+                                        th:field="*{starCount}">
+                                    <option value="5" selected required>&#9733;&#9733;&#9733;&#9733;&#9733;</option>
                                     <option value="4">&#9733;&#9733;&#9733;&#9733;</option>
                                     <option value="3">&#9733;&#9733;&#9733;</option>
                                     <option value="2">&#9733;&#9733;</option>
@@ -41,57 +47,85 @@
 
                         <div class="form-group row mb-3">
                             <div class="col-md-4">
-                                <label for="comment"
+                                <label for="content"
                                        class="col-form-label text-md-left fw-bold">コメント</label>
                             </div>
                             <div class="col-md-8">
-                                <textarea class="form-control" name="comment" cols="35"
-                                          th:field="*{comment}"
-                                          rows="5"></textarea>
+                                <textarea class="form-control" name="content" cols="35"
+                                          th:field="*{content}"
+                                          placeholder="Please enter your content in English, French, or Japanese"
+                                          rows="5" required></textarea>
                             </div>
                         </div>
 
                         <div class="form-group row mb-3">
                             <div class="col-md-4">
-                                <label for="'#photoInput'+${reservation.reservationId}"
-                                       class="col-form-label text-md-left fw-bold">写真を追加する</label>
+                                <label class="col-form-label text-md-left fw-bold">写真を追加する</label>
                             </div>
                             <div class="col-md-8">
                                 <div class="photo-upload">
                                     <label for="images" class="upload-label">
-                                        <div class="upload-box">
-                                            <span class="plus-icon">+</span>
+                                        <div class="upload-box d-flex justify-content-center bg-light">
+                                            <span class="plus-icon" style="font-size:48px;">+</span>
                                         </div>
                                     </label>
-                                    <button class="btn btn-outline-primary shadow"
-                                            onclick="document.getElementById('images').click()">画像を選択(10枚まで）
-                                    </button>
                                     <!--jsで１つのレビューにおける写真の合計投稿枚数が10を超えないように調整する。-->
-                                    <input type="file"  th:field="*{images}"
+                                    <input type="file" th:field="*{images}"
                                            class="form-control d-none" multiple accept="image/*"
-                                           onchange="previewFiles(event)">
+                                           onchange="handleFiles(event)">
                                 </div>
                                 <div id="photoPreview" class="d-flex mt-3 flex-wrap">
+                                    <div class="modal fade" id="deletePhotoModal" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Delete Photo</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class ="modal-body">
+                                                    <div class="text-center mb-3">
+                                                        <img id="deleteTargetPreview" class="img-fluid" style="max-height: 300px;">
+                                                    </div>
+                                                    <p>Are you sure you don't want to upload this image?</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="button" class="btn btn-danger" onclick="deleteSelectedPhoto()">Yes</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <!--ここにすでに投稿されている写真を表示。また、その写真をクリックしたら、消去モーダルが出るようにする。-->
                                     <div th:each="photo:${review.photos}" class="m-0 p-0">
-                                        <img  th:src="@{images/__${photo.imageName}__}" class="preview-img existing-img" data-bs-toggle="modal"
-                                        th:data-bs-target="'#delete'+${photo.imageName}">
-                                        <div class="modal fade" th:id="'delete'+${photo.imageName}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <img th:src="@{/images/__${photo.imageName}__}" class="preview-img existing-img"
+                                             data-bs-toggle="modal"
+                                             th:data-bs-target="'#delete-'+${photo.reviewPhotoId}">
+
+                                        <!-- モーダルのIDを一意にする -->
+                                        <div class="modal fade" th:id="'delete-'+${photo.reviewPhotoId}" tabindex="-1"
+                                             aria-labelledby="exampleModalLabel" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h1 class="modal-title fs-5" id="exampleModalLabel">この画像を削除しますか？</h1>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                                            Do you really want to delete this image？</h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close"></button>
                                                     </div>
-                                                    <div class="modal-body">
-                                                        <img th:src="@{images/__${photo.imageName}__}" >
+                                                    <div class="modal-body text-center">
+                                                        <!-- img-fluid でレスポンシブ対応、max-height で最大高さを制限 -->
+                                                        <img th:src="@{/images/__${photo.imageName}__}"
+                                                             class="img-fluid"
+                                                             style="max-height: 400px; object-fit: contain;">
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <form th:action="@{/review/deleteImage}">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                            <input type="hidden" name="reviewPhotoId"  th:value="${photo.reviewPhotoId}">
-                                                            <button type="submit" class="btn btn-primary">delete</button>
-                                                        </form>
+                                                        <input type="hidden" th:name="${_csrf.parameterName}"
+                                                               th:value="${_csrf.token}"/>
+                                                        <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Close
+                                                        </button>
+                                                        <a th:href="@{/review/deleteImage/__${photo.reviewPhotoId}__}"
+                                                           type="submit" class="btn btn-primary">delete</a>
                                                     </div>
                                                 </div>
                                             </div>

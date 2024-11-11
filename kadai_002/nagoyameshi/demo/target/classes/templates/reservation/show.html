@@ -10,6 +10,8 @@
 
 <div class="container mt-5 flex-grow-1">
     <h1 class="text-center mb-4" th:text="${#authentication.principal.username}+'さんの予約一覧'"></h1>
+    <!-- Flash メッセージを表示する部分 -->
+    <div th:if="${message}" class="alert alert-success m-2 text-center" role="alert" th:text="${message}"></div>
     <ul class="list-group">
         <ul class="list-group">
             <li th:each="reservation : ${reservations}"
@@ -27,7 +29,7 @@
                     <div class="col col-md-5">
                         <div class="mt-3 d-flex flex-column">
                             <!-- 日付によるボタン表示 -->
-                            <button  class="btn btn-primary mt-2 shadow" th:if="${reservation.date.isBefore(currentDateTime)}" th:href="@{/review/create/__${reservation.reservationId}__">レビュー</button>
+                            <a  class="btn btn-primary mt-2 shadow" th:if="${reservation.date.isBefore(currentDateTime)}" th:href="@{/review/create/__${reservation.reservationId}__}">レビュー</a>
 
                             <a th:href="@{/restaurant/__${reservation.restaurant.restaurantId}__}" class="btn btn-link shadow mt-2" th:if="${reservation.date.isBefore(currentDateTime)}">再予約</a>
                             <button data-bs-toggle="modal" th:data-bs-target="'#cancel'+${reservation.reservationId}"  class="btn btn-danger mt-2 shadow"  th:if="${reservation.date.isAfter(currentDateTime)}">予約キャンセル</button>
@@ -41,11 +43,12 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            ...
+                                            <div class="alert alert-danger" th:text="${reservation.restaurant.name}+'の予約を本当にキャンセルしますか？'"></div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
-                                            <button type="button" class="btn btn-primary">キャンセルする</button>
+                                            <button type="button" class="btn btn-secondary shadow" data-bs-dismiss="modal">閉じる</button>
+                                            <!-- リンクでGETメソッドを呼び出す -->
+                                            <a th:href="@{/reservation/delete/{id}(id=${reservation.reservationId})}" class="btn btn-danger shadow">キャンセルする</a>
                                         </div>
                                     </div>
                                 </div>
@@ -92,7 +95,6 @@
     </div>
 </div>
 
-<div th:replace="~{fragment::scripts}"></div>
 <div th:replace="~{fragment::footer}"></div>
 </body>
 </html>

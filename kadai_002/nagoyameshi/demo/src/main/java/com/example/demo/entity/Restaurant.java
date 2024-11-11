@@ -81,6 +81,11 @@ public class Restaurant {
     @Column(name = "sunday_closing_time")
     private LocalTime sundayClosingTime;
 
+    @OneToMany(mappedBy="restaurant",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Reservation> reservations;
+
+    @Transient
+    private float averageStar;
 
     //cascadeType.Allとすると、restaurantが保存、削除されるとそれに関連するRestaurantImageも自動で処理される。
     //FetchType.LAZYにすると必要なときにのみ読み込まれるようになる。

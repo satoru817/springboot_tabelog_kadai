@@ -5,10 +5,7 @@ import com.example.demo.entity.Category;
 import com.example.demo.entity.CategoryRestaurant;
 import com.example.demo.entity.Restaurant;
 import com.example.demo.entity.RestaurantImage;
-import com.example.demo.repository.CategoryRepository;
-import com.example.demo.repository.CategoryRestaurantRepository;
-import com.example.demo.repository.RestaurantImageRepository;
-import com.example.demo.repository.RestaurantRepository;
+import com.example.demo.repository.*;
 import com.example.demo.service.CategoryService;
 import com.example.demo.service.ImageService;
 import com.example.demo.service.RestaurantService;
@@ -52,6 +49,7 @@ public class AdminRestaurantController {
     private final CategoryRestaurantRepository categoryRestaurantRepository;
     private final RestaurantImageRepository restaurantImageRepository;
     private final ImageService imageService;
+    private final ReviewRepository reviewRepository;
 
     //レストラン一覧画面(管理者用)
     //詳細画面へのリンク、削除ボタン、検索ボックスが必要
@@ -67,6 +65,7 @@ public class AdminRestaurantController {
         }else {
             restaurantsPage = restaurantRepository.findAll(pageable);
         }
+
 
 
         model.addAttribute("restaurantsPage",restaurantsPage);

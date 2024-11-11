@@ -192,6 +192,7 @@
                   <span class="input-group-text" id="time-icon"><i class="bi bi-clock-fill"></i></span>
                   <select id="time" class="form-select">
                     <!-- 時間のオプションをJavaScriptで生成 -->
+                    <!--todo:ここを動的に生成するメソッドを改良する必要がある!!-->
                   </select>
                 </div>
               </div>
@@ -199,7 +200,7 @@
 
 
             <!-- メッセージ表示部分 -->
-            <div id="availabilityMessage" class="message d-flex justify-content-center">
+            <div id="availabilityMessage" class="message d-flex justify-content-center alert alert-success">
               <i class="bi bi-info-circle" ></i> 予約可能か確認中です...
             </div>
 
@@ -234,6 +235,48 @@
           </form>
         </div>
       </div>
+      <div class="container my-4">
+        <div class="row">
+          <div class="col-md-6" th:each="reservation,resStat : ${restaurant.reservations}">
+            <div class="card mb-4">
+              <div class="row no-gutters">
+                <div class="col-md-4">
+                  <!-- Carousel for review photos -->
+                  <div th:id="'carouselReviewPhotos' + ${resStat.index}" class="carousel slide">
+                    <div class="carousel-inner">
+                      <div  th:each="photo, photoStat : ${reservation.review.photos}"
+                           th:class="'carousel-item' + (${photoStat.first} ? ' active' : '')">
+                        <img class="d-block w-100 h-100" th:src="@{/images/__${photo.imageName}__}" alt="Review Photo">
+                      </div>
+                    </div>
+                    <a class="carousel-control-prev"  th:data-bs-target="'#carouselReviewPhotos' + ${resStat.index}" type="button" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next"  th:data-bs-target="'#carouselReviewPhotos' + ${resStat.index}" type="button" data-bs-slide="next" >
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </div>
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body">
+                    <h5 class="card-title">Rating</h5>
+                    <p class="card-text">
+                <span th:each="i : ${#numbers.sequence(1, 5)}">
+                  <i class="fas fa-star" th:classappend="${i <= reservation.review.starCount} ? ' text-warning' : ' text-secondary'"></i>
+                </span>
+                    </p>
+                    <p class="card-text" th:text="${reservation.review.content}"></p>
+                    <p class="card-text"><small class="text-muted">Review ID: <span th:text="${reservation.review.reviewId}"></span></small></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </main>
@@ -241,9 +284,6 @@
   <!-- フッター -->
 
 </div>
-<div th:replace="~{fragment::footer}"></div>
-<div th:replace="~{fragment::scripts}"></div>
 
-<script th:src="@{/js/flatpickr.js}"></script>
 </body>
 </html>

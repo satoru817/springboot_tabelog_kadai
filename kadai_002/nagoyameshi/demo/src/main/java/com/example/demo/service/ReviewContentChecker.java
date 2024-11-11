@@ -1,11 +1,34 @@
 package com.example.demo.service;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import com.cybozu.labs.langdetect.Detector;
+import com.cybozu.labs.langdetect.DetectorFactory;
+import com.cybozu.labs.langdetect.LangDetectException;
 
+@RequiredArgsConstructor
 @Service
+@Slf4j
 public class ReviewContentChecker {
+
+    @PostConstruct
+    public void init() {
+        try {
+            // You need to provide the path to your language profiles
+            // These profiles should be in your resources folder
+            String profileDirectory = "src/main/resources/static/language";
+            DetectorFactory.loadProfile(profileDirectory);
+        } catch (LangDetectException e) {
+            log.error("Failed to initialize language detection: " + e.getMessage());
+        }
+    }
+
 
     private final List<String> bannedWordsJapanese = List.of(
             "まずい", "クソ", "不味い", "腐ってる", "汚い", "汚れ", "最悪", "バカ", "アホ", "嫌い",
@@ -54,8 +77,37 @@ public class ReviewContentChecker {
         return bannedWordsEnglish.stream().anyMatch(word->content.contains(word));
     }
 
-    public boolean containsBannedWordFrench(String content){
+    public boolean containsBannedWordsFrench(String content){
         return bannedWordsFrench.stream().anyMatch(content::contains);
+    }
+
+    // 言語判定メソッド
+    private String detectLanguage(String content) {
+        try {
+            if (content == null || content.trim().isEmpty()) {
+                return null;
+            }
+            Detector detector = DetectorFactory.create();
+            detector.append(content);
+            return detector.detect(); // 例: "ja"（日本語）
+        } catch (LangDetectException e) {
+            // ログ出力などの処理を入れることも可能です
+            System.err.println("言語検出に失敗しました: " + e.getMessage());
+            return null;
+        }
+    }
+
+    // 言語判定と禁止語句チェックの統合メソッド
+    public boolean containsBannedWords(String content)  {
+        String language = detectLanguage(content);
+        log.info("language:{}",language);
+
+        return switch (language) {
+            case "ja" -> containsBannedWordsJapanese(content);
+            case "en" -> containsBannedWordsEnglish(content);
+            case "fr" -> containsBannedWordsFrench(content);
+            default -> true;
+        };
     }
 
 

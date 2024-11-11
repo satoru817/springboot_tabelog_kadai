@@ -495,5 +495,51 @@ footer {
     object-fit: cover;
     margin: 5px;
     border-radius: 5px;
-border: 1px solid #ccc;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.preview-img:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.modal-body img {
+    max-height: 400px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
+}
+
+/*星のなめらかな表示*/
+.star-rating {
+    display: flex;          /* 子要素を横並びに */
+    align-items: center;    /* 子要素を縦方向の中央に揃える */
+    font-size: 1.2rem;     /* 星とテキストのサイズ */
+}
+
+.stars-outer {
+    position: relative;     /* 内側の星の位置決めの基準点となる */
+    display: inline-block;  /* ブロック要素としつつ、横幅は内容に合わせる */
+}
+
+.stars-outer::before {
+    content: "★★★★★";   /* グレーの星5つを表示（背景） */
+    color: #ccc;           /* グレーの星の色 */
+}
+
+.stars-inner {
+    position: absolute;     /* stars-outerを基準に位置を決める */
+    top: 0;                /* 上端をstars-outerの上端に合わせる */
+    left: 0;               /* 左端をstars-outerの左端に合わせる */
+    white-space: nowrap;   /* 星が改行されないようにする */
+    overflow: hidden;      /* 評価値に応じて幅が変わる。幅を超えた部分は隠す */
+    color: #ffc107;        /* 黄色の星の色 */
+}
+
+.stars-inner::before {
+    content: "★★★★★";   /* 黄色の星5つを表示（前景） */
 }

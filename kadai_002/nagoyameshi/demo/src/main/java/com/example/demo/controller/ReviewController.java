@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.cybozu.labs.langdetect.LangDetectException;
 import com.example.demo.entity.Reservation;
 import com.example.demo.entity.Review;
 import com.example.demo.entity.ReviewPhoto;
@@ -7,12 +8,14 @@ import com.example.demo.repository.ReservationRepository;
 import com.example.demo.repository.ReviewPhotoRepository;
 import com.example.demo.repository.ReviewRepository;
 import com.example.demo.service.ImageService;
+import com.example.demo.service.ReviewContentChecker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
@@ -25,6 +28,7 @@ public class ReviewController {
     private final ReviewPhotoRepository reviewPhotoRepository;
     private final ImageService imageService;
     private final ReservationRepository reservationRepository;
+    private final ReviewContentChecker reviewContentChecker;
 
     //投稿と編集両方に対応する必要がある。
     //遷移先のページではjsを利用した画像の削除ができるようにする。また普通にフォームを
@@ -37,8 +41,10 @@ public class ReviewController {
         Review review = new Review();
         if(optionalReview.isPresent()){
             review = optionalReview.get();
+            review.setReservationId(reservationId);
         }else{
             review.setReservation(reservation);
+            review.setReservationId(reservationId);
         }
 
         model.addAttribute("review",review);
@@ -46,20 +52,34 @@ public class ReviewController {
         return "review/create";
     }
 
-    //コンテントのfilteringと感情の判断をする
+    //コンテントのfilteringをする
     // 合格した場合のみ登録する。そうでないときは保存しない。
     @Transactional
     @PostMapping("/upsert")
-    public String upsertReview(@ModelAttribute Review review){
+    public String upsertReview(@ModelAttribute Review review,
+                               RedirectAttributes redirectAttributes) {
         String content = review.getContent();
-        imageService.saveImageOfReview(review,reviewPhotoRepository);
-        reviewRepository.save(review);
-        return
+        log.info("content:{}",content);
+        boolean containsBannedWords = reviewContentChecker.containsBannedWords(content);
+        if(containsBannedWords){
+            String message = "Your message cannot be posted for some reason";
+            redirectAttributes.addFlashAttribute("message",message);
+            return "redirect:/review/create"+review.getReservation().getReservationId();
+        }else{
+            review.setReservation(reservationRepository.getReferenceById(review.getReservationId()));
+            reviewRepository.save(review);
+            imageService.saveImageOfReview(review,reviewPhotoRepository);
+
+            String message = "Your review was posted!";
+            redirectAttributes.addFlashAttribute("message",message);
+            return "redirect:/reservation/show";
+        }
 
     }
 
-    @PostMapping("/deleteImage")
-    public String deleteImage(@RequestParam("reviewPhotoId")Integer reviewPhotoId){
+
+    @GetMapping("/deleteImage/{id}")
+    public String deleteImage(@PathVariable("id")Integer reviewPhotoId){
         ReviewPhoto reviewPhoto = reviewPhotoRepository.getReferenceById(reviewPhotoId);
         boolean isDeleted = imageService.deleteImage(reviewPhoto.getImageName());
         if(isDeleted){
@@ -70,7 +90,7 @@ public class ReviewController {
         Reservation reservation = reviewPhoto.getReview().getReservation();
         reviewPhotoRepository.delete(reviewPhoto);
 
-        return "redirect:/review/create/"+reservation.getCreatedAt();
+        return "redirect:/review/create/"+reservation.getReservationId();
     }
 
 

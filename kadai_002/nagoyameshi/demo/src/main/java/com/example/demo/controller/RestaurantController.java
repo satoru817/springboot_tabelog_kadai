@@ -4,10 +4,7 @@ import com.example.demo.dto.TentativeReservationDto;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Reservation;
 import com.example.demo.entity.Restaurant;
-import com.example.demo.repository.CategoryRepository;
-import com.example.demo.repository.CategoryRestaurantRepository;
-import com.example.demo.repository.RestaurantImageRepository;
-import com.example.demo.repository.RestaurantRepository;
+import com.example.demo.repository.*;
 import com.example.demo.security.UserDetailsImpl;
 import com.example.demo.service.CategoryService;
 import com.example.demo.service.NagoyaService;
@@ -46,6 +43,7 @@ public class RestaurantController {
     private final RestaurantImageRepository restaurantImageRepository;
     private final NagoyaService nagoyaService;
     private final ReservationService reservationService;
+    private final ReviewRepository reviewRepository;
 
 
     @GetMapping
@@ -59,6 +57,12 @@ public class RestaurantController {
     {
 
         Page<Restaurant> restaurantPage  = restaurantService.findRestaurantOnCondition(restaurantName,wards,categoryIds,num,logic,pageable);
+
+        restaurantPage.forEach(restaurant -> {
+            float averageStar = reviewRepository.getAverageStarForRestaurant(restaurant)
+                    .orElse(0.0f);
+            restaurant.setAverageStar(averageStar);
+        });
 
         List<Category> categories = categoryRepository.findAll();
 
