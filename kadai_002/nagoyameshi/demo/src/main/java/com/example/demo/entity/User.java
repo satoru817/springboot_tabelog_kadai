@@ -44,6 +44,9 @@ public class User {
     @Column(name="phone_number", length = 20)
     private String phoneNumber;
 
+    @Column(name="profile_image" , length=255)
+    private String profileImage;
+
     @Column(name="enabled",nullable = false)
     private Boolean enabled;
 

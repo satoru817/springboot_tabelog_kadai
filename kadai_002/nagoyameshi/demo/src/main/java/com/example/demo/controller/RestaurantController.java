@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.OpeningHours;
 import com.example.demo.dto.TentativeReservationDto;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Reservation;
@@ -10,6 +11,7 @@ import com.example.demo.service.CategoryService;
 import com.example.demo.service.NagoyaService;
 import com.example.demo.service.ReservationService;
 import com.example.demo.service.RestaurantService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,12 +25,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Time;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -44,6 +42,33 @@ public class RestaurantController {
     private final NagoyaService nagoyaService;
     private final ReservationService reservationService;
     private final ReviewRepository reviewRepository;
+
+    // リクエストボディを受け取るためのクラス
+
+    @Data
+    public static class OpeningHourRequest {
+        private Long restaurantId;
+        private LocalDate date;
+    }
+
+    @PostMapping("/getOpeningHour")
+    public ResponseEntity<OpeningHours> getOpeningHour(@RequestBody OpeningHourRequest request){
+        try{
+            if(request.getRestaurantId()==null||request.getDate()==null){
+                return ResponseEntity.badRequest().build();
+            }
+
+            OpeningHours openingHours = restaurantService.getOpeningHours(
+                    Math.toIntExact(request.getRestaurantId()),
+                    request.getDate()
+            );
+
+            return ResponseEntity.ok(openingHours);
+        }catch(Exception e){
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 
 
     @GetMapping
@@ -135,8 +160,6 @@ public class RestaurantController {
 
         return reservation;
     }
-
-
 
 
 

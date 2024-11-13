@@ -235,6 +235,7 @@
           </form>
         </div>
       </div>
+      <!--レビューの表示部分-->
       <div class="container my-4">
         <div class="row">
           <div class="col-md-6" th:each="reservation,resStat : ${restaurant.reservations}">
@@ -244,31 +245,82 @@
                   <!-- Carousel for review photos -->
                   <div th:id="'carouselReviewPhotos' + ${resStat.index}" class="carousel slide">
                     <div class="carousel-inner">
-                      <div  th:each="photo, photoStat : ${reservation.review.photos}"
+                      <div th:if="${#lists.isEmpty(reservation.review.photos)}" class="carousel-item active">
+                        <img th:src="@{/images/no_image.webp}" alt="No image available" class="rounded">
+                      </div>
+                      <div th:each="photo, photoStat : ${reservation.review.photos}"
                            th:class="'carousel-item' + (${photoStat.first} ? ' active' : '')">
-                        <img class="d-block w-100 h-100" th:src="@{/images/__${photo.imageName}__}" alt="Review Photo">
+                        <img class="object-fit-cover d-block w-100 h-100 rounded" th:src="@{/images/__${photo.imageName}__}" alt="Review Photo">
                       </div>
                     </div>
-                    <a class="carousel-control-prev"  th:data-bs-target="'#carouselReviewPhotos' + ${resStat.index}" type="button" data-bs-slide="prev">
+                    <a class="carousel-control-prev" th:data-bs-target="'#carouselReviewPhotos' + ${resStat.index}" type="button" data-bs-slide="prev">
                       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                       <span class="sr-only">Previous</span>
                     </a>
-                    <a class="carousel-control-next"  th:data-bs-target="'#carouselReviewPhotos' + ${resStat.index}" type="button" data-bs-slide="next" >
+                    <a class="carousel-control-next" th:data-bs-target="'#carouselReviewPhotos' + ${resStat.index}" type="button" data-bs-slide="next">
                       <span class="carousel-control-next-icon" aria-hidden="true"></span>
                       <span class="sr-only">Next</span>
                     </a>
+                    <!--全写真を開くモーダル-->
+                    <button  type="button" class="see-all-photos-btn"
+                            data-bs-toggle="modal" th:attr="data-bs-target='#photoModal__${reservation.reservationId}__'"
+                            aria-disabled="false" th:aria-label="${restaurant.images.size() + '枚の写真を見る'}">
+                      <span th:text="${reservation.review.photos.size() + '枚の写真を見る'}"></span>
+                    </button>
+                  </div>
+
+                  <!-- Modal Structure for Scrollable Gallery -->
+                  <div th:id="photoModal__${reservation.reservationId}__" class="modal fade" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" th:text="${reservation.restaurant.name}+'の写真一覧（'+${reservation.user.name}+'）'"></h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+                          <div class="d-flex flex-wrap gap-1">
+                            <div th:each="image : ${reservation.review.photos}" class="photo-thumbnail">
+                              <img th:src="@{/images/__${image.imageName}__}" class="img-thumbnail" alt="店舗画像" style="width: 100%; max-width: 800px;">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div class="col-md-8">
                   <div class="card-body">
-                    <h5 class="card-title">Rating</h5>
-                    <p class="card-text">
+                    <!-- ユーザープロフィール部分 -->
+                    <div class="d-flex align-items-center mb-2">
+                      <a th:href="@{/review/user/{id}(id=${reservation.user.userId})}" class="text-decoration-none">
+                        <div class="d-flex align-items-center">
+                          <!-- ユーザーアイコン -->
+                          <img th:if="${reservation.user.profileImage != null}"
+                               th:src="@{/images/__${reservation.user.profileImage}__}"
+                               class="rounded-circle me-2"
+                               style="width: 40px; height: 40px; object-fit: cover;"
+                               alt="User profile">
+                          <img th:if="${reservation.user.profileImage == null}"
+                               th:src="@{/images/default_profile.png}"
+                               class="rounded-circle me-2"
+                               style="width: 40px; height: 40px; object-fit: cover;"
+                               alt="Default profile">
+                          <!-- ユーザー名とレビュー表示 -->
+                          <div>
+                            <h6 class="mb-0" th:text="${reservation.user.name}">User Name</h6>
+                            <div class="text-muted small" th:text="${reservation.formattedDate}">2024年10月6日</div>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                    <!-- 星評価 -->
+                    <p class="card-text mb-2">
                 <span th:each="i : ${#numbers.sequence(1, 5)}">
                   <i class="fas fa-star" th:classappend="${i <= reservation.review.starCount} ? ' text-warning' : ' text-secondary'"></i>
                 </span>
                     </p>
+                    <!-- レビュー内容 -->
                     <p class="card-text" th:text="${reservation.review.content}"></p>
-                    <p class="card-text"><small class="text-muted">Review ID: <span th:text="${reservation.review.reviewId}"></span></small></p>
                   </div>
                 </div>
               </div>
@@ -282,8 +334,7 @@
 </main>
 
   <!-- フッター -->
-
-</div>
+<div th:replace="~{fragment::footer}"></div>
 
 </body>
 </html>

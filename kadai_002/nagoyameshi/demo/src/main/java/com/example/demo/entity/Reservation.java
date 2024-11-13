@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static jakarta.persistence.FetchType.*;
 
@@ -28,6 +29,12 @@ public class Reservation {
     @Column(name="date", nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime date;
+
+    // 表示用メソッド。個人情報保護の観点で、時刻までは表示しない。
+    public String getFormattedDate() {
+        if (date == null) return "";
+        return date.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日"));
+    }
 
     @Column(name="number_of_people", nullable = false)
     private Integer numberOfPeople;

@@ -11,6 +11,10 @@ import com.example.demo.service.ImageService;
 import com.example.demo.service.ReviewContentChecker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -91,6 +95,15 @@ public class ReviewController {
         reviewPhotoRepository.delete(reviewPhoto);
 
         return "redirect:/review/create/"+reservation.getReservationId();
+    }
+    
+    @GetMapping("/user/{id}")
+    public String userReview(@PathVariable("id")Integer userId,
+                             @PageableDefault(page=0,size=10,sort="reservation.date",direction= Sort.Direction.DESC) Pageable pageable,
+                             Model model){
+        Page<Review> reviews = reviewRepository.findAllByUserId(userId,pageable);
+        model.addAttribute("reviews",reviews);
+        return "review/user";
     }
 
 

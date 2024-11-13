@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta th:replace="~{fragment::headResources}">
+    <title>レビュー一覧</title>
+</head>
+<body class="d-flex flex-column min-vh-100">
+<!-- ヘッダー -->
+<div th:replace="~{fragment::header}"></div>
+<main class="flex-grow-1">
+    <div class="container my-4">
+        <!-- ユーザー情報セクション -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex align-items-center">
+                    <img th:if="${reviews.getContent().size() > 0}"
+                         th:src="${reviews.getContent().get(0).reservation.user.profileImage != null ? '/images/' + reviews.getContent().get(0).reservation.user.profileImage : '/images/default_profile.png'}"
+                         class="rounded-circle me-3"
+                         style="width: 100px; height: 100px; object-fit: cover;"
+                         alt="User profile">
+                    <div>
+                        <h2 th:if="${reviews.getContent().size() > 0}"
+                            th:text="${reviews.getContent().get(0).reservation.user.name + 'さんのレビュー'}">
+                            ユーザー名さんのレビュー
+                        </h2>
+                        <p class="text-muted">レビュー数: <span th:text="${reviews.getTotalElements()}">0</span>件</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- レビュー一覧 -->
+        <div class="row">
+            <div class="col-md-6 mb-4" th:each="review : ${reviews}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <!--レストラン名-->
+                        <div class="mb-2">
+                            <h5 th:text="${review.reservation.restaurant.name}"></h5>
+                        </div>
+                        <!-- 星評価 -->
+                        <div class="mb-2">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                <i class="fas fa-star" th:classappend="${i <= review.starCount} ? 'text-warning' : 'text-secondary'"></i>
+                            </span>
+                        </div>
+
+                        <!-- レビュー投稿日 -->
+                        <p class="text-muted small mb-2" th:text="${review.reservation.formattedDate}">2024年3月15日</p>
+
+                        <!-- レビュー内容 -->
+                        <p class="card-text" th:text="${review.content}">レビュー内容がここに表示されます。</p>
+
+                        <!-- レビュー画像カルーセル -->
+                        <div th:if="${not #lists.isEmpty(review.photos)}"
+                             th:id="'reviewCarousel' + ${review.reviewId}"
+                             class="carousel slide mb-3">
+                            <div class="carousel-inner">
+                                <div th:each="photo, photoStat : ${review.photos}"
+                                     th:class="'carousel-item' + (${photoStat.first} ? ' active' : '')">
+                                    <img th:src="@{/images/__${photo.imageName}__}"
+                                         class="d-block w-100 rounded"
+                                         style="height: 200px; object-fit: cover;"
+                                         alt="Review photo">
+                                </div>
+                            </div>
+                            <button th:if="${review.photos.size() > 1}"
+                                    class="carousel-control-prev"
+                                    type="button"
+                                    th:data-bs-target="'#reviewCarousel' + ${review.reviewId}"
+                                    data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button th:if="${review.photos.size() > 1}"
+                                    class="carousel-control-next"
+                                    type="button"
+                                    th:data-bs-target="'#reviewCarousel' + ${review.reviewId}"
+                                    data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                            <!--モーダルを開くボタン-->
+                            <button  type="button" class="see-all-photos-btn"
+                                     data-bs-toggle="modal" th:attr="data-bs-target='#photoModal__${review.reviewId}__'"
+                                     aria-disabled="false" th:aria-label="${review.photos.size() + '枚の写真を見る'}">
+                                <span th:text="${review.photos.size() + '枚の写真を見る'}"></span>
+                            </button>
+                        </div>
+                        <!-- Modal Structure for Scrollable Gallery -->
+                        <div th:id="photoModal__${review.reviewId}__" class="modal fade" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" th:text="${review.reservation.restaurant.name}+'の写真一覧（'+${review.reservation.user.name}+'）'"></h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <div th:each="image : ${review.photos}" class="photo-thumbnail">
+                                                <img th:src="@{/images/__${image.imageName}__}" class="img-thumbnail" alt="店舗画像" style="width: 100%; max-width: 800px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+<!--                        &lt;!&ndash; いいねボタン &ndash;&gt;-->
+<!--                        <div class="d-flex justify-content-end">-->
+<!--                            <button class="btn btn-link text-decoration-none">-->
+<!--                                <i class="far fa-heart"></i>-->
+<!--                                <span th:text="${review.likeCount ?: 0}">0</span>-->
+<!--                            </button>-->
+<!--                        </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ページネーション -->
+        <div th:if="${reviews.totalPages > 1}" class="row">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${!reviews.hasPrevious()} ? 'disabled'">
+                            <a class="page-link" th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number - 1})}">前へ</a>
+                        </li>
+                        <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, reviews.totalPages - 1)}"
+                            th:classappend="${pageNumber == reviews.number} ? 'active'">
+                            <a class="page-link" th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${pageNumber})}"
+                               th:text="${pageNumber + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${!reviews.hasNext()} ? 'disabled'">
+                            <a class="page-link" th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number + 1})}">次へ</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</main>
+<div th:replace="~{fragment::footer}"></div>
+</body>
+</html>

@@ -1,20 +1,93 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.OpeningHours;
+import com.example.demo.entity.Reservation;
 import com.example.demo.entity.Restaurant;
+import com.example.demo.repository.RestaurantRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class RestaurantService {
+    private final RestaurantRepository restaurantRepository;
+
+    private String formatLocalTime(LocalTime time) {
+        if (time == null) return null;
+        return time.format(DateTimeFormatter.ofPattern("HH:mm"));
+    }
+
+    public OpeningHours getOpeningHours(Integer restaurantId, LocalDate date){
+        Restaurant restaurant = restaurantRepository.getReferenceById(restaurantId);
+
+        OpeningHours openingHours = new OpeningHours();
+
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        String day = dayOfWeek.toString().toLowerCase();
+
+        String hours = restaurant.getOpeningHoursForDay(day);
+
+        if (hours.equals("休業")) {
+            openingHours.setIsBusinessDay(false);
+            openingHours.setOpeningTime(null);
+            openingHours.setClosingTime(null);
+        } else if (hours.equals("未設定")) {
+            openingHours.setIsBusinessDay(false);
+            openingHours.setOpeningTime(null);
+            openingHours.setClosingTime(null);
+        } else {
+            openingHours.setIsBusinessDay(true);
+
+            // 営業時間文字列からLocalTimeを取得
+            switch (day) {
+                case "monday":
+                    openingHours.setOpeningTime(formatLocalTime(restaurant.getMondayOpeningTime()));
+                    openingHours.setClosingTime(formatLocalTime(restaurant.getMondayClosingTime()));
+                    break;
+                case "tuesday":
+                    openingHours.setOpeningTime(formatLocalTime(restaurant.getTuesdayOpeningTime()));
+                    openingHours.setClosingTime(formatLocalTime(restaurant.getTuesdayClosingTime()));
+                    break;
+                case "wednesday":
+                    openingHours.setOpeningTime(formatLocalTime(restaurant.getWednesdayOpeningTime()));
+                    openingHours.setClosingTime(formatLocalTime(restaurant.getWednesdayClosingTime()));
+                    break;
+                case "thursday":
+                    openingHours.setOpeningTime(formatLocalTime(restaurant.getThursdayOpeningTime()));
+                    openingHours.setClosingTime(formatLocalTime(restaurant.getThursdayClosingTime()));
+                    break;
+                case "friday":
+                    openingHours.setOpeningTime(formatLocalTime(restaurant.getFridayOpeningTime()));
+                    openingHours.setClosingTime(formatLocalTime(restaurant.getFridayClosingTime()));
+                    break;
+                case "saturday":
+                    openingHours.setOpeningTime(formatLocalTime(restaurant.getSaturdayOpeningTime()));
+                    openingHours.setClosingTime(formatLocalTime(restaurant.getSaturdayClosingTime()));
+                    break;
+                case "sunday":
+                    openingHours.setOpeningTime(formatLocalTime(restaurant.getSundayOpeningTime()));
+                    openingHours.setClosingTime(formatLocalTime(restaurant.getSundayClosingTime()));
+                    break;
+            }
+
+        }
+
+        return openingHours;
+    }
 
     @PersistenceContext
     private EntityManager entityManager;
