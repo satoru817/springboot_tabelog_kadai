@@ -40,6 +40,10 @@ public class ReservationService {
 //    }
 
     public Boolean checkVacancy(Restaurant restaurant,Integer people,LocalDateTime reservationDateTime){
+
+        if(reservationDateTime == null){
+            return false;
+        }
         Integer interval = 1;
         Integer reservedCount = reservationRepository.countReservation(restaurant,reservationDateTime,reservationDateTime.minusHours(1));
 

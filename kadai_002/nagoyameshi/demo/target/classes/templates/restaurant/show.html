@@ -200,13 +200,13 @@
 
 
             <!-- メッセージ表示部分 -->
-            <div id="availabilityMessage" class="message d-flex justify-content-center alert alert-success">
+            <div id="availabilityMessage" class="message d-flex justify-content-center alert alert-info ">
               <i class="bi bi-info-circle" ></i> 予約可能か確認中です...
             </div>
 
             <!-- 本予約ボタン -->
             <div class="d-flex justify-content-center">
-              <button type="button" id="confirmReservation" class="btn btn-primary mt-3" style="display: none;"  data-bs-target="#confirmReservationModal">本予約する</button><!--todo:モーダルが開いて、本予約できるようにする。-->
+              <button type="button" id="confirmReservation" class="btn btn-primary mt-2 mb-2" style="display: none;"  data-bs-target="#confirmReservationModal">本予約する</button><!--todo:モーダルが開いて、本予約できるようにする。-->
             </div>
 
             <!-- 予約確認モーダル -->
@@ -239,7 +239,7 @@
       <div class="container my-4">
         <div class="row">
           <div class="col-md-6" th:each="reservation,resStat : ${restaurant.reservations}">
-            <div class="card mb-4">
+            <div th:if="${reservation.review}" class="card mb-4">
               <div class="row no-gutters">
                 <div class="col-md-4">
                   <!-- Carousel for review photos -->

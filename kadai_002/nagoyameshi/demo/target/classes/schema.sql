@@ -114,6 +114,17 @@ CREATE TABLE IF NOT EXISTS restaurant_images (--１つのレストランが複�
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS favorites (
+    favorite_id INT AUTO_INCREMENT PRIMARY KEY,
+    restaurant_id INT NOT NULL,
+    user_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY (restaurant_id,user_id),
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
 
 CREATE TABLE IF NOT EXISTS reservations (
     reservation_id INT AUTO_INCREMENT PRIMARY KEY,

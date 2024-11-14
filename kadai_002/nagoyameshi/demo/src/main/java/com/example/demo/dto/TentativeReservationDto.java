@@ -20,10 +20,15 @@ public class TentativeReservationDto {
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     public LocalDateTime getReservationDateTime() {
-        // timeフィールドをLocalTimeに変換
-        LocalTime localTime = LocalTime.parse(time, TIME_FORMATTER);
-        // LocalDateとLocalTimeを結合してLocalDateTimeに変換
-        return date.atTime(localTime);
+        try{
+            // timeフィールドをLocalTimeに変換
+            LocalTime localTime = LocalTime.parse(time, TIME_FORMATTER);
+            // LocalDateとLocalTimeを結合してLocalDateTimeに変換
+            return date.atTime(localTime);
+        } catch (Exception e){
+            return  null;
+        }
+
     }
 
 
