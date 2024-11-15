@@ -588,3 +588,16 @@ footer {
     max-height: 400px;
     margin: auto;
 }
+
+.cr-boundary {
+    margin: 0 auto;
+}
+
+.cr-slider-wrap {
+    margin: 15px auto;
+    width: 200px;
+}
+
+.cr-viewport {
+    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.1);
+}

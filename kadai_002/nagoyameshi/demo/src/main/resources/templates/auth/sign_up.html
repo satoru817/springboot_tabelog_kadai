@@ -138,6 +138,8 @@
               </div>
             </div>
             <div th:if="${passwordConfirmationError}" class="text-danger mb-3" th:text="${passwordConfirmationError}"></div>
+
+
             <!--icon画像送信フィールド-->
             <div class="form-group row mb-3">
               <div class="col-md-5">
@@ -148,46 +150,27 @@
                 </label>
               </div>
               <div class="col-md-7">
-                <div class="icon-upload">
-                  <img id="preview" src="#" class="rounded-circle d-none" style="width:150px; height: 150px; object-fit:cover;">
-                  <label for="icon" class="upload-label">
-                    <div class="icon-upload-box">
-                      <span class="plus-icon" style="font-size:48px;">+</span>
-                    </div>
+                <div class="text-center">
+                  <!--アップロードボタン-->
+                  <label for="icon" class="btn btn-outline-primary mb-3">
+                    画像を選択
                   </label>
-                  <input type="file" th:field="*{icon}"
-                         class="form-control d-none"
-                         accept="image/*"
-                         onchange="handleIconUpload(event)">
-                  <input type="hidden" name="croppedImage" id="croppedImage">
+                  <input type="file" id="icon" name="icon" class="d-none" accept="image/*">
+
+                  <!--プレビューボタンｎ-->
+                  <div id="upload-demo"></div>
+
+                  <!--切り取り後の画像を保存するhidden input -->
+                  <input type="hidden" th:field="*{icon}" id="icon-base64">
+
+                  <!--切り取りボタン(画像選択後に表示)-->
+                  <button type="button" id="crop-button" class="btn btn-success d-none mt-3">
+                    切り取りを確定
+                  </button>
+
                 </div>
               </div>
             </div>
-
-            <!--トリミング用モーダル-->
-            <div class="modal fade" id="cropModal" tabindex="-1">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title">画像のトリミング</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                  </div>
-<!--                  <div class="modal-body">-->
-                    <div class="img-container">
-                      <img id="cropImage" src="#" style="max-width: 100%;">
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">cancel</button>
-                    <button type="button" class="btn btn-primary" id="cropButton">go</button>
-                  </div>
-                </div>
-              </div>
-
-
-
-
-
 
             <div th:if="${sameUserFoundError}" class="text-danger mb-3" th:text="${sameUserFoundError}"></div>
             <div th:if="${tokenNotFound}" class="text-danger mb-3" th:text="${tokenNotFound}"></div>

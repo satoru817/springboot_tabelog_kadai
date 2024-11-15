@@ -75,58 +75,107 @@ function validatePasswordLength() {
     }
 }
 
-let cropper;
-
-function handleIconUpload(event){
-    const file = event.target.files[0];
-    if(file){
-        const reader = new FileReader();
-        reader.onload=function(e){
-            //モーダル内の画像を設定
-            const image = document.getElementById('cropImage');
-            image.src = e.target.result;
-
-            //モーダルを表示
-            const modal = new bootstrap.Modal(document.getElementById('cropModal'));
-            modal.show();
-
-            if(cropper){
-                cropper.destroy();
-            }
-
-            cropper = new Cropper(image,{
-                aspectRatio: 1,
-                viewMode: 1,
-                dragMode: 'move',
-                cropBoxResizable: true,
-                cropBoxMovable: true,
-                guides: true,
-                center: true,
-                highlight: false,
-                background:true,
-                autoCropArea: 0.8,
-                responsive: true,
-            });
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-document.getElementById('cropButton').addEventListener('click',()=>{
-    const canvas = cropper.getCroppedCanvas({
-        width: 300,
-        height: 300
+document.addEventListener('DOMContentLoaded',function(){
+    //Croppieの初期設定
+    let croppie = new Croppie(document.getElementById('upload-demo'),{
+        viewport:{
+            width:150,
+            height:150,
+            type:'circle'
+        },
+        boundary:{
+            width:200,
+            height:200
+        },
+        enableExif: true
     });
 
-    //トリミングした画像をプレビュー表示
-    const preview = document.getElementById('preview');
-    preview.src = canvas.toDataURL();
-    preview.classList.remove('d-none');
-    document.querySelector('.icon-upload-box').classList.add('d-none');
+    //ファイル選択時の処理
+    document.getElementById('icon').addEventListener('change',function(e){
+        if(this.files && this.files[0]){
+            const reader = new FileReader();
+            reader.onload = function(e){
+                //画像をCroppieにバインド
+                croppie.bind({
+                    url:e.target.result
+                }).then(function(){
+                   //切り取りボタンを表示
+                   document.getElementById('crop-button').classList.remove('d-none');
+                });
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
 
-    //トリミングした画像データをhidden input に設定
-    document.getElementById('croppedImage').value = canvas.toDataURL();
+    document.getElementById('crop-button').addEventListener('click',function(){
+        croppie.result({
+            type: 'base64',
+            size: 'viewport',
+            format:'jpeg',
+            quality: 0.9
+        }).then(function(base64){
+            //切り取った画像データをhidden inputにセット
+            document.getElementById('icon-base64').value = base64;
 
-    const modal = bootstrap.Modal.getInstance(document.getElementById('cropModal'));
-    modal.hide();
+            //切り取り完了メッセージの表示
+            alert('画像の切り取りが完了しました');
+
+        })
+    });
 });
+
+//let cropper;
+//
+//function handleIconUpload(event){
+//    const file = event.target.files[0];
+//    if(file){
+//        const reader = new FileReader();
+//        reader.onload=function(e){
+//            //モーダル内の画像を設定
+//            const image = document.getElementById('cropImage');
+//            image.src = e.target.result;
+//
+//            //モーダルを表示
+//            const modal = new bootstrap.Modal(document.getElementById('cropModal'));
+//            modal.show();
+//
+//            if(cropper){
+//                cropper.destroy();
+//            }
+//
+//            cropper = new Cropper(image,{
+//                aspectRatio: 1,
+//                viewMode: 1,
+//                dragMode: 'move',
+//                cropBoxResizable: true,
+//                cropBoxMovable: true,
+//                guides: true,
+//                center: true,
+//                highlight: false,
+//                background:true,
+//                autoCropArea: 0.8,
+//                responsive: true,
+//            });
+//        };
+//        reader.readAsDataURL(file);
+//    }
+//}
+//
+//document.getElementById('cropButton').addEventListener('click',()=>{
+//    const canvas = cropper.getCroppedCanvas({
+//        width: 300,
+//        height: 300
+//    });
+//
+//    //トリミングした画像をプレビュー表示
+//    const preview = document.getElementById('preview');
+//    preview.src = canvas.toDataURL();
+//    preview.classList.remove('d-none');
+//    document.querySelector('.icon-upload-box').classList.add('d-none');
+//
+//    //トリミングした画像データをhidden input に設定
+//    document.getElementById('croppedImage').value = canvas.toDataURL();
+//
+//    const modal = bootstrap.Modal.getInstance(document.getElementById('cropModal'));
+//    modal.hide();
+//});
