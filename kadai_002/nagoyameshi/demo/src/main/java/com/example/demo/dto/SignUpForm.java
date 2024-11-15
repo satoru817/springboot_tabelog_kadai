@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class SignUpForm {
@@ -36,5 +37,7 @@ public class SignUpForm {
     public Boolean isConfirmed(){
         return this.password.equals(this.passwordConfirmation);
     }
+
+    private MultipartFile icon;//アイコン画像
 
 }

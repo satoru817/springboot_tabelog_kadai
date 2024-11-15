@@ -2,7 +2,10 @@
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
   <meta th:replace="~{fragment::headResources}"/>
-
+  <script th:src="@{/js/script_sign_up.js}" defer></script>
+  <!--croppie-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js" integrity="sha512-Gs+PsXsGkmr+15rqObPJbenQ2wB3qYvTHuJO6YJzPe/dTLvhy0fmae2BcnaozxDo5iaF8emzmCZWbQ1XXiX2Ig==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.css" integrity="sha512-2eMmukTZtvwlfQoG8ztapwAH5fXaQBzaMqdljLopRSA0i6YKM8kBAOrSSykxu9NN9HrtD45lIqfONLII2AFL/Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <title>会員情報</title>
 </head>
 
@@ -135,6 +138,57 @@
               </div>
             </div>
             <div th:if="${passwordConfirmationError}" class="text-danger mb-3" th:text="${passwordConfirmationError}"></div>
+            <!--icon画像送信フィールド-->
+            <div class="form-group row mb-3">
+              <div class="col-md-5">
+                <label class="col-form-label text-md-left fw-bold">
+                  <div class="d-flex align-items-center">
+                    <span class="me-1">プロフィール画像</span>
+                  </div>
+                </label>
+              </div>
+              <div class="col-md-7">
+                <div class="icon-upload">
+                  <img id="preview" src="#" class="rounded-circle d-none" style="width:150px; height: 150px; object-fit:cover;">
+                  <label for="icon" class="upload-label">
+                    <div class="icon-upload-box">
+                      <span class="plus-icon" style="font-size:48px;">+</span>
+                    </div>
+                  </label>
+                  <input type="file" th:field="*{icon}"
+                         class="form-control d-none"
+                         accept="image/*"
+                         onchange="handleIconUpload(event)">
+                  <input type="hidden" name="croppedImage" id="croppedImage">
+                </div>
+              </div>
+            </div>
+
+            <!--トリミング用モーダル-->
+            <div class="modal fade" id="cropModal" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">画像のトリミング</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+<!--                  <div class="modal-body">-->
+                    <div class="img-container">
+                      <img id="cropImage" src="#" style="max-width: 100%;">
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">cancel</button>
+                    <button type="button" class="btn btn-primary" id="cropButton">go</button>
+                  </div>
+                </div>
+              </div>
+
+
+
+
+
+
             <div th:if="${sameUserFoundError}" class="text-danger mb-3" th:text="${sameUserFoundError}"></div>
             <div th:if="${tokenNotFound}" class="text-danger mb-3" th:text="${tokenNotFound}"></div>
             <div class="text-danger mb-3" style="display:none;" id="input_mistakes">入力内容に不備があります。御確認下さい</div>

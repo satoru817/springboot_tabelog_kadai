@@ -1,20 +1,33 @@
 /* カラー定義 */
 :root {
-    --primary-red: #EB0A1E; /* トヨタブランド赤 */
-    --primary-white: #FFFFFF; /* トヨタブランド白 */
-    --primary-black: #000000; /* トヨタブランド黒 */
-    --primary-gold: #FFD900; /* 名古屋の鯱イメージ金 */
-    --light-gray: #f8f9fa;
-    --medium-gray: #6c757d;
-    --dark-gray: #343a40;
-    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 自然な影 */
+    /* メインカラー */
+    --primary-red: #B44C43;     /* 落ち着いた朱色 - アクセントカラー */
+    --primary-white: #FDFBF7;   /* 温かみのある白 - 背景色 */
+    --primary-black: #2C2C2C;   /* やわらかい黒 - テキスト主体 */
+
+    /* アクセントカラー */
+    --accent-gold: #D4B156;     /* 上品な金色 */
+    --accent-brown: #8C7851;    /* 温かみのある茶色 */
+
+    /* サブカラー */
+    --light-gray: #F5F2ED;      /* 温かみのあるライトグレー */
+    --medium-gray: #9B9B9B;     /* ニュートラルグレー */
+    --dark-gray: #4A4A4A;       /* ソフトな濃色 */
+
+    /* 機能色 */
+    --success: #7A8C73;         /* 和風な緑 */
+    --warning: #CF8E6D;         /* 柔らかいオレンジ */
+    --danger: #C1666B;          /* 優しい赤 */
+
+    /* その他 */
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* より繊細な影 */
 }
 
 /* 全体の設定 */
 body {
     font-family: 'Noto Sans JP', sans-serif;
     color: var(--primary-black);
-    background-color: var(--primary-white);
+    background-color: #f5f5f5;
     line-height: 1.6;
 }
 
@@ -126,26 +139,27 @@ footer {
 
 /* Bootstrapボタンの上書き */
 .btn-primary {
-    background-color: var(--primary-gold);
-    border-color: var(--primary-gold);
-    color: var(--primary-black);
-}
-
-.btn-primary:hover {
-    background-color: #e0b800; /* 金色の濃いバリエーション */
-    border-color: #e0b800;
-    color: var(--primary-black);
-}
-
-.btn-secondary {
-    background-color: var(--primary-black);
-    border-color: var(--primary-black);
+    background-color: var(--success);
+    border-color: var(--success);
     color: var(--primary-white);
 }
 
+.btn-primary:hover {
+    background-color: var(--dark-gray); /* 金色の濃いバリエーション */
+    border-color: #e0b800;
+    color: var(--primary-white);
+}
+
+.btn-secondary {
+    background-color: white;
+    border: 1px solid var(--success);
+    color: var(--primary-black);
+
+}
+
 .btn-secondary:hover {
-    background-color: #333333; /* 黒の濃いバリエーション */
-    border-color: #333333;
+    background-color: var(--medium-gray); /* 黒の濃いバリエーション */
+    border-color: var(--medium-gray);
     color: var(--primary-white);
 }
 
@@ -542,4 +556,35 @@ footer {
 
 .stars-inner::before {
     content: "★★★★★";   /* 黄色の星5つを表示（前景） */
+}
+
+.icon-upload{
+    width: 150px;
+    height:150px;
+    position: relative;
+    margin: 0 auto;
+}
+
+.upload-label{
+    width:100%;
+    height:100%;
+}
+
+.icon-upload-box{
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px dashed var(--medium-gray);
+    display: flex;
+    justify-content: center;
+    cursor:pointer;
+    transition: all 0.3s ease;
+}
+.plus-icon{
+    margin: auto;
+}
+
+.img-container{
+    max-height: 400px;
+    margin: auto;
 }

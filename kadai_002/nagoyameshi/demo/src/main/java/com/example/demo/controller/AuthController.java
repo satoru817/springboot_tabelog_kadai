@@ -192,7 +192,7 @@ public class AuthController {
         return "auth/sign_up";
 
     }
-    //fixme:認証メールを送るようにしないといけない。
+
     @PostMapping("/userRegister")
     public String userRegister(@Validated SignUpForm signUpForm,
                                BindingResult result,
@@ -205,7 +205,7 @@ public class AuthController {
                     +Conventions.getVariableName(signUpForm),result);
             return  "redirect:/signUp";
         }else if(!signUpForm.isConfirmed()){
-            //TODO:これだと、間違ったパスワードも再度入力されちゃうかな？確認必要。
+
             redirectAttributes.addFlashAttribute("signUpForm",signUpForm);
             redirectAttributes.addFlashAttribute("passwordConfirmationError","パスワード（確認用）が異なっています。");
             return "redirect:/signUp";
@@ -215,8 +215,6 @@ public class AuthController {
                 User user = optionalUser.get();
                 user.setEnabled(false);
                 userRepository.save(optionalUser.get());
-                //TODO:メール送信しないと。
-                //TODO:遷移先は書き換える必要が有る。
                 String token = UUID.randomUUID().toString();
 
                 VerificationToken verificationToken = new VerificationToken();
@@ -227,7 +225,6 @@ public class AuthController {
                 javaMailSender.send(mailMessage);
                 Integer verificationTokenId = verificationToken.getId();
                 model.addAttribute("verificationTokenId",verificationTokenId);//再送用に必要な情報
-                //fixme:メール送信完了しましたの文言が入った画面に遷移したい。
                 return "auth/email-verification-sent";
             }else{
                 redirectAttributes.addFlashAttribute("signUpForm",signUpForm);
@@ -263,7 +260,7 @@ public class AuthController {
         return mailMessage;
     }
 
-    //TODO:tokenをつかってverificationToken tableを検索。30分以内なら、ユーザーを有効化する。存在が確認できなければ、無効なことを告げる。
+    //tokenをつかってverificationToken tableを検索。30分以内なら、ユーザーを有効化する。存在が確認できなければ、無効なことを告げる。
     @GetMapping("/userRegister/userRegistryConfirmation")
     public String confirmUser(@RequestParam("token")String token,
                               Model model,

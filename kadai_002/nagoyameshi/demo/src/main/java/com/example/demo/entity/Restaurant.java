@@ -87,6 +87,9 @@ public class Restaurant {
     @Transient
     private float averageStar;
 
+    @Transient
+    private Boolean isFavorite;
+
     //cascadeType.Allとすると、restaurantが保存、削除されるとそれに関連するRestaurantImageも自動で処理される。
     //FetchType.LAZYにすると必要なときにのみ読み込まれるようになる。
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

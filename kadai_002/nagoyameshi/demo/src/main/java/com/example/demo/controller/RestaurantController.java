@@ -5,6 +5,7 @@ import com.example.demo.dto.TentativeReservationDto;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Reservation;
 import com.example.demo.entity.Restaurant;
+import com.example.demo.entity.User;
 import com.example.demo.repository.*;
 import com.example.demo.security.UserDetailsImpl;
 import com.example.demo.service.CategoryService;
@@ -32,6 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/restaurant")
 @Slf4j
+//todo:レストラン一覧画面でもお気に入りは確認できるようにする。
 public class RestaurantController {
     private final CategoryService categoryService;
     private final CategoryRepository categoryRepository;
@@ -42,6 +44,7 @@ public class RestaurantController {
     private final NagoyaService nagoyaService;
     private final ReservationService reservationService;
     private final ReviewRepository reviewRepository;
+    private final FavoriteRepository favoriteRepository;
 
     // リクエストボディを受け取るためのクラス
 
@@ -72,7 +75,8 @@ public class RestaurantController {
 
 
     @GetMapping
-    public String index(@RequestParam(name="restaurantName",required=false) String restaurantName,
+    public String index(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                        @RequestParam(name="restaurantName",required=false) String restaurantName,
                         @RequestParam(name="ward",required=false) List<String> wards,//区
                         @RequestParam(name="categoryId",required=false)List<Integer> categoryIds,
                         @RequestParam(name="num",required=false) Integer num,//収容人数下限
@@ -80,6 +84,7 @@ public class RestaurantController {
                         @PageableDefault(page=0,size=10,sort="restaurantId",direction= Sort.Direction.ASC) Pageable pageable,//自動的にspringがpageable オブジェクトを生成する。
                         Model model)
     {
+        User user = userDetails.getUser();
 
         Page<Restaurant> restaurantPage  = restaurantService.findRestaurantOnCondition(restaurantName,wards,categoryIds,num,logic,pageable);
 
@@ -87,6 +92,7 @@ public class RestaurantController {
             float averageStar = reviewRepository.getAverageStarForRestaurant(restaurant)
                     .orElse(0.0f);
             restaurant.setAverageStar(averageStar);
+            restaurant.setIsFavorite(favoriteRepository.existsByUserAndRestaurant(user,restaurant));
         });
 
         List<Category> categories = categoryRepository.findAll();
@@ -104,10 +110,13 @@ public class RestaurantController {
     }
 
     @GetMapping("/{id}")
-    public String show(@PathVariable("id")Integer restaurantId,
+    public String show(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                       @PathVariable("id")Integer restaurantId,
                        Model model){
-        log.info("showは呼びだされています。");
+
         Restaurant restaurant = restaurantRepository.getReferenceById(restaurantId);
+        Boolean isFavorite = favoriteRepository.existsByUserAndRestaurant(userDetails.getUser(),restaurant);
+        restaurant.setIsFavorite(isFavorite);
         model.addAttribute("restaurant",restaurant);
 
         return "restaurant/show";

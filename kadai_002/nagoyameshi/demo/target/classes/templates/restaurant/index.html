@@ -140,7 +140,17 @@
 
                   <div class="col-md-5">
                     <div class="card-body">
-                      <h3 class="card-title mb-3" th:text="${restaurant.getName()}"></h3>
+                      <h4 class="card-title mb-3 d-flex align-items-center">
+                        <i th:if="${restaurant.isFavorite}"
+                           class="ms-2 bi bi-heart-fill"
+                           style="color: var(--primary-red);">
+                        </i>
+                        <i th:unless="${restaurant.isFavorite}"
+                           class="ms-2 bi bi-heart"
+                           style="color: var(--medium-gray);">
+                        </i>
+                        <span th:text="${restaurant.getName()}"></span>
+                      </h4>
 
                       <p class="star-rating">
                         <span class="stars-outer m-1">
