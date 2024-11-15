@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +23,34 @@ import java.util.UUID;
 @Service
 public class ImageService {
     private static final String IMAGE_DIRECTORY = "src/main/resources/static/images/";
+
+    //Base64でエンコードされた画像をユーザー名をファイル名としてつけて保存.パスを返す
+    public String saveImage(String base64Image,String username) throws IOException{
+        //Base64文字列からプレフィックスを除去
+        String base64Data = removeBase64Prefix(base64Image);
+
+        //Base64をデコード
+        byte[] imageBytes = Base64.getDecoder().decode(base64Data);
+
+        //ファイル名を生成(拡張子はjpg)
+        String fileName = username+".jpg";
+        Path filePath = Paths.get(IMAGE_DIRECTORY,fileName);
+
+        //ファイルに保存
+        Files.write(filePath,imageBytes);
+
+        return fileName;
+
+    }
+    //Base64文字列からデータURIスキームのプレフィックスを除去するメソッド
+    private String removeBase64Prefix(String base64Image) {
+        // 最後のカンマ以降を取得する
+        int lastCommaIndex = base64Image.lastIndexOf(",");
+        if (lastCommaIndex != -1) {
+            return base64Image.substring(lastCommaIndex + 1);
+        }
+        return base64Image;
+    }
 
     // UUIDを使って生成したファイル名を返す
     public String generateNewFileName(String fileName) {

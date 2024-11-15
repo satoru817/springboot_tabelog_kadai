@@ -84,6 +84,7 @@
           </li>
           <li><a sec:authorize="isAnonymous()" class="dropdown-custom" th:href="@{/auth/login}">ログイン</a></li>
           <li><a sec:authorize="isAnonymous()" class="dropdown-custom" th:href="@{/signUp}">ユーザー登録</a></li>
+          <li><a sec:authorize="!isAnonymous()" class="dropdown-custom" th:href="@{/auth/update}">ユーザ情報更新</a></li>
         </ul>
       </div>
       <div class="btn-group me-2">

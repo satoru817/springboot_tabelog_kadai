@@ -38,6 +38,6 @@ public class SignUpForm {
         return this.password.equals(this.passwordConfirmation);
     }
 
-    private MultipartFile icon;//アイコン画像
+    private String icon;//アイコン画像
 
 }

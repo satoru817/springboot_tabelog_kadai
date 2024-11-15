@@ -160,6 +160,13 @@
                   <!--プレビューボタンｎ-->
                   <div id="upload-demo"></div>
 
+                  <!--切り取り後の画像プレビュー-->
+                  <div id="result-preview" class="mt-3 d-none">
+                    <img id="result-image" class="rounded-circle"
+                         style="width: 150px; height: 150px; object-fit:cover;
+                                border: 2px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                  </div>
+
                   <!--切り取り後の画像を保存するhidden input -->
                   <input type="hidden" th:field="*{icon}" id="icon-base64">
 

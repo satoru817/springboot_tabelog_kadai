@@ -26,9 +26,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -51,7 +51,7 @@
     </option>
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
@@ -70,7 +70,7 @@
     "DefaultHtmlFileTemplate": "HTML File",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "b1",
+    "git-widget-placeholder": "106d4221",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/satoru/document/kadai",
     "project.structure.last.edited": "Project",
@@ -204,7 +204,15 @@
       <option name="project" value="LOCAL" />
       <updated>1731551680368</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="croppieを実装した">
+      <option name="closed" value="true" />
+      <created>1731655416195</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1731655416195</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -218,6 +226,7 @@
     <MESSAGE value="サブスクリプション関連の実装が終わった" />
     <MESSAGE value="テーブルのschema.sqlを書いた" />
     <MESSAGE value="show.jsの記述は完成した" />
-    <option name="LAST_COMMIT_MESSAGE" value="show.jsの記述は完成した" />
+    <MESSAGE value="croppieを実装した" />
+    <option name="LAST_COMMIT_MESSAGE" value="croppieを実装した" />
   </component>
 </project>

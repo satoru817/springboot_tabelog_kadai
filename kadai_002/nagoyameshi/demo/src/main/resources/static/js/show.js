@@ -12,6 +12,10 @@ const timeSelect = document.getElementById('time');
 const dateField = document.getElementById('date');
 const peopleField = document.getElementById('people');
 
+
+const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
 const today = new Date();
 const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split('T')[0];
 
@@ -61,8 +65,7 @@ async function createTimeSelectOption(){
 //日時とレストランIdを利用してfetch通信を行いstartとfinish時刻をdbからとってくる
 async function getOpeningHour(date,restaurantId){
     try{
-        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
 
         const data = {
             restaurantId: restaurantId,

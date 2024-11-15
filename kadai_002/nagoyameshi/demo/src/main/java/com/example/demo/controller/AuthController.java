@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Conventions;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,6 +34,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,6 +57,8 @@ public class AuthController {
     private final SignUpFormConverter signUpFormConverter;
     private final JavaMailSender javaMailSender;
     private final UserDetailsServiceImpl userDetailsService;
+
+
 
     @GetMapping("/auth/login")
     public String login(Model model,
@@ -198,7 +203,7 @@ public class AuthController {
                                BindingResult result,
                                RedirectAttributes redirectAttributes,
                                Model model,
-                               HttpServletRequest request){
+                               HttpServletRequest request) throws IOException {
         if(result.hasErrors()){
             redirectAttributes.addFlashAttribute("signUpForm",signUpForm);
             redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
@@ -304,4 +309,25 @@ public class AuthController {
     public String blocked () {
         return "auth/blocked";
     }
+
+    //ユーザー情報のアップロード(パスワードはフォームで扱わない。リセットメールを送る形にする。リセットメールを送るリンクを遷移先に作成する）
+    @GetMapping("/auth/update")
+    public String update(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                         Model model){
+        User user = userDetails.getUser();
+        model.addAttribute("user",user);
+        return "auth/edit";
+    }
+
+    //名前が重複していないか確認するメソッド
+    @PostMapping("/auth/validateName")
+    public ResponseEntity<Boolean> validateName(@RequestBody String name){
+        try{
+            Boolean isAvailable = !userRepository.existsByName(name);
+            return ResponseEntity.ok(isAvailable);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+    }
+
 }

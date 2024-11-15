@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <meta th:replace="~{fragment::headResources}"/>
+    <script th:src="@{/js/user_edit.js}" defer></script>
+    <!--croppie-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js" integrity="sha512-Gs+PsXsGkmr+15rqObPJbenQ2wB3qYvTHuJO6YJzPe/dTLvhy0fmae2BcnaozxDo5iaF8emzmCZWbQ1XXiX2Ig==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.css" integrity="sha512-2eMmukTZtvwlfQoG8ztapwAH5fXaQBzaMqdljLopRSA0i6YKM8kBAOrSSykxu9NN9HrtD45lIqfONLII2AFL/Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>会員情報編集</title>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+<div th:replace="~{fragment::header}"></div>
+<div>
+
+    <main>
+        <div class="container pt-4 pb-5">
+            <div class="row justify-content-center">
+                <div class="col-xl-5 col-lg-6 col-md-8">
+
+                    <h1 class="mb-4 text-center">会員情報編集</h1>
+
+                    <form method="post" th:action="@{/userRegister}" th:object="${user}" id="registration_form">
+
+                        <div class="form-group row mb-3">
+                            <div class="col-md-5">
+                                <label for="name" class="col-form-label text-md-left fw-bold">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-1">ユーザー名</span>
+                                        <span class="badge bg-danger">必須</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <!--todo:ajax通信で重なる名前が無いか検索-->
+                            <div class="col-md-7">
+                                <div th:if="${#fields.hasErrors('name')}" class="text-danger small mb-2" th:errors="*{name}"></div>
+                                <div class="text-danger small mb-2" style="display:none;" id="name_validation">名前には@を含まないで下さい</div>
+                                <div class="text-danger small mb-2 d-none"  id="validateError">このユーザー名はすでに利用されています</div>
+                                <div class="text-success small mb-2 d-none" id="successValidate">このユーザー名は利用可能です</div>
+                                <input type="text" class="form-control" th:field="*{name}" autocomplete="name" autofocus placeholder="ユーザー名を入力してください" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-3">
+                            <div class="col-md-5">
+                                <label for="name" class="col-form-label text-md-left fw-bold">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-1">予約者名(予約のときにお店に伝えられる名前です）</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="col-md-7">
+                                <input type="text" class="form-control" th:field="*{nameForReservation}" autocomplete="name" autofocus placeholder="予約者名を入力してください">
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-3">
+                            <div class="col-md-5">
+                                <label for="postalCode" class="col-form-label text-md-left fw-bold">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-1">郵便番号</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="col-md-7">
+                                <input type="text" class="form-control" th:field="*{postalCode}" autocomplete="postal-code" autofocus placeholder="101-0022">
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-3">
+                            <div class="col-md-5">
+                                <label for="address" class="col-form-label text-md-left fw-bold">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-1">住所</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="col-md-7">
+                                <input type="text" class="form-control" th:field="*{address}" placeholder="東京都千代田区千代田１−１">
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-3">
+                            <div class="col-md-5">
+                                <label for="phoneNumber" class="col-form-label text-md-left fw-bold">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-1">電話番号</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="col-md-7">
+                                <input type="text" class="form-control" th:field="*{phoneNumber}" autocomplete="tel-national" placeholder="090-1234-5678">
+                            </div>
+                        </div>
+
+                        <!--ajaxで重なるメールアドレスが無いか確認する-->
+                        <div class="form-goup row mb-3">
+                            <div class="col-md-5">
+                                <label for="email" class="col-form-label text-md-left fw-bold">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-1">メールアドレス</span>
+                                        <span class="badge bg-danger">必須</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="text-danger small mb-2" style="display:none;" id="email_validation">無効なemailアドレスです。</div>
+                                <div th:if="${#fields.hasErrors('email')}" class="text-danger small mb-2" th:errors="*{email}" required></div>
+                                <input type="text" class="form-control" th:field="*{email}" autocomplete="email" placeholder="taro.samurai@example.com">
+                            </div>
+                        </div>
+
+                        <!--icon画像送信フィールド-->
+                        <div class="form-group row mb-3">
+                            <div class="col-md-5">
+                                <label class="col-form-label text-md-left fw-bold">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-1">プロフィール画像</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="text-center">
+                                    <!--現在の画像を表示-->
+                                    <img th:src="${user.profileImage != null ? '/images/' + user.profileImage : '/images/default_profile.png'}"
+                                         class="rounded-circle me-3"
+                                         style="width: 100px; height: 100px; object-fit: cover;"
+                                         alt="User profile">
+                                    <!--アップロードボタン-->
+                                    <br>
+                                    <label for="icon" class="btn btn-outline-primary mb-3 mt-3">
+                                        変更したければ画像を選択
+                                    </label>
+                                    <input type="file" id="icon" name="icon" class="d-none" accept="image/*">
+
+
+                                    <!--切り取りボタン(画像選択後に表示)-->
+                                    <button type="button" id="crop-button" class="btn btn-success d-none mt-3">
+                                        切り取りを確定
+                                    </button>
+
+                                    <div id="upload-demo"></div>
+
+                                    <!--切り取り後の画像プレビュー-->
+                                    <div id="result-preview" class="mt-3 d-none">
+                                        <img id="result-image" class="rounded-circle"
+                                             style="width: 150px; height: 150px; object-fit:cover;
+                                border: 2px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    </div>
+
+                                    <!--切り取り後の画像を保存するhidden input -->
+                                    <input type="hidden" th:field="*{icon}" id="icon-base64">
+
+                                    <!--確認メッセージ-->
+                                    <div id="confirm_image" class="d-none alert alert-info">
+                                        Do you like this icon image? If not then select and edit image again.
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:if="${sameUserFoundError}" class="text-danger mb-3" th:text="${sameUserFoundError}"></div>
+                        <div th:if="${tokenNotFound}" class="text-danger mb-3" th:text="${tokenNotFound}"></div>
+                        <div class="text-danger mb-3" style="display:none;" id="input_mistakes">入力内容に不備があります。御確認下さい</div>
+
+                        <div class="form-group d-flex justify-content-center  my-4">
+                            <button type="submit" class="btn btn-primary w-50 ">編集内容登録</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+</div>
+<!-- フッター -->
+<div th:replace="~{fragment::footer}"></div>
+
+</body>
+
+</html>
+
+
+

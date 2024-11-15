@@ -57,4 +57,7 @@ public class User {
     @UpdateTimestamp
     @Column(name="updated_at")
     private LocalDateTime updatedAt;
+
+    @Transient
+    private String icon;//base64のimageStringを送るためのフィールド
 }

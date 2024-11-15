@@ -601,3 +601,28 @@ footer {
 .cr-viewport {
     box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.1);
 }
+
+.cr-boundary {
+    margin: 0 auto;
+}
+
+.cr-slider-wrap {
+    margin: 15px auto;
+    width: 200px;
+}
+
+.cr-viewport {
+    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.1);
+}
+
+#result-preview {
+    transition: all 0.3s ease;
+}
+
+img{
+    transition: transform 0.3s ease;
+}
+
+img:hover {
+    transform: scale(1.05);
+}

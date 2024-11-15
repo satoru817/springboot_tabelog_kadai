@@ -8,6 +8,7 @@ import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -16,9 +17,10 @@ public class SignUpFormConverter {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncryptionService passwordEncryptionService;
-    //TODO:同じメールアドレス、同じ名前のユーザーがすでにいる場合はnullを返す
+    private final ImageService imageService;
+    //同じメールアドレス、同じ名前のユーザーがすでにいる場合はnullを返す
     // そうでなければUserオブジェクトを返す。
-    public Optional<User> singUpFormToUnpaidUser(SignUpForm form){
+    public Optional<User> singUpFormToUnpaidUser(SignUpForm form) throws IOException {
         if(userRepository.findByNameOrEmail(form.getName(), form.getEmail()).isPresent()){
             return Optional.empty();
         }else{
@@ -32,6 +34,9 @@ public class SignUpFormConverter {
             user.setPostalCode(form.getPostalCode());
             user.setAddress(form.getAddress());
             user.setPhoneNumber(form.getPhoneNumber());
+            //Base64の画像を保存してファイル名を得ている。
+            String fileName = imageService.saveImage(form.getIcon(),form.getName());
+            user.setProfileImage(fileName);
             return Optional.of(user);
         }
     }
