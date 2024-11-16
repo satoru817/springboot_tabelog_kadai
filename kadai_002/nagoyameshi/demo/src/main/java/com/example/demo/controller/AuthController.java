@@ -336,4 +336,24 @@ public class AuthController {
 
     }
 
+    //メールが重複していないか確認するメソッド
+    @PostMapping("/auth/validateEmail")
+    public ResponseEntity<Boolean> validateEmail(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                @RequestBody Map<String,String> emailMap){
+        String email = emailMap.get("email");
+        boolean isAvailable;
+
+        if(email.equals(userDetails.getUser().getEmail())){
+            return ResponseEntity.ok(true);
+        }else{
+            try{
+                isAvailable = !userRepository.existsByEmail(email);
+                return ResponseEntity.ok(isAvailable);
+            }catch(Exception e){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+            }
+        }
+
+    }
+
 }

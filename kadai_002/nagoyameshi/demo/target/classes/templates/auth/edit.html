@@ -107,6 +107,8 @@
                             </div>
                             <div class="col-md-7">
                                 <div class="text-danger small mb-2" style="display:none;" id="email_validation">無効なemailアドレスです。</div>
+                                <div class="text-danger small mb-2 d-none"  id="email_validate_error_ajax">このメールアドレスはすでに利用されています</div>
+                                <div class="text-success small mb-2 d-none" id="email_validate_success">このメールアドレスは利用可能です</div>
                                 <div th:if="${#fields.hasErrors('email')}" class="text-danger small mb-2" th:errors="*{email}" required></div>
                                 <input type="text" class="form-control" th:field="*{email}" autocomplete="email" placeholder="taro.samurai@example.com">
                             </div>
