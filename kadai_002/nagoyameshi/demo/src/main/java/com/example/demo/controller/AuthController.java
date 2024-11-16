@@ -36,10 +36,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -321,13 +318,22 @@ public class AuthController {
 
     //名前が重複していないか確認するメソッド
     @PostMapping("/auth/validateName")
-    public ResponseEntity<Boolean> validateName(@RequestBody String name){
-        try{
-            Boolean isAvailable = !userRepository.existsByName(name);
-            return ResponseEntity.ok(isAvailable);
-        }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+    public ResponseEntity<Boolean> validateName(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                @RequestBody Map<String,String> nameMap){
+        String name = nameMap.get("name");
+        boolean isAvailable;
+
+        if(name.equals(userDetails.getUsername())){
+            return ResponseEntity.ok(true);
+        }else{
+            try{
+                isAvailable = !userRepository.existsByName(name);
+                return ResponseEntity.ok(isAvailable);
+            }catch(Exception e){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+            }
         }
+
     }
 
 }

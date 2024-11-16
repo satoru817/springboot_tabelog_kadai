@@ -1,8 +1,10 @@
 const nameInput = document.querySelector('input[id="name"]');
+const mailInput = document.querySelector('input[id="email"]');
+
 const nameValidation = document.getElementById('name_validation');
 const validationSuccess = document.getElementById('successValidate');
 
-document.addEventListener('DOMContentLoaded',function(){
+document.addEventListener('DOMContentLoaded',async function(){
     let croppie = new Croppie(document.getElementById('upload-demo'),{
         viewport:{  // 実際に切り取られる円形の領域の設定
             width:150,  // 幅150px
@@ -51,13 +53,14 @@ document.addEventListener('DOMContentLoaded',function(){
         })
     });
 
-    nameInput.addEventListener('input', nameValidator);
-    nameInput.addEventListener('change', await validateName);
+    nameInput.addEventListener('input', await nameValidator);
+    mailInput.addEventListener('input',await mailValidator);
+
 
 
 });
 
-function nameValidator() {
+async function nameValidator() {
     if (nameInput.value.includes('@')) {
         nameValidation.style.display = "block";
         validationSuccess.classList.add("d-none");
@@ -65,15 +68,19 @@ function nameValidator() {
     } else {
         validationSuccess.classList.remove('d-none');
         nameValidation.style.display = "none";
+        await validateName();
         return true;
     }
 }
 
 
-async function validateName(name){
+async function validateName(){
     try{
         const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        const name = nameInput.value;
+        console.log('validationが行われています:',name);
 
         const data = {
             name: name,
@@ -94,10 +101,15 @@ async function validateName(name){
 
         const isValid = await response.json();
 
+        console.log('isValid:',isValid);
+
         if(!isValid){
            document.getElementById('validateError').classList.remove('d-none');
+           validationSuccess.classList.add('d-none');
+           console.log('validation不合格');
         }else{
            document.getElementById('validateError').classList.add('d-none');
+           console.log('validation合格');
         }
 
     }catch(error){
