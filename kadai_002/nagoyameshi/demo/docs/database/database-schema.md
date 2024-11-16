@@ -1,3 +1,5 @@
+```mermaid
+
 erDiagram
     roles ||--o{ users : has
     users ||--o{ verification_tokens : has
