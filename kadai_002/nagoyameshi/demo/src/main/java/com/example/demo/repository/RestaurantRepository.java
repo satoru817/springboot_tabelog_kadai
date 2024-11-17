@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
 import com.example.demo.entity.Restaurant;
+import com.example.demo.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -19,6 +20,25 @@ public interface RestaurantRepository extends JpaRepository<Restaurant,Integer> 
 
     Page<Restaurant> findByNameLike(String s, Pageable pageable);
 
+    @Query("""
+            SELECT ret FROM Favorite f
+            JOIN f.restaurant ret 
+            JOIN ret.categoryRestaurants cr 
+            JOIN cr.category c
+            WHERE f.user = :user 
+            AND (ret.name LIKE %:searchQuery% 
+            OR ret.description LIKE %:searchQuery%
+            OR ret.address LIKE %:searchQuery%
+            OR c.categoryName LIKE %:searchQuery%)
+            """)
+    Page<Restaurant> findAllFavoriteBySearchQueryAndUser(@Param("searchQuery")String searchQuery,
+                                                         @Param("user")User user,
+                                                         Pageable pageable);
 
-
+    @Query("""
+            SELECT ret FROM Favorite f 
+            JOIN f.restaurant ret
+            WHERE f.user = :user
+            """)
+    Page<Restaurant> findAllFavoriteByUser(@Param("user")User user, Pageable pageable);
 }

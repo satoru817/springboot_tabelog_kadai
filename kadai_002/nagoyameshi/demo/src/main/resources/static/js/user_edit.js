@@ -1,5 +1,8 @@
 const nameInput = document.querySelector('input[id="name"]');
 const mailInput = document.querySelector('input[id="email"]');
+const imageInput = document.getElementById('imageInput');
+
+const icon = document.getElementById('icon');
 
 const nameValidation = document.getElementById('name_validation');
 const emailValidation = document.getElementById('email_validation');
@@ -7,61 +10,146 @@ const emailValidationErrorAjax = document.getElementById('email_validate_error_a
 const emailValidateSuccess = document.getElementById('email_validate_success');
 const validationSuccess = document.getElementById('successValidate');
 
+const cancelImage = document.getElementById('cancelImage');
+const selectImageBtn = document.getElementById('selectImageBtn');
+const deleteImageBtn = document.getElementById('deleteImageBtn');
+const cropButton = document.getElementById('cropButton');
+const cancelCropBtn = document.getElementById('cancelCropBtn');
+const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+const editCancelBtn = document.getElementById('editCancelBtn');
+
+const croppieElement = document.getElementById('croppieElement');
+const croppieContainer = document.getElementById('croppieContainer');
+//Croppieインスタンスの設定
+let croppie = null;
+
+const alertMessage = document.getElementById('icon_replace_alert');
+const resultImage = document.getElementById('result-image');
+const resultPreview = document.getElementById('result-preview');
+
+
 document.addEventListener('DOMContentLoaded',async function(){
-    let croppie = new Croppie(document.getElementById('upload-demo'),{
-        viewport:{  // 実際に切り取られる円形の領域の設定
-            width:150,  // 幅150px
-            height:150, // 高さ150px
-            type:'circle' // 円形に切り取り
-        },
-        boundary:{  // 画像の移動や拡大縮小ができる領域の設定
-            width:200,  // 幅200px
-            height:200  // 高さ200px
-        },
-        enableExif: true  // スマホでの撮影時の画像の向きを自動補正
-    });
 
-    //ファイル選択時の処理
-    document.getElementById('icon').addEventListener('change',function(e){
-        if(this.files && this.files[0]){  // ファイルが選択されたか確認
-            const reader = new FileReader();  // ファイルを読み込むための機能
-            reader.onload = function(e){  // ファイル読み込み完了時の処理
-                croppie.bind({  // 読み込んだ画像をCroppieに設定
-                    url:e.target.result
-                }).then(function(){
-                   document.getElementById('crop-button').classList.remove('d-none');
-                   // 切り取りボタンを表示
-                });
-            }
-            reader.readAsDataURL(this.files[0]);  // 画像をBase64形式で読み込み
-        }
-    });
 
-    document.getElementById('crop-button').addEventListener('click',function(){
-        croppie.result({  // 切り取り結果を取得
-            type: 'base64',    // Base64形式で出力
-            size: 'viewport',  // viewport(円形)サイズで出力
-            format:'jpeg',     // JPEG形式で出力
-            quality: 0.9       // 品質90%で出力
-        }).then(function(base64){  // 切り取り完了後の処理
-            // 切り取った画像データをhidden inputにセット
-            document.getElementById('icon-base64').value = base64;
 
-            // プレビュー画像を表示
-            document.getElementById('result-image').src = base64;
-            document.getElementById('result-preview').classList.remove('d-none');
-            document.getElementById('confirm_image').classList.remove('d-none');
 
-            alert('画像の切り取りが完了しました');
-        })
-    });
 
+    //画像関連の要素
     nameInput.addEventListener('input', await nameValidator);
     mailInput.addEventListener('input',await mailValidator);
 
+    //画像選択ボタンをクリックするとinput type="file"の要素が開く
+    selectImageBtn.addEventListener('click',function(){
+        console.log('selectImageBtnは押されました。');
+        imageInput.click();
+    })
 
+
+
+    //選択された画像をcroppieと結びつける
+    imageInput.addEventListener('change',function(e){
+        if(e.target.files && e.target.files[0]){
+            const reader = new FileReader();
+            reader.onload = function(e){
+                if(!croppie){
+                    initCroppie();
+                }
+                croppieContainer.classList.remove('d-none');
+                croppie.bind({
+                    url: e.target.result
+                });
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    //切り取り確定ボタンのイベントリスナー
+    cropButton.addEventListener('click',async function() {
+
+        const base64 = await croppie.result({
+            type:'base64',
+            size:'viewport',
+            format:'jpeg',
+            quality:0.9
+        });
+
+        icon.value=base64;
+
+        // プレビュー画像を表示
+        resultImage.src = base64;
+        cancelImage.src = base64;
+        resultPreview.classList.remove('d-none');
+        alertMessage.classList.remove('d-none');
+        const editModal = bootstrap.Modal.getInstance(document.getElementById('imageEditModal'));
+        editModal.hide();
+
+        alert('画像の切り取りが終わりました');
+
+
+    });
+
+    deleteImageBtn.addEventListener('click',function(){
+        console.log('deleteImageBtnは押されています');
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        deleteModal.show();
+    });
+
+    confirmDeleteBtn.addEventListener('click',async function(){
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        console.log("confirmDeleteBtnは押されました。");
+        try{
+            const response = await fetch('/api/profile/image',{
+                method: 'DELETE',
+                headers: {
+                    [csrfHeader]:csrfToken
+                }
+            });
+
+            if(response.ok){
+                document.querySelector('.profile-image').src='/images/default_profile.png';
+                document.querySelector('.current-profile-image').src='/images/default_profile.png';
+
+                //モーダルを閉じる
+                const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
+                deleteModal.hide();
+                const editModal = bootstrap.Modal.getInstance(document.getElementById('imageEditModal'));
+                editModal.hide();
+            }
+        }catch(error){
+            console.error('Error deleting image:',error);
+        }
+    });
+
+    cancelCropBtn.addEventListener('click',function(){
+        croppieContainer.classList.add('d-none');
+        if(croppie){
+            croppie.destroy();
+            croppie = null;
+        }
+    });
+
+    editCancelBtn.addEventListener('click',function(){
+        icon.value=null;//フォームで送られる値をnullに直す
+        resultPreview.classList.add('d-none');
+        const editCancelModal = bootstrap.Modal.getInstance(document.getElementById('cancelEditModal'));
+        editCancelModal.hide();
+        alertMessage.classList.add('d-none');
+    });
 
 });
+
+
+
+
+function initCroppie(){
+    console.log("initCroppieは呼ばれました");
+    croppie = new Croppie(croppieElement,{
+        viewport:{width:200,height:200,type:'circle'},
+        boundary:{width:300,height:300},
+        enableOrientation:true
+    });
+}
 
 async function mailValidator() {
     const regex = /^[\w-.]+@([\w-]+\.)+[a-zA-Z]{2,6}$/;

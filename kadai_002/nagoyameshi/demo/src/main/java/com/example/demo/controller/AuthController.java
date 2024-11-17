@@ -28,6 +28,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -54,6 +55,8 @@ public class AuthController {
     private final SignUpFormConverter signUpFormConverter;
     private final JavaMailSender javaMailSender;
     private final UserDetailsServiceImpl userDetailsService;
+    private final ImageService imageService;
+    private final UserService userService;
 
 
 
@@ -139,7 +142,7 @@ public class AuthController {
 
         errorMessage = "無効なパスワード変更用URLにアクセスされました。再度パスワード変更をお試しください。";
         redirectAttributes.addFlashAttribute("message",errorMessage);
-        return "redirect:/password_change";
+        return "redirect:/passwordChange";
     }
 
     @PostMapping("/doChangePassword")
@@ -354,6 +357,38 @@ public class AuthController {
             }
         }
 
+    }
+
+    //ゆーざー情報編集画面で画像を削除するためのメソッド
+    @Transactional
+    @DeleteMapping("/api/profile/image")
+    public ResponseEntity<String> deleteImage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+
+        String fileName = String.format("%s.jpg", userDetails.user.getName());
+
+        boolean deleteSuccess = imageService.deleteImage(fileName);
+        user.setProfileImage(null);
+        userRepository.save(user);
+
+
+        if (deleteSuccess) {
+            return ResponseEntity.ok("deletion of image success");
+        } else {
+            return ResponseEntity.internalServerError()
+                    .body("deletion of image failed");
+        }
+    }
+
+
+    @Transactional
+    @PostMapping("/userUpdate")
+    public String updateUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                             @ModelAttribute User user) throws IOException{
+        User exUser = userDetails.getUser();
+        userService.replaceField(exUser,user);
+        userRepository.save(exUser);//upsert
+        return "redirect:/auth/update";//編集画面に戻る
     }
 
 }

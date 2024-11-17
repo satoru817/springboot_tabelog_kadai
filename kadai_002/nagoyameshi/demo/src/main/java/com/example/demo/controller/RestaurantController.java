@@ -72,6 +72,25 @@ public class RestaurantController {
         }
     }
 
+    //お気に入り一覧画面とりあえずページネーションはつける。あと、できたらキーワード検索（カテゴリ名と店舗名と住所）をつけたい。
+    @GetMapping("/favorite")
+    public String favorite(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                           @PageableDefault(page=0,size=10,sort="restaurantId",direction=Sort.Direction.ASC)Pageable pageable,
+                           @RequestParam(name="searchQuery",required = false )String searchQuery,
+                           Model model){
+        User user = userDetails.getUser();
+        Page<Restaurant> restaurants;
+        if(searchQuery!=null && searchQuery.trim().isEmpty()){
+            restaurants = restaurantRepository.findAllFavoriteBySearchQueryAndUser(searchQuery,user,pageable);
+        }else{
+            restaurants = restaurantRepository.findAllFavoriteByUser(user,pageable);
+        }
+
+        model.addAttribute("restaurants",restaurants);
+        return "restaurant/favorite";//この画面の作成から
+
+    }
+
 
 
     @GetMapping

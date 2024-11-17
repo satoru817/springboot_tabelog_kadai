@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.OpeningHours;
 import com.example.demo.entity.Reservation;
 import com.example.demo.entity.Restaurant;
+import com.example.demo.entity.User;
 import com.example.demo.repository.RestaurantRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -247,4 +248,6 @@ public class RestaurantService {
 
         }
     }
+
+
 }

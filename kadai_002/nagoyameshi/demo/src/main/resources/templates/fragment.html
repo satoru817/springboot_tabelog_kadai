@@ -101,6 +101,7 @@
           レストラン
         </button>
         <ul class="dropdown-menu">
+          <li sec:authorize="hasAnyRole('ADMIN','PAID_USER')"><a class="dropdown-custom" th:href="@{/restaurant/favorite}">お気に入り一覧</a></li>
           <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant}">レストラン情報一覧(管理者用)</a></li>
           <li><a class="dropdown-custom" th:href="@{/restaurant}">レストラン情報一覧</a></li>
           <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant/register}">レストラン情報登録</a></li>

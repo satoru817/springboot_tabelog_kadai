@@ -95,6 +95,9 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RestaurantImage> images;
 
+    @OneToMany(mappedBy = "restaurant",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Favorite> favorites;
+
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CategoryRestaurant> categoryRestaurants; // 中間テーブルとの関連を追加
 

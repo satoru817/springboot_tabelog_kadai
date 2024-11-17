@@ -26,8 +26,14 @@
       <!-- タイトルとお気に入りボタンを横に並べる -->
       <div class="d-flex justify-content-center align-items-center mb-4">
         <h1 class="mb-0 mr-4" th:text="${restaurant.getName()}"></h1>
-        <div class="d-flex ms-4" sec:authorize="!isAnonymous()">
+        <div class="d-flex ms-4" sec:authorize="hasAnyRole('PAID_USER','ADMIN')">
           <a th:href="@{/favorite/toggle/__${restaurant.getRestaurantId()}__/__${restaurant.isFavorite}__}"
+             class="btn btn-outline-danger"
+             th:text="${restaurant.isFavorite ? '&#9829; Remove from Favorites' : '&#9825; Add to Favorites'}">
+          </a>
+        </div>
+        <div class="d-flex ms-4" sec:authorize="hasRole('UNPAID_USER')">
+          <a th:href="@{/upgrade}"
              class="btn btn-outline-danger"
              th:text="${restaurant.isFavorite ? '&#9829; Remove from Favorites' : '&#9825; Add to Favorites'}">
           </a>
