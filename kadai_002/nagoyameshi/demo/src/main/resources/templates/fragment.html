@@ -84,6 +84,7 @@
           </li>
           <li><a sec:authorize="isAnonymous()" class="dropdown-custom" th:href="@{/auth/login}"><i class="bi bi-box-arrow-in-right me-2"></i>ログイン</a></li>
           <li><a sec:authorize="isAnonymous()" class="dropdown-custom" th:href="@{/signUp}"><i class="bi bi-person-plus me-2"></i>ユーザー登録</a></li>
+          <li><a sec:authorize="hasRole('ADMIN')" class="dropdown-custom" th:href="@{/auth/add_admin}"><i class="bi bi-person-plus me-2"></i>管理者追加</a></li>
           <li><a sec:authorize="!isAnonymous()" class="dropdown-custom" th:href="@{/auth/update}"><i class="bi bi-person-gear me-2"></i>ユーザ情報更新</a></li>
         </ul>
       </div>

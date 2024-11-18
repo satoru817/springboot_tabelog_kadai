@@ -18,9 +18,10 @@
       <div class="row justify-content-center">
         <div class="col-xl-5 col-lg-6 col-md-8">
 
-          <h1 class="mb-4 text-center">会員登録</h1>
+          <h1 class="mb-4 text-center" th:text="${admin} ? 管理者登録 : 会員登録"></h1>
 
-          <form method="post" th:action="@{/userRegister}" th:object="${signUpForm}" id="registration_form">
+
+          <form method="post" th:action="${admin} ? @{/auth/admin_add} : @{/userRegister}" th:object="${signUpForm}" id="registration_form">
 
             <div class="form-group row mb-3">
               <div class="col-md-5">
@@ -33,6 +34,8 @@
               </div>
               <div class="col-md-7">
                 <div th:if="${#fields.hasErrors('name')}" class="text-danger small mb-2" th:errors="*{name}"></div>
+                <div class="text-danger small mb-2 d-none"  id="validateError">このユーザー名はすでに利用されています</div>
+                <div class="text-success small mb-2 d-none" id="successValidate">このユーザー名は利用可能です</div>
                 <div class="text-danger small mb-2" style="display:none;" id="name_validation">名前には@を含まないで下さい</div>
                 <input type="text" class="form-control" th:field="*{name}" autocomplete="name" autofocus placeholder="ユーザー名を入力してください" required>
               </div>
@@ -101,8 +104,10 @@
               </div>
               <div class="col-md-7">
                 <div class="text-danger small mb-2" style="display:none;" id="email_validation">無効なemailアドレスです。</div>
-                <div th:if="${#fields.hasErrors('email')}" class="text-danger small mb-2" th:errors="*{email}" required></div>
-                <input type="text" class="form-control" th:field="*{email}" autocomplete="email" placeholder="taro.samurai@example.com">
+                <div class="text-danger small mb-2 d-none"  id="email_validate_error_ajax">このメールアドレスはすでに利用されています</div>
+                <div class="text-success small mb-2 d-none" id="email_validate_success">このメールアドレスは利用可能です</div>
+                <div th:if="${#fields.hasErrors('email')}" class="text-danger small mb-2" th:errors="*{email}"></div>
+                <input type="text" class="form-control" th:field="*{email}" autocomplete="email" placeholder="taro.samurai@example.com" required>
               </div>
             </div>
 
@@ -187,10 +192,6 @@
               <button type="submit" class="btn btn-primary w-50 ">認証メールを送る</button>
             </div>
           </form>
-
-          <div class="text-center">
-            <a th:href="@{/auth/login}">ログイン</a>
-          </div>
         </div>
       </div>
     </div>

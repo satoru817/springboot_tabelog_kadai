@@ -58,6 +58,22 @@ public class AuthController {
     private final ImageService imageService;
     private final UserService userService;
 
+    @GetMapping("/auth/admin_add")
+    public String addAdmin(Model model){
+        SignUpForm signUpForm = new SignUpForm();
+
+        model.addAttribute("signUpForm",signUpForm);
+        model.addAttribute("admin",true);
+
+        return "auth/sign_up";
+    }
+
+    @PostMapping("/auth/admin_add")
+    public String registerAdmin(@ModelAttribute @Validated SignUpForm signUpForm,
+                                RedirectAttributes redirectAttributes){
+
+    }
+
 
 
     @GetMapping("/auth/login")
