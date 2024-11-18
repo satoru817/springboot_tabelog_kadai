@@ -42,7 +42,7 @@ public class WebSecurityConfig {
                 )
                 // Logout configuration
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/?loggedOut") // Redirect after successful logout
+                        .logoutSuccessUrl("/auth/login") // Redirect after successful logout
                         .permitAll() // Allow logout for all authenticated users
                 )
                 .csrf().ignoringRequestMatchers("/stripe/webhook");
