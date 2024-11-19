@@ -1,14 +1,12 @@
-const nameInput = document.querySelector('input[id="name"]');
-const mailInput = document.querySelector('input[id="email"]');
+
+
 const imageInput = document.getElementById('imageInput');
 
 const icon = document.getElementById('icon');
 
-const nameValidation = document.getElementById('name_validation');
-const emailValidation = document.getElementById('email_validation');
-const emailValidationErrorAjax = document.getElementById('email_validate_error_ajax');
-const emailValidateSuccess = document.getElementById('email_validate_success');
-const validationSuccess = document.getElementById('successValidate');
+
+
+
 
 const cancelImage = document.getElementById('cancelImage');
 const selectImageBtn = document.getElementById('selectImageBtn');
@@ -35,8 +33,8 @@ document.addEventListener('DOMContentLoaded',async function(){
 
 
     //画像関連の要素
-    nameInput.addEventListener('input', await nameValidator);
-    mailInput.addEventListener('input',await mailValidator);
+
+
 
     //画像選択ボタンをクリックするとinput type="file"の要素が開く
     selectImageBtn.addEventListener('click',function(){
@@ -151,120 +149,6 @@ function initCroppie(){
     });
 }
 
-async function mailValidator() {
-    const regex = /^[\w-.]+@([\w-]+\.)+[a-zA-Z]{2,6}$/;
-    const emailString = mailInput.value;
-
-    if (!regex.test(emailString)) {
-        emailValidation.style.display = "block";
-        emailValidateSuccess.classList.add('d-none');
-        return false;
-    } else {
-        emailValidation.style.display = "none";
-        await validateEmailAjax();
-        return true;
-    }
-}
-
-async function validateEmailAjax(){
-    try{
-        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-        const email = mailInput.value;
-        console.log('validationが行われています:',email);
-
-        const data = {
-            email: email,
-        }
-
-        const response = await fetch('/auth/validateEmail',{
-            method: 'POST',
-            headers: {
-                'Content-Type':'application/json',
-                [csrfHeader]: csrfToken
-            },
-            body: JSON.stringify(data)
-        });
-
-        if(!response.ok){
-            throw new Error(`HTTP error!: ${response.status}`)
-        }
-
-        const isValid = await response.json();
-
-        console.log('isValid:',isValid);
-
-        if(!isValid){
-           emailValidationErrorAjax.classList.remove('d-none');
-           emailValidateSuccess.classList.add('d-none');
-           console.log('validation不合格');
-        }else{
-           emailValidationErrorAjax.classList.add('d-none');
-           emailValidateSuccess.classList.remove('d-none');
-           console.log('validation合格');
-        }
-
-    }catch(error){
-        console.error("名前のvalidationに失敗しました。");
-        throw error;
-    }
-}
-
-async function nameValidator() {
-    if (nameInput.value.includes('@')) {
-        nameValidation.style.display = "block";
-        validationSuccess.classList.add("d-none");
-        return false;
-    } else {
-        validationSuccess.classList.remove('d-none');
-        nameValidation.style.display = "none";
-        await validateNameAjax();
-        return true;
-    }
-}
 
 
-async function validateNameAjax(){
-    try{
-        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-        const name = nameInput.value;
-        console.log('validationが行われています:',name);
-
-        const data = {
-            name: name,
-        }
-
-        const response = await fetch('/auth/validateName',{
-            method: 'POST',
-            headers: {
-                'Content-Type':'application/json',
-                [csrfHeader]: csrfToken
-            },
-            body: JSON.stringify(data)
-        });
-
-        if(!response.ok){
-            throw new Error(`HTTP error!: ${response.status}`)
-        }
-
-        const isValid = await response.json();
-
-        console.log('isValid:',isValid);
-
-        if(!isValid){
-           document.getElementById('validateError').classList.remove('d-none');
-           validationSuccess.classList.add('d-none');
-           console.log('validation不合格');
-        }else{
-           document.getElementById('validateError').classList.add('d-none');
-           console.log('validation合格');
-        }
-
-    }catch(error){
-        console.error("名前のvalidationに失敗しました。");
-        throw error;
-    }
-}

@@ -84,7 +84,7 @@
           </li>
           <li><a sec:authorize="isAnonymous()" class="dropdown-custom" th:href="@{/auth/login}"><i class="bi bi-box-arrow-in-right me-2"></i>ログイン</a></li>
           <li><a sec:authorize="isAnonymous()" class="dropdown-custom" th:href="@{/signUp}"><i class="bi bi-person-plus me-2"></i>ユーザー登録</a></li>
-          <li><a sec:authorize="hasRole('ADMIN')" class="dropdown-custom" th:href="@{/auth/add_admin}"><i class="bi bi-person-plus me-2"></i>管理者追加</a></li>
+          <li><a sec:authorize="hasRole('ADMIN')" class="dropdown-custom" th:href="@{/auth/admin_add}"><i class="bi bi-person-plus me-2"></i>管理者追加</a></li>
           <li><a sec:authorize="!isAnonymous()" class="dropdown-custom" th:href="@{/auth/update}"><i class="bi bi-person-gear me-2"></i>ユーザ情報更新</a></li>
         </ul>
       </div>
@@ -119,7 +119,50 @@
       </div>
     </div>
   </nav>
+</div>
 
+
+<!--ユーザーのformの部品-->
+<div th:fragment="nameInput" th:remove="tag">
+  <div class="form-group row mb-3">
+    <div class="col-md-5">
+      <label for="name" class="col-form-label text-md-left fw-bold">
+        <div class="d-flex align-items-center">
+          <span class="me-1" th:text="${admin}? '管理者名' : 'ユーザー名'"></span>
+          <span class="badge bg-danger">必須</span>
+        </div>
+      </label>
+    </div>
+    <div class="col-md-7">
+      <div th:if="${#fields.hasErrors('name')}" class="text-danger small mb-2" th:errors="*{name}"></div>
+      <div class="text-danger small mb-2 d-none"  id="validateError">このユーザー名はすでに利用されています</div>
+      <div class="text-success small mb-2 d-none" id="successValidate">このユーザー名は利用可能です</div>
+      <div class="text-danger small mb-2" style="display:none;" id="name_validation">名前には@を含まないで下さい</div>
+      <div class="text-danger small mb-2 d-none"  id="name_exist_validation">空白文字ではない名前を入力してください</div>
+      <input type="text" class="form-control" th:field="*{name}" autocomplete="name" autofocus th:placeholder="${admin}?'管理者名を入力してください' :'ユーザー名を入力してください'" required>
+    </div>
+  </div>
+</div>
+
+
+<div th:fragment="mailInput" th:remove="tag">
+  <div class="form-goup row mb-3">
+    <div class="col-md-5">
+      <label for="email" class="col-form-label text-md-left fw-bold">
+        <div class="d-flex align-items-center">
+          <span class="me-1">メールアドレス</span>
+          <span class="badge bg-danger">必須</span>
+        </div>
+      </label>
+    </div>
+    <div class="col-md-7">
+      <div class="text-danger small mb-2" style="display:none;" id="email_validation">無効なemailアドレスです。</div>
+      <div class="text-danger small mb-2 d-none"  id="email_validate_error_ajax">このメールアドレスはすでに利用されています</div>
+      <div class="text-success small mb-2 d-none" id="email_validate_success">このメールアドレスは利用可能です</div>
+      <div th:if="${#fields.hasErrors('email')}" class="text-danger small mb-2" th:errors="*{email}"></div>
+      <input type="text" class="form-control" th:field="*{email}" autocomplete="email" placeholder="taro.samurai@example.com" required>
+    </div>
+  </div>
 </div>
 <!-- フッターの部品化 -->
 <div th:fragment="footer" th:remove="tag">

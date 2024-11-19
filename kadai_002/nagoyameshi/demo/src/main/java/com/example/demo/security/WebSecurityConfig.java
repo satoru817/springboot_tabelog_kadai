@@ -23,7 +23,7 @@ public class WebSecurityConfig {
         http
                 // Authorize requests based on the URL patterns
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/userRegister**","/userRegister/**","/signUp**","/css/**", "/images/**", "/js/**", "/storage/**", "/","/passwordChange","/test","/auth/login**","/forgot_password**","/forgot_password/**","/doChangePassword","/auth/blocked","/stripe/webhook")
+                        .requestMatchers("/auth/validateEmail","/auth/validateName","/userRegister**","/userRegister/**","/signUp**","/css/**", "/images/**", "/js/**", "/storage/**", "/","/passwordChange","/test","/auth/login**","/forgot_password**","/forgot_password/**","/doChangePassword","/auth/blocked","/stripe/webhook")
                         .permitAll()  // Publicly accessible
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN") // Only users with "ADMIN" role can access

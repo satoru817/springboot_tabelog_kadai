@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
   <meta th:replace="~{fragment::headResources}"/>
+  <script th:src="@{/js/name_validation.js}" defer></script>
+  <script th:src="@{/js/mail_validation.js}" defer></script>
   <script th:src="@{/js/script_sign_up.js}" defer></script>
   <!--croppie-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js" integrity="sha512-Gs+PsXsGkmr+15rqObPJbenQ2wB3qYvTHuJO6YJzPe/dTLvhy0fmae2BcnaozxDo5iaF8emzmCZWbQ1XXiX2Ig==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.css" integrity="sha512-2eMmukTZtvwlfQoG8ztapwAH5fXaQBzaMqdljLopRSA0i6YKM8kBAOrSSykxu9NN9HrtD45lIqfONLII2AFL/Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <title>会員情報</title>
+  <title th:text="${admin ? '管理者追加画面' : 'ユーザー登録画面'}"></title>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -23,23 +27,7 @@
 
           <form method="post" th:action="${admin} ? @{/auth/admin_add} : @{/userRegister}" th:object="${signUpForm}" id="registration_form">
 
-            <div class="form-group row mb-3">
-              <div class="col-md-5">
-                <label for="name" class="col-form-label text-md-left fw-bold">
-                  <div class="d-flex align-items-center">
-                    <span class="me-1">ユーザー名</span>
-                    <span class="badge bg-danger">必須</span>
-                  </div>
-                </label>
-              </div>
-              <div class="col-md-7">
-                <div th:if="${#fields.hasErrors('name')}" class="text-danger small mb-2" th:errors="*{name}"></div>
-                <div class="text-danger small mb-2 d-none"  id="validateError">このユーザー名はすでに利用されています</div>
-                <div class="text-success small mb-2 d-none" id="successValidate">このユーザー名は利用可能です</div>
-                <div class="text-danger small mb-2" style="display:none;" id="name_validation">名前には@を含まないで下さい</div>
-                <input type="text" class="form-control" th:field="*{name}" autocomplete="name" autofocus placeholder="ユーザー名を入力してください" required>
-              </div>
-            </div>
+            <div th:replace="~{fragment::nameInput}"></div>
 
             <div class="form-group row mb-3">
               <div class="col-md-5">
@@ -93,23 +81,7 @@
               </div>
             </div>
 
-            <div class="form-goup row mb-3">
-              <div class="col-md-5">
-                <label for="email" class="col-form-label text-md-left fw-bold">
-                  <div class="d-flex align-items-center">
-                    <span class="me-1">メールアドレス</span>
-                    <span class="badge bg-danger">必須</span>
-                  </div>
-                </label>
-              </div>
-              <div class="col-md-7">
-                <div class="text-danger small mb-2" style="display:none;" id="email_validation">無効なemailアドレスです。</div>
-                <div class="text-danger small mb-2 d-none"  id="email_validate_error_ajax">このメールアドレスはすでに利用されています</div>
-                <div class="text-success small mb-2 d-none" id="email_validate_success">このメールアドレスは利用可能です</div>
-                <div th:if="${#fields.hasErrors('email')}" class="text-danger small mb-2" th:errors="*{email}"></div>
-                <input type="text" class="form-control" th:field="*{email}" autocomplete="email" placeholder="taro.samurai@example.com" required>
-              </div>
-            </div>
+            <div th:replace="~{fragment::mailInput}"></div>
 
             <div class="form-group row mb-3">
               <div class="col-md-5">
@@ -165,6 +137,12 @@
                   <!--プレビューボタンｎ-->
                   <div id="upload-demo"></div>
 
+                  <!--切り取りボタン(画像選択後に表示)-->
+                  <button type="button" id="crop-button" class="btn btn-success d-none mt-3">
+                    切り取りを確定
+                  </button>
+
+
                   <!--切り取り後の画像プレビュー-->
                   <div id="result-preview" class="mt-3 d-none">
                     <img id="result-image" class="rounded-circle"
@@ -175,10 +153,6 @@
                   <!--切り取り後の画像を保存するhidden input -->
                   <input type="hidden" th:field="*{icon}" id="icon-base64">
 
-                  <!--切り取りボタン(画像選択後に表示)-->
-                  <button type="button" id="crop-button" class="btn btn-success d-none mt-3">
-                    切り取りを確定
-                  </button>
 
                 </div>
               </div>

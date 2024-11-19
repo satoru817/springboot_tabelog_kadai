@@ -58,6 +58,7 @@ public class AuthController {
     private final ImageService imageService;
     private final UserService userService;
 
+    //管理者追加メソッド
     @GetMapping("/auth/admin_add")
     public String addAdmin(Model model){
         SignUpForm signUpForm = new SignUpForm();
@@ -337,34 +338,47 @@ public class AuthController {
 
     //名前が重複していないか確認するメソッド
     @PostMapping("/auth/validateName")
-    public ResponseEntity<Boolean> validateName(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                @RequestBody Map<String,String> nameMap){
-        String name = nameMap.get("name");
-        boolean isAvailable;
+    public ResponseEntity<Boolean> validateName(
+            @AuthenticationPrincipal(errorOnInvalidType = false) UserDetailsImpl userDetails,
+            @RequestBody Map<String,String> nameMap) {
 
-        if(name.equals(userDetails.getUsername())){
-            return ResponseEntity.ok(true);
-        }else{
-            try{
-                isAvailable = !userRepository.existsByName(name);
+        String name = nameMap.get("name");
+        log.info("validateNameは呼びだされています:{}", name);
+
+        // ログアウト状態（userDetails が null）の場合は
+        // 既存ユーザー名との重複チェックのみを行う
+        if (userDetails == null) {
+            try {
+                boolean isAvailable = !userRepository.existsByName(name);
                 return ResponseEntity.ok(isAvailable);
-            }catch(Exception e){
+            } catch (Exception e) {
+                log.error("Error checking name availability", e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
             }
         }
 
+        // ログイン状態の場合は、現在のユーザー名との比較も行う
+        if (name.equals(userDetails.getUsername())) {
+            return ResponseEntity.ok(true);
+        }
+
+        try {
+            boolean isAvailable = !userRepository.existsByName(name);
+            return ResponseEntity.ok(isAvailable);
+        } catch (Exception e) {
+            log.error("Error checking name availability", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
     }
 
     //メールが重複していないか確認するメソッド
     @PostMapping("/auth/validateEmail")
-    public ResponseEntity<Boolean> validateEmail(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<Boolean> validateEmail(@AuthenticationPrincipal(errorOnInvalidType = false)UserDetailsImpl userDetails,
                                                 @RequestBody Map<String,String> emailMap){
         String email = emailMap.get("email");
         boolean isAvailable;
 
-        if(email.equals(userDetails.getUser().getEmail())){
-            return ResponseEntity.ok(true);
-        }else{
+        if(userDetails == null){
             try{
                 isAvailable = !userRepository.existsByEmail(email);
                 return ResponseEntity.ok(isAvailable);
@@ -372,6 +386,19 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
             }
         }
+
+        //ログイン状態のときは現在のmail addressとの比較も行う。
+        if(email.equals(userDetails.getUser().getEmail())) {
+            return ResponseEntity.ok(true);
+        }
+
+        try{
+            isAvailable = !userRepository.existsByEmail(email);
+            return ResponseEntity.ok(isAvailable);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+
 
     }
 
