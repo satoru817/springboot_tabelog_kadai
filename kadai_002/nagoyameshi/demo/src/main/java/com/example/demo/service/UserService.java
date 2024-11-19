@@ -13,6 +13,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final ImageService imageService;
 
+
+    //画像データの削除を追加する必要がある。
     public void replaceField(User exUser, User newUser) throws IOException {
         // 基本情報の更新
         exUser.setName(newUser.getName());
@@ -24,6 +26,7 @@ public class UserService {
 
         // アイコン画像が新しく設定されている場合のみ更新
         if (newUser.getIcon() != null && !newUser.getIcon().isEmpty()) {
+            imageService.deleteImage(exUser.getProfileImage());
             String fileName = imageService.saveImage(newUser.getIcon(), newUser.getName());
             exUser.setProfileImage(fileName);
         }

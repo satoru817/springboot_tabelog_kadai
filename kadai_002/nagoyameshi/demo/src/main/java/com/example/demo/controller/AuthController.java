@@ -68,11 +68,11 @@ public class AuthController {
         return "auth/sign_up";
     }
 
-    @PostMapping("/auth/admin_add")
-    public String registerAdmin(@ModelAttribute @Validated SignUpForm signUpForm,
-                                RedirectAttributes redirectAttributes){
-
-    }
+//    @PostMapping("/auth/admin_add")
+//    public String registerAdmin(@ModelAttribute @Validated SignUpForm signUpForm,
+//                                RedirectAttributes redirectAttributes){
+//
+//    }
 
 
 
