@@ -37,7 +37,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetailsImpl loadUserByUsername(String username) throws UsernameNotFoundException {
-        //TODO:username、email両方使えるようにする->DONE
         User user = userRepository.findByNameOrEmail(username,username)
                 .orElseThrow(()->new UsernameNotFoundException("User not found: "+username));
         String userRoleName = user.getRole().getName();
@@ -66,7 +65,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         System.out.println("handleFailedLoginは呼び出されています");
     }
 
-    //fixme:このメソッドが間違っているoptionalUserのデータで再度userDetailsをつくってnewAuthを作成する必要が有る。->対応した
     public void updateUserRolesAndSession(UserDetailsImpl userDetails, HttpServletRequest request) {
         String roleName = null;
         Optional<User> optionalUser = userRepository.findByName(userDetails.getUsername());

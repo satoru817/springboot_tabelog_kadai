@@ -1,6 +1,6 @@
 // ページロード時に日時と人数をローカルストレージから取得
 //TODO:条件分岐を加えて下さい。
-//TODO:今日が選択されたとき現在時刻より後の時刻が表示されるようにしてください。
+//TODO:ローカルストレージに保存されている日付が今日よりも前のときは今日がdefaultで選択されるようにしてください
 
 //ブラウザのlocalStorageからのデータの取得
 const savedDate = localStorage.getItem('reservationDate');

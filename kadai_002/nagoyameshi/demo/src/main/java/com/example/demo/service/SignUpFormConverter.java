@@ -18,26 +18,55 @@ public class SignUpFormConverter {
     private final RoleRepository roleRepository;
     private final PasswordEncryptionService passwordEncryptionService;
     private final ImageService imageService;
-    //同じメールアドレス、同じ名前のユーザーがすでにいる場合はnullを返す
-    // そうでなければUserオブジェクトを返す。
+
+    private static final String ROLE_UNPAID_USER = "ROLE_UNPAID_USER";
+    private static final String ROLE_ADMIN = "ROLE_ADMIN";
+
     public Optional<User> singUpFormToUnpaidUser(SignUpForm form) throws IOException {
-        if(userRepository.findByNameOrEmail(form.getName(), form.getEmail()).isPresent()){
+        return createUser(form, ROLE_UNPAID_USER);
+    }
+
+    public Optional<User> singUpFormToAdmin(SignUpForm form) throws IOException {
+        return createUser(form, ROLE_ADMIN);
+    }
+
+    private Optional<User> createUser(SignUpForm form, String roleName) throws IOException {
+        if (isUserExists(form)) {
             return Optional.empty();
-        }else{
-            User user = new User();
-            Optional<Role> optionalUnpaid = roleRepository.findRoleByName("ROLE_UNPAID_USER");
-            optionalUnpaid.ifPresent(user::setRole);
-            user.setName(form.getName());
-            user.setNameForReservation(form.getNameForReservation());
-            user.setPassword(passwordEncryptionService.encryptPassword(form.getPassword()));
-            user.setEmail(form.getEmail());
-            user.setPostalCode(form.getPostalCode());
-            user.setAddress(form.getAddress());
-            user.setPhoneNumber(form.getPhoneNumber());
-            //Base64の画像を保存してファイル名を得ている。
-            String fileName = imageService.saveImage(form.getIcon(),form.getName());
-            user.setProfileImage(fileName);
-            return Optional.of(user);
         }
+
+        User user = new User();
+        setFields(form, user, roleName);
+        return Optional.of(user);
+    }
+
+    private boolean isUserExists(SignUpForm form) {
+        return userRepository.findByNameOrEmail(form.getName(), form.getEmail()).isPresent();
+    }
+
+    private void setFields(SignUpForm form, User user, String roleName) throws IOException {
+        setRole(user, roleName);
+        setUserDetails(form, user);
+        setUserImage(form, user);
+    }
+
+    private void setRole(User user, String roleName) {
+        Optional<Role> role = roleRepository.findRoleByName(roleName);
+        role.ifPresent(user::setRole);
+    }
+
+    private void setUserDetails(SignUpForm form, User user) {
+        user.setName(form.getName());
+        user.setNameForReservation(form.getNameForReservation());
+        user.setPassword(passwordEncryptionService.encryptPassword(form.getPassword()));
+        user.setEmail(form.getEmail());
+        user.setPostalCode(form.getPostalCode());
+        user.setAddress(form.getAddress());
+        user.setPhoneNumber(form.getPhoneNumber());
+    }
+
+    private void setUserImage(SignUpForm form, User user) throws IOException {
+        String fileName = imageService.saveImage(form.getIcon(), form.getName());
+        user.setProfileImage(fileName);
     }
 }

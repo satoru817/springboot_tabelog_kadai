@@ -10,7 +10,7 @@
   <!--croppie-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js" integrity="sha512-Gs+PsXsGkmr+15rqObPJbenQ2wB3qYvTHuJO6YJzPe/dTLvhy0fmae2BcnaozxDo5iaF8emzmCZWbQ1XXiX2Ig==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.css" integrity="sha512-2eMmukTZtvwlfQoG8ztapwAH5fXaQBzaMqdljLopRSA0i6YKM8kBAOrSSykxu9NN9HrtD45lIqfONLII2AFL/Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <title th:text="${admin ? '管理者追加画面' : 'ユーザー登録画面'}"></title>
+  <title th:text="${admin} ? '管理者追加画面' : 'ユーザー登録画面'"></title>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -163,7 +163,7 @@
             <div class="text-danger mb-3" style="display:none;" id="input_mistakes">入力内容に不備があります。御確認下さい</div>
 
             <div class="form-group d-flex justify-content-center  my-4">
-              <button type="submit" class="btn btn-primary w-50 ">認証メールを送る</button>
+              <button type="submit" class="btn btn-primary w-50 " th:text="${admin}? '管理者登録':'send verification email'"></button>
             </div>
           </form>
         </div>

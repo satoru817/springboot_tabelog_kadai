@@ -2,10 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.PasswordResetForm;
 import com.example.demo.dto.SignUpForm;
+import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.entity.VerificationToken;
 import com.example.demo.event.ChangePasswordEventPublisher;
 import com.example.demo.repository.LoginAttemptRepository;
+import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VerificationTokenRepository;
 import com.example.demo.security.UserDetailsImpl;
@@ -57,23 +59,62 @@ public class AuthController {
     private final UserDetailsServiceImpl userDetailsService;
     private final ImageService imageService;
     private final UserService userService;
-
+    private final RoleRepository roleRepository;
+    private static final String SAME_USER_FOUND_ERROR = "we found duplicate name or email";
+    private static final String ROLE_ADMIN = "ROLE_ADMIN";
+    private static final String addAdmin = "admin_add";
     //管理者追加メソッド
     @GetMapping("/auth/admin_add")
     public String addAdmin(Model model){
-        SignUpForm signUpForm = new SignUpForm();
+        if(!model.containsAttribute("signUpForm")){
+            SignUpForm signUpForm = new SignUpForm();
+            model.addAttribute("signUpForm",signUpForm);
+        }
 
-        model.addAttribute("signUpForm",signUpForm);
         model.addAttribute("admin",true);
 
         return "auth/sign_up";
     }
 
-//    @PostMapping("/auth/admin_add")
-//    public String registerAdmin(@ModelAttribute @Validated SignUpForm signUpForm,
-//                                RedirectAttributes redirectAttributes){
-//
-//    }
+    @PostMapping("/auth/admin_add")
+    public String registerAdmin(@ModelAttribute @Validated SignUpForm signUpForm,
+                                BindingResult result,
+                                RedirectAttributes redirectAttributes) throws IOException {
+        if(result.hasErrors()){
+            redirectAttributes.addFlashAttribute("signUpForm",signUpForm);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX+
+                    Conventions.getVariableName(signUpForm),result);
+            return  "redirect:/auth/admin_add";
+        }
+
+        if(!signUpForm.isConfirmed()){
+            redirectAttributes.addFlashAttribute("signUpForm",signUpForm);
+            redirectAttributes.addFlashAttribute("passwordConfirmationError","パスワード（確認用）が異なっています。");
+
+            return "redirect:/auth/admin_add";
+        }
+
+        Optional<User> optionalAdmin = signUpFormConverter.singUpFormToAdmin(signUpForm);
+
+        if(optionalAdmin.isPresent()){
+            User admin = optionalAdmin.get();
+            admin.setEnabled(true);
+            userRepository.save(admin);
+            return "/";
+
+        }else{
+            redirectAttributes.addFlashAttribute("signUpForm",signUpForm);
+            redirectAttributes.addFlashAttribute("sameUserFoundError",SAME_USER_FOUND_ERROR);
+            return "redirect:/auth/admin_add";
+        }
+
+
+
+
+
+
+
+    }
 
 
 
@@ -250,7 +291,7 @@ public class AuthController {
                 return "auth/email-verification-sent";
             }else{
                 redirectAttributes.addFlashAttribute("signUpForm",signUpForm);
-                redirectAttributes.addFlashAttribute("sameUserFoundError","同じメールアドレスかユーザー名のユーザーが見つかりました。");
+                redirectAttributes.addFlashAttribute("sameUserFoundError",SAME_USER_FOUND_ERROR);
                 return "redirect:/signUp";
             }
         }
@@ -340,10 +381,12 @@ public class AuthController {
     @PostMapping("/auth/validateName")
     public ResponseEntity<Boolean> validateName(
             @AuthenticationPrincipal(errorOnInvalidType = false) UserDetailsImpl userDetails,
-            @RequestBody Map<String,String> nameMap) {
+            @RequestBody Map<String,String> nameMap,
+            HttpServletRequest request) {
 
         String name = nameMap.get("name");
-        log.info("validateNameは呼びだされています:{}", name);
+        String referer = request.getHeader("Referer");
+        log.info("validateNameは呼びだされています:{},Referer:{}", name,referer);
 
         // ログアウト状態（userDetails が null）の場合は
         // 既存ユーザー名との重複チェックのみを行う
@@ -357,8 +400,9 @@ public class AuthController {
             }
         }
 
-        // ログイン状態の場合は、現在のユーザー名との比較も行う
-        if (name.equals(userDetails.getUsername())) {
+        // ログイン状態かつ、ログインユーザーが管理者でない場合は、現在のユーザー名との比較も行う
+        //管理者がこのメソッドにアクセスするときは管理者追加のときなので、自身の名前との合致を判定してはいけない。
+        if (name.equals(userDetails.getUsername()) && !(userDetails.getAuthorities().contains(new SimpleGrantedAuthority(ROLE_ADMIN)) && referer.contains(addAdmin))) {
             return ResponseEntity.ok(true);
         }
 
