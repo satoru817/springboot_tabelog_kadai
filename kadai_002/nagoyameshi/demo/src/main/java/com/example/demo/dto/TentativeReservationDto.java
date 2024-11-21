@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+//レストラン予約時に使うdto
 @Data
 public class TentativeReservationDto {
     private Integer restaurantId;

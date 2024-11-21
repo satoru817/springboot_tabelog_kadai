@@ -22,7 +22,7 @@ const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).
 //初期値をLocalStorageから読み込むメソッド
 document.addEventListener('DOMContentLoaded',async function() {
 
-   dateField.value = savedDate || localDate;
+   dateField.value = (savedDate && savedDate >= localDate) ? savedDate : localDate;
    dateField.min = localDate;
    console.log('minDate:', dateField.min);
 
@@ -276,4 +276,6 @@ document.getElementById("finalizeReservation").addEventListener("click",function
         console.error('There was a problem with the fetch operation:',error);
     });
 })
+
+
 

@@ -27,6 +27,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -45,6 +48,8 @@ public class RestaurantController {
     private final ReservationService reservationService;
     private final ReviewRepository reviewRepository;
     private final FavoriteRepository favoriteRepository;
+
+
 
     // リクエストボディを受け取るためのクラス
 
@@ -165,10 +170,15 @@ public class RestaurantController {
 
     }
 
+    //予約を実際に作成するメソッド
     @PostMapping("/reservations")
     public ResponseEntity<String> createReservation(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                 @RequestBody TentativeReservationDto reservationDto){
         log.info("ログインユーザー名:{}",userDetails.getUsername());
+
+        if(!checkReservationValidity(reservationDto)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("reservations are not available at that time");
+        }
 
         try{
             reservationService.save(getReservation(userDetails,reservationDto));
@@ -190,6 +200,30 @@ public class RestaurantController {
 
         return reservation;
     }
+
+
+    //サーバー側での予約の妥当性チェック 同じことをjsで選択肢作成のときに行っているが、念の為。
+    private boolean checkReservationValidity(TentativeReservationDto dto){
+
+        LocalDateTime when = dto.getReservationDateTime();
+        LocalDateTime now = LocalDateTime.now();
+
+        if(when.isBefore(now)){
+            return false;
+        }
+
+        OpeningHours op = restaurantService.getOpeningHours(dto.getRestaurantId(),dto.getDate());
+
+        if(!op.getIsBusinessDay()){
+            return false;
+        }
+
+        LocalTime reservationTime = when.toLocalTime();
+
+        return (op.getOpTimeAsLocalTime().isBefore(reservationTime)&&op.getClTimeAsLocalTime().isAfter(reservationTime));
+
+    }
+
 
 
 
