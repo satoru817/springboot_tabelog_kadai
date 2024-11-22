@@ -626,3 +626,39 @@ img{
 img:hover {
     transform: scale(1.05);
 }
+
+/*サブメニューのGPUによる描写*/
+
+
+.dropdown_submenu{
+    position: relative;
+}
+
+.dropdown_submenu > .dropdown-menu{
+    top: 0;
+    left: 100%;
+    margin-top: 0;
+    visibility: hidden;/*完全に非表示&クリック不可*/
+    opacity: 0;/*フェードアニメーション用*/
+    transform: translateX(-10px);/*スライドイン効果*/
+    transition: all 0.3s ease;/*アニメーション設定*/
+}
+
+.dropdown_submenu:hover > .dropdown-menu{
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+
+.dropdown_submenu > .dropdown-item:after{
+    display:inline-block;
+    float: right;
+    margin-left: 0.5em;
+    vertical-align: middle;
+    content: "";
+    border-top: 0.3em solid transparent;
+    border-right: 0;
+    border-bottom: 0.3em solid transparent;
+    border-left: 0.3em solid;
+}

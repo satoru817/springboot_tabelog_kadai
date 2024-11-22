@@ -12,6 +12,8 @@ const timeSelect = document.getElementById('time');
 const dateField = document.getElementById('date');
 const peopleField = document.getElementById('people');
 
+const favBtn = document.getElementById('toggle-favorite');
+
 
 const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
 const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
@@ -277,5 +279,55 @@ document.getElementById("finalizeReservation").addEventListener("click",function
     });
 })
 
+favBtn.addEventListener('click',toggleFavorite);
 
+async function toggleFavorite(){
+    const restaurantId = favBtn.dataset.restaurantId;
+    console.log("restaurantId:",restaurantId);
+    const isFavorite = favBtn.dataset.isFavorite;
+    console.log("isFavorite:",isFavorite);
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    const favoriteData = {
+        isFavorite : isFavorite,
+        restaurantId : restaurantId
+    };
+
+    try{
+        const response = await fetch('/favorite/api/toggle',{
+            method: 'POST',
+            headers:{
+                'Content-Type' : 'application/json',
+                [csrfHeader] : csrfToken
+            },
+            body:JSON.stringify(favoriteData)
+        });
+
+        if(!response.ok){
+           if(response.status === 404){
+                throw new Error('Restaurant not found');
+           }else if(response.status === 400){
+                throw new Error('Invalid request');
+           }else{
+                throw new Error('Server error occurred');
+           }
+        }
+
+        const result = await response.json();
+        console.log("result.isFavorite",result.isFavorite);
+        if(result.isFavorite===true){
+            favBtn.innerHTML = '&#9829; Remove from Favorites';
+        }else{
+            favBtn.innerHTML = '&#9825; Add to Favorites';
+        }
+
+        favBtn.dataset.isFavorite = result.isFavorite;
+
+
+    }catch(error){
+        console.error('Error:',error);
+        alert(`failed to update your favorites:${error.message}`);
+    }
+}
 

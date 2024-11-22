@@ -39,7 +39,9 @@
     <!--BootStrap Icons-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
     <!-- JavaScript -->
-    <!-- jQuery（必要な場合のみ） -->
+    <script th:src="@{/js/submenu.js}" defer></script>
+
+    <!-- jQuery-->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
             crossorigin="anonymous" defer></script>
@@ -84,8 +86,9 @@
           </li>
           <li><a sec:authorize="isAnonymous()" class="dropdown-custom" th:href="@{/auth/login}"><i class="bi bi-box-arrow-in-right me-2"></i>ログイン</a></li>
           <li><a sec:authorize="isAnonymous()" class="dropdown-custom" th:href="@{/signUp}"><i class="bi bi-person-plus me-2"></i>ユーザー登録</a></li>
-          <li><a sec:authorize="hasRole('ADMIN')" class="dropdown-custom" th:href="@{/auth/admin_add}"><i class="bi bi-person-plus me-2"></i>管理者追加</a></li>
           <li><a sec:authorize="!isAnonymous()" class="dropdown-custom" th:href="@{/auth/update}"><i class="bi bi-person-gear me-2"></i>ユーザ情報更新</a></li>
+          <li sec:authorize="hasRole('ROLE_ADMIN')"><hr class="dropdown-divider"></li>
+          <li><a sec:authorize="hasRole('ADMIN')" class="dropdown-custom" th:href="@{/auth/admin_add}"><i class="bi bi-person-plus me-2"></i>管理者追加</a></li>
         </ul>
       </div>
       <div class="btn-group me-2">
@@ -93,8 +96,9 @@
           <i class="bi bi-building me-1"></i>会社情報
         </button>
         <ul class="dropdown-menu">
-          <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/company/editCompanyInfo}"><i class="bi bi-pencil-square me-2"></i>会社情報編集</a></li>
           <li><a class="dropdown-custom" th:href="@{/CompanyInfo}"><i class="bi bi-info-circle me-2"></i>会社情報</a></li>
+          <li sec:authorize="hasRole('ROLE_ADMIN')"><hr class="dropdown-divider"></li>
+          <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/company/editCompanyInfo}"><i class="bi bi-pencil-square me-2"></i>会社情報編集</a></li>
         </ul>
       </div>
       <div class="btn-group me-2">
@@ -103,8 +107,9 @@
         </button>
         <ul class="dropdown-menu">
           <li sec:authorize="hasAnyRole('ADMIN','PAID_USER')"><a class="dropdown-custom" th:href="@{/restaurant/favorite}"><i class="bi bi-heart me-2"></i>お気に入り一覧</a></li>
-          <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant}"><i class="bi bi-list-check me-2"></i>レストラン情報一覧(管理者用)</a></li>
           <li><a class="dropdown-custom" th:href="@{/restaurant}"><i class="bi bi-list me-2"></i>レストラン情報一覧</a></li>
+          <li sec:authorize="hasRole('ROLE_ADMIN')"><hr class="dropdown-divider"></li>
+          <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant}"><i class="bi bi-list-check me-2"></i>レストラン情報一覧(管理者用)</a></li>
           <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant/register}"><i class="bi bi-plus-square me-2"></i>レストラン情報登録</a></li>
           <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant/category/crud}"><i class="bi bi-tags me-2"></i>カテゴリー編集</a></li>
         </ul>
@@ -117,8 +122,39 @@
           <li><a class="dropdown-custom" th:href="@{/reservation/show}"><i class="bi bi-list-ul me-2"></i>予約一覧(ユーザー用)</a></li>
         </ul>
       </div>
+      <div sec:authorize="hasRole('ADMIN')" class="btn-group me-2">
+        <button class="btn btn-custom dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-shop me-1"></i>管理者メニュー
+        </button>
+        <ul class="dropdown-menu">
+          <li class="dropdown_submenu">
+            <a class="dropdown-item" href="#">
+              レストラン関連
+            </a>
+            <ul class="dropdown-menu">
+              <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant}"><i class="bi bi-list-check me-2"></i>レストラン情報一覧</a></li>
+              <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant/register}"><i class="bi bi-plus-square me-2"></i>レストラン情報登録</a></li>
+              <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant/register}"><i class="bi bi-plus-square me-2"></i>レストラン情報登録</a></li>
+              <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant/category/crud}"><i class="bi bi-tags me-2"></i>カテゴリー編集</a></li>
+            </ul>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a sec:authorize="hasRole('ADMIN')" class="dropdown-custom" th:href="@{/auth/admin_add}"><i class="bi bi-person-plus me-2"></i>管理者追加</a></li>
+          <li sec:authorize="hasRole('ROLE_ADMIN')"><hr class="dropdown-divider"></li>
+          <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/company/editCompanyInfo}"><i class="bi bi-pencil-square me-2"></i>会社情報編集</a></li>
+        </ul>
+      </div>
+      <div class="btn-group me-2">
+        <button class="btn btn-custom dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-calendar-check me-1"></i>予約関連
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-custom" th:href="@{/reservation/show}"><i class="bi bi-list-ul me-2"></i>予約一覧(ユーザー用)</a></li>
+        </ul>
+      </div>
     </div>
   </nav>
+
 </div>
 
 
