@@ -70,7 +70,8 @@
           <i class="bi bi-credit-card me-1"></i>サブスクリプション関連
         </button>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-custom" th:href="@{/upgrade}"><i class="bi bi-star-fill me-2"></i>有料会員にアップグレード</a></li>
+          <li sec:authorize="hasRole('UNPAID_USER')"><a class="dropdown-custom" th:href="@{/upgrade}"><i class="bi bi-arrow-up-circle me-2"></i>有料会員にアップグレード</a></li>
+          <li sec:authorize="hasRole('PAID_USER')"><a class="dropdown-custom" th:href="@{/upgrade}"><i class="bi bi-arrow-down-circle me-2"></i>無料会員にダウングレード</a></li>
           <li><a class="dropdown-custom" th:href="@{/add_card}"><i class="bi bi-plus-circle me-2"></i>支払いカード追加</a></li>
           <li><a class="dropdown-custom" th:href="@{/cardView}"><i class="bi bi-credit-card-2-front me-2"></i>支払いカード確認</a></li>
         </ul>
@@ -134,10 +135,11 @@
             <ul class="dropdown-menu">
               <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant}"><i class="bi bi-list-check me-2"></i>レストラン情報一覧</a></li>
               <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant/register}"><i class="bi bi-plus-square me-2"></i>レストラン情報登録</a></li>
-              <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant/register}"><i class="bi bi-plus-square me-2"></i>レストラン情報登録</a></li>
               <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-custom" th:href="@{/admin/restaurant/category/crud}"><i class="bi bi-tags me-2"></i>カテゴリー編集</a></li>
             </ul>
           </li>
+          <li hr class="dropdown-divider"></li>
+          <li><a sec:authorize="hasRole('ADMIN')" class="dropdown-custom" th:href="@{/admin/user/}"><i class="bi bi-people me-2"></i>ユーザー一覧</a> </li>
           <li><hr class="dropdown-divider"></li>
           <li><a sec:authorize="hasRole('ADMIN')" class="dropdown-custom" th:href="@{/auth/admin_add}"><i class="bi bi-person-plus me-2"></i>管理者追加</a></li>
           <li sec:authorize="hasRole('ROLE_ADMIN')"><hr class="dropdown-divider"></li>
@@ -155,6 +157,13 @@
     </div>
   </nav>
 
+</div>
+
+<div th:fragment="role_display" th:remove="tag">
+      <span th:text="${user.role.name=='ROLE_ADMIN' ? '管理者' : (user.role.name=='ROLE_PAID_USER' ? '課金ユーザー' :(user.role.name == 'ROLE_UNPAID_USER' ? '無課金ユーザー' : '不明'))}"
+            th:classappend="${user.role.name=='ROLE_ADMIN' ? 'badge text-danger':
+                      (user.role.name=='ROLE_PAID_USER' ? 'badge text-primary':
+                      (user.role.name == 'ROLE_UNPAID_USER' ? 'badge text-secondary' : 'badge text-muted'))}"></span>
 </div>
 
 
@@ -179,6 +188,26 @@
     </div>
   </div>
 </div>
+
+<div th:fragment="nameForReservationInput" th:remove="tag">
+  <div class="form-group row mb-3">
+    <div class="col-md-5">
+      <label for="name" class="col-form-label text-md-left fw-bold">
+        <div class="d-flex align-items-center">
+          <span class="me-1">予約者名(カタカナのみあるいはローマ字のみで入力してください）</span>
+          <span class="badge bg-danger">必須</span>
+        </div>
+      </label>
+    </div>
+    <div class="col-md-7">
+      <div class="text-danger small mb-2 d-none" id="nameForReservationBlankError">Name should not be blank </div>
+      <div class="text-danger small mb-2 d-none" id="nameForReservationValidationError">Please enter name using only Katakana or Roman letters (ABC...)</div>
+      <div th:if="${#fields.hasErrors('nameForReservation')}" class="text-danger small mb-2" th:errors="*{nameForReservation}"></div>
+      <input type="text" class="form-control" th:field="*{nameForReservation}" autocomplete="name" autofocus placeholder="予約者名を入力してください" required>
+    </div>
+  </div>
+</div>
+
 
 
 <div th:fragment="mailInput" th:remove="tag">

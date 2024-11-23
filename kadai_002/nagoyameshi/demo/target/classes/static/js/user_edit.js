@@ -1,12 +1,7 @@
 
-
 const imageInput = document.getElementById('imageInput');
 
 const icon = document.getElementById('icon');
-
-
-
-
 
 const cancelImage = document.getElementById('cancelImage');
 const selectImageBtn = document.getElementById('selectImageBtn');

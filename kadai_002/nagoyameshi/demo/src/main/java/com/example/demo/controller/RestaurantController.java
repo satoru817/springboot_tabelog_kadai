@@ -162,7 +162,7 @@ public class RestaurantController {
                 dto.getReservationDateTime());
         log.info("isAvailable:{}",isAvailable);
 
-        if(isAvailable){
+        if(isAvailable && checkReservationValidity(dto)){
             return ResponseEntity.ok("the restaurant is available");
         }else{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The restaurant is not available for the selected time");
@@ -207,6 +207,7 @@ public class RestaurantController {
 
         LocalDateTime when = dto.getReservationDateTime();
         LocalDateTime now = LocalDateTime.now();
+        log.info("when:{},now:{}",when,now);
 
         if(when.isBefore(now)){
             return false;
@@ -220,7 +221,7 @@ public class RestaurantController {
 
         LocalTime reservationTime = when.toLocalTime();
 
-        return (op.getOpTimeAsLocalTime().isBefore(reservationTime)&&op.getClTimeAsLocalTime().isAfter(reservationTime));
+        return ((!op.getOpTimeAsLocalTime().isAfter(reservationTime))&&(!op.getClTimeAsLocalTime().isBefore(reservationTime)));
 
     }
 

@@ -6,7 +6,8 @@
   <meta th:replace="~{fragment::headResources}"/>
   <script th:src="@{/js/name_validation.js}" defer></script>
   <script th:src="@{/js/mail_validation.js}" defer></script>
-  <script th:src="@{/js/script_sign_up.js}" defer></script>
+  <script th:src="@{/js/sign_up.js}" defer></script>
+  <script th:src="@{/js/name_for_reservation_validation.js}" defer></script>
   <!--croppie-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js" integrity="sha512-Gs+PsXsGkmr+15rqObPJbenQ2wB3qYvTHuJO6YJzPe/dTLvhy0fmae2BcnaozxDo5iaF8emzmCZWbQ1XXiX2Ig==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.css" integrity="sha512-2eMmukTZtvwlfQoG8ztapwAH5fXaQBzaMqdljLopRSA0i6YKM8kBAOrSSykxu9NN9HrtD45lIqfONLII2AFL/Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -29,18 +30,7 @@
 
             <div th:replace="~{fragment::nameInput}"></div>
 
-            <div class="form-group row mb-3">
-              <div class="col-md-5">
-                <label for="name" class="col-form-label text-md-left fw-bold">
-                  <div class="d-flex align-items-center">
-                    <span class="me-1">予約者名(予約のときにお店に伝えられる名前です）</span>
-                  </div>
-                </label>
-              </div>
-              <div class="col-md-7">
-                <input type="text" class="form-control" th:field="*{nameForReservation}" autocomplete="name" autofocus placeholder="予約者名を入力してください">
-              </div>
-            </div>
+            <div th:replace="~{fragment::nameForReservationInput}"></div>
 
             <div class="form-group row mb-3">
               <div class="col-md-5">

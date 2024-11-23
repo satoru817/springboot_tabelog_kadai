@@ -1,6 +1,7 @@
 package com.example.demo.dto;
 
 
+import com.example.demo.validation.KatakanaOrRomanOnly;
 import com.example.demo.validation.NoAtSymbol;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,6 +15,7 @@ public class SignUpForm {
     @NotBlank(message="ユーザー名を入力してください。")
     private String name;
 
+    @KatakanaOrRomanOnly//管理者がわかりやすいようにnameForReservationは必須にする。そして、katakanaかローマ字のみにして検索時の順序をわかりやすくする
     private String nameForReservation;
 
     private String postalCode;

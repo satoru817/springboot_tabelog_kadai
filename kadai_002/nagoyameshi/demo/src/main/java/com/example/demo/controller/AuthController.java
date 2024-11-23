@@ -76,6 +76,7 @@ public class AuthController {
         return "auth/sign_up";
     }
 
+    //管理者追加メソッド
     @PostMapping("/auth/admin_add")
     public String registerAdmin(@ModelAttribute @Validated SignUpForm signUpForm,
                                 BindingResult result,
@@ -107,12 +108,6 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("sameUserFoundError",SAME_USER_FOUND_ERROR);
             return "redirect:/auth/admin_add";
         }
-
-
-
-
-
-
 
     }
 
@@ -256,6 +251,7 @@ public class AuthController {
 
     }
 
+    //一般ユーザーの登録メソッド
     @PostMapping("/userRegister")
     public String userRegister(@Validated SignUpForm signUpForm,
                                BindingResult result,
@@ -368,14 +364,7 @@ public class AuthController {
         return "auth/blocked";
     }
 
-    //ユーザー情報のアップロード(パスワードはフォームで扱わない。リセットメールを送る形にする。リセットメールを送るリンクを遷移先に作成する）
-    @GetMapping("/auth/update")
-    public String update(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                         Model model){
-        User user = userDetails.getUser();
-        model.addAttribute("user",user);
-        return "auth/edit";
-    }
+
 
     //名前が重複していないか確認するメソッド
     @PostMapping("/auth/validateName")
@@ -467,11 +456,33 @@ public class AuthController {
         }
     }
 
+    //ユーザー情報のアップロード(パスワードはフォームで扱わない。リセットメールを送る形にする。リセットメールを送るリンクを遷移先に作成する）
+    @GetMapping("/auth/update")
+    public String update(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                         Model model){
 
+        if(!model.containsAttribute("user")){
+            User user = userDetails.getUser();
+            model.addAttribute("user",user);
+        }
+
+        return "auth/edit";
+    }
+
+    //todo:validationを行う。
     @Transactional
     @PostMapping("/userUpdate")
     public String updateUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                             @ModelAttribute User user) throws IOException{
+                             @ModelAttribute @Validated User user,
+                             BindingResult result,
+                             RedirectAttributes redirectAttributes) throws IOException{
+        if(result.hasErrors()){
+            redirectAttributes.addFlashAttribute("user",user);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
+            +Conventions.getVariableName("user"),result);
+            return "redirect:/auth/update";
+        }
+
         User exUser = userDetails.getUser();
         userService.replaceField(exUser,user);
         userRepository.save(exUser);//upsert

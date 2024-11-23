@@ -1,6 +1,5 @@
 // ページロード時に日時と人数をローカルストレージから取得
-//TODO:条件分岐を加えて下さい。
-//TODO:ローカルストレージに保存されている日付が今日よりも前のときは今日がdefaultで選択されるようにしてください
+
 
 //ブラウザのlocalStorageからのデータの取得
 const savedDate = localStorage.getItem('reservationDate');
@@ -30,7 +29,7 @@ document.addEventListener('DOMContentLoaded',async function() {
 
   //その日の始業、終業時刻をとってきて、timeFieldを作る
   await createTimeSelectOption();
-  dateField.addEventListener('change',await createTimeSelectOption);
+  dateField.addEventListener('change',createTimeSelectOption);
 
   // 人数の初期値を設定
   if (savedPeople) peopleField.value = savedPeople;
@@ -130,7 +129,7 @@ function generateTimeOptionsInBusinessHours(selectedDate,selectElement, openTime
 
     // selectedDateが今日の日付かを確認
     const today = new Date();
-    const isToday = selectedDate == localDate;
+    const isToday = selectedDate === localDate;
     console.log("selectedDate:",selectedDate);
     console.log("today:",today.toISOString().split('T')[0]);
 

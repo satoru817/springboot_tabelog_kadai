@@ -1,11 +1,14 @@
 package com.example.demo.entity;
 
+import com.example.demo.validation.KatakanaOrRomanOnly;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -26,7 +29,8 @@ public class User {
     @Column(name="stripe_customer_id",nullable = true)
     private String stripeCustomerId;
 
-    @Column(name="name_for_reservation")
+    @KatakanaOrRomanOnly
+    @Column(name="name_for_reservation")//ローマ字あるいはカタカナのみを許す。
     private String nameForReservation;
 
     @Column(name="password", nullable = false)
@@ -52,7 +56,14 @@ public class User {
 
     @CreationTimestamp
     @Column(name="created_at")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "user" ,fetch = FetchType.LAZY)
+    private List<Card> cards;
+
+    @OneToMany(mappedBy = "user" , fetch = FetchType.LAZY)
+    private List<Subscription> subscriptions;
 
     @UpdateTimestamp
     @Column(name="updated_at")
