@@ -22,7 +22,12 @@
                 </nav>
 
                 <div class="col-xl-3 col-lg-4 col-md-12">
-                    <form method="get" th:action="@{/restaurant/favorite}" class="w-100 mb-3">
+                    <form method="get"
+                          th:with="userRole = ${#authentication.principal.user.role.name}"
+                          th:action="${userRole == 'ROLE_ADMIN' ?
+                                        '/admin/favorite/show/' + user.userId :
+                                        '/restaurant/favorite'
+                                      }" class="w-100 mb-3">
                         <div class="input-group mb-3">
                             <input type="text" class="form-control" name="searchQuery" th:value="${searchQuery}" placeholder="検索キーワード">
                             <button type="submit" class="btn shadow-sm btn">検索</button>
@@ -33,6 +38,7 @@
 
 
                 <div class="col">
+                    <h3 th:text="${user.name}+'さんのお気に入り一覧'" class="text-center mb-2"></h3>
                     <div class="d-flex justify-content-between flex-wrap">
                         <p th:if="${restaurantPage.getTotalPages()>1}" class="fs-5 mb-3" th:text="${'検索結果:'+restaurantPage.getTotalElements()+'件'+'('+(restaurantPage.getNumber()+1) + '/' + restaurantPage.getTotalPages()+'ページ)'}"></p>
                         <p th:unless="${restaurantPage.getTotalPages()>1}" class="fs-5 mb-3" th:text="${'検索結果:'+restaurantPage.getTotalElements()+'件'}"></p>
@@ -128,20 +134,32 @@
                                 <li class="page-item">
                                     <span th:if="${restaurantPage.isFirst()}" class="page-link disabled">前</span>
                                     <a th:unless="${restaurantPage.isFirst()}"
-                                       th:href="@{/restaurant/favorite(page=${restaurantPage.getNumber()-1},searchQuery=${searchQuery})}"
+                                       th:with="userRole = ${#authentication.principal.user.role.name}"
+                                       th:href="@{${userRole == 'ROLE_ADMIN' ?
+                                                    '/admin/favorite/show/__${user.userId}__' :
+                                                    '/restaurant/favorite'}
+                                                    (page=${restaurantPage.getNumber()-1},searchQuery=${searchQuery})}"
                                        class="page-link page-link">前</a>
                                 </li>
                                 <li th:each="i:${#numbers.sequence(0,restaurantPage.getTotalPages()-1)}" class="page-item">
                                     <span th:if="${i==restaurantPage.getNumber()}" class="page-link active active" th:text="${i+1}"></span>
                                     <a th:unless="${i==restaurantPage.getNumber()}"
-                                       th:href="@{/restaurant/favorite(page=${i},searchQuery=${searchQuery})}"
+                                       th:with="userRole = ${#authentication.principal.user.role.name}"
+                                       th:href="@{${userRole == 'ROLE_ADMIN' ?
+                                                    '/admin/favorite/show/__${user.userId}__' :
+                                                    '/restaurant/favorite'}
+                                                    (page=${i},searchQuery=${searchQuery})}"
                                        class="page-link page-link"
                                        th:text="${i+1}"></a>
                                 </li>
                                 <li class="page-item">
                                     <span th:if="${restaurantPage.isLast()}" class="page-link disabled">次</span>
                                     <a th:unless="${restaurantPage.isLast()}"
-                                       th:href="@{/restaurant/favorite(page=${restaurantPage.getNumber()+1},searchQuery=${searchQuery})}"
+                                       th:with="userRole = ${#authentication.principal.user.role.name}"
+                                       th:href="@{${userRole == 'ROLE_ADMIN' ?
+                                                    '/admin/favorite/show/__${user.userId}__' :
+                                                    '/restaurant/favorite'}
+                                                    (page=${restaurantPage.getNumber()+1},searchQuery=${searchQuery})}"
                                        class="page-link page-link">次</a>
                                 </li>
                             </ul>

@@ -84,18 +84,21 @@ public class RestaurantController {
                            @RequestParam(name="searchQuery",required = false )String searchQuery,
                            Model model){
         User user = userDetails.getUser();
+        return showFavorite(user,pageable,searchQuery,model);
+    }
+
+    public String showFavorite(User user, Pageable pageable,String searchQuery,Model model){
         Page<Restaurant> restaurantPage;
-        log.info("searchQuery:{}",searchQuery);
         if(searchQuery!=null && !searchQuery.trim().isEmpty()){
             restaurantPage = restaurantRepository.findAllFavoriteBySearchQueryAndUser(searchQuery,user,pageable);
         }else{
             restaurantPage = restaurantRepository.findAllFavoriteByUser(user,pageable);
         }
 
+        model.addAttribute("user",user);
         model.addAttribute("restaurantPage",restaurantPage);
         model.addAttribute("searchQuery",searchQuery);
         return "restaurant/favorite";//この画面の作成から
-
     }
 
 
