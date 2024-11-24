@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -38,5 +39,18 @@ public class Review {
 
     @Transient
     private List<MultipartFile> images;
+
+    @Column(name="is_visible" , nullable = false)
+    private Boolean isVisible = true;
+
+    @Column(name = "hidden_reason",length = 255)
+    private String hiddenReason;
+
+    @Column(name = "hidden_at")
+    private LocalDateTime hiddenAt;
+
+    @ManyToOne
+    @JoinColumn(name = "hidden_by")
+    private User hiddenBy;
 
 }

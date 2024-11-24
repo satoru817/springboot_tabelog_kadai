@@ -144,9 +144,14 @@ CREATE TABLE IF NOT EXISTS reviews (
     reservation_id INT NOT NULL,
     star_count INT NOT NULL,
     content VARCHAR(255),
+    is_visible BOOLEAN DEFAULT TRUE,--falseのとき、管理者をのぞく他のユーザーには見えないようにする。
+    hidden_reason VARCHAR(255),
+    hidden_at DATETIME,
+    hidden_by INT,
     UNIQUE KEY(reservation_id),--１つの予約に付きレビューは1件しかできないようにしている
     CHECK(star_count > 0 AND star_count < 6),
-    FOREIGN KEY (reservation_id) REFERENCES reservations(reservation_id) ON DELETE CASCADE
+    FOREIGN KEY (reservation_id) REFERENCES reservations(reservation_id) ON DELETE CASCADE,
+    FOREIGN KEY (hidden_by) REFERENCES users (user_id)
 );
 
 CREATE TABLE IF NOT EXISTS review_photos (

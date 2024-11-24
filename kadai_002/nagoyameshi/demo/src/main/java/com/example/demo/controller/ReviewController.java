@@ -34,9 +34,7 @@ public class ReviewController {
     private final ReservationRepository reservationRepository;
     private final ReviewContentChecker reviewContentChecker;
 
-    //投稿と編集両方に対応する必要がある。
-    //遷移先のページではjsを利用した画像の削除ができるようにする。また普通にフォームを
-    //送ることができるようにする。
+    //todo:今のままでは他人のレビューを簡単に編集できてしまう。
     @GetMapping("/create/{id}")
     public String createReview(@PathVariable("id")Integer reservationId,
                                Model model){
