@@ -1,15 +1,18 @@
 // ページロード時に日時と人数をローカルストレージから取得
-
-
 //ブラウザのlocalStorageからのデータの取得
-const savedDate = localStorage.getItem('reservationDate');
-const savedTime = localStorage.getItem('reservationTime');
-const savedPeople = localStorage.getItem('reservationPeople');
+const savedData = {
+  savedDate : localStorage.getItem('reservationDate'),
+  savedTime : localStorage.getItem('reservationTime'),
+  savedPeople : localStorage.getItem('reservationPeople')
+};
+
+const reservationFields = {
+  time : document.getElementById('time'),
+  date : document.getElementById('date'),
+  people : document.getElementById('people')
+};
 
 const restaurantId = document.getElementById('restaurantId').value;
-const timeSelect = document.getElementById('time');
-const dateField = document.getElementById('date');
-const peopleField = document.getElementById('people');
 
 const favBtn = document.getElementById('toggle-favorite');
 
@@ -23,40 +26,41 @@ const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).
 //初期値をLocalStorageから読み込むメソッド
 document.addEventListener('DOMContentLoaded',async function() {
 
-   dateField.value = (savedDate && savedDate >= localDate) ? savedDate : localDate;
-   dateField.min = localDate;
-   console.log('minDate:', dateField.min);
+   reservationFields.date.value = (savedData.savedDate && savedData.savedDate >= localDate) ? savedData.savedDate : localDate;
+   reservationFields.date.min = localDate;
 
   //その日の始業、終業時刻をとってきて、timeFieldを作る
   await createTimeSelectOption();
-  dateField.addEventListener('change',createTimeSelectOption);
+  // reservationFields.date.addEventListener('change',createTimeSelectOption);
 
   // 人数の初期値を設定
-  if (savedPeople) peopleField.value = savedPeople;
+  if (savedData.savedPeople) reservationFields.people.value = savedData.savedPeople;
 
-  console.log("timeSelect.value:",timeSelect.value);
+  console.log("timeSelect.value:",reservationFields.time.value);
 
-  await checkAvailability(restaurantId, dateField.value, timeSelect.value, peopleField.value);
+  await checkAvailability(restaurantId, reservationFields.date.value, reservationFields.time.value, reservationFields.people.value);
 });
 
 
 async function createTimeSelectOption(){
   try{
-    const openingHour = await getOpeningHour(dateField.value,restaurantId);
+    const openingHour = await getOpeningHour(reservationFields.date.value,restaurantId);
 
     const isBusinessDay = openingHour.isBusinessDay;
     const openingTime = openingHour.openingTime;
     const closingTime = openingHour.closingTime;
 
     if(!isBusinessDay){
-        timeSelect.innerHTML = '';
+        reservationFields.time.innerHTML = '';
         const option = document.createElement('option');
         option.textContent = `Closed`;
 
-        timeSelect.appendChild(option);
+        reservationFields.time.appendChild(option);
     }else{
         console.log("generateTimeOptionsINBusinessHoursは呼びだされています。")
-        generateTimeOptionsInBusinessHours(dateField.value,timeSelect,openingTime,closingTime);
+        console.log(`reservationFields.time:${reservationFields.time.value}`);
+        savedData.savedTime = reservationFields.time.value//これがかけていた？
+        generateTimeOptionsInBusinessHours(reservationFields.date.value,reservationFields.time,openingTime,closingTime);
     }
   }catch(error){
     console.error("エラーが発生しました:",error);
@@ -98,7 +102,7 @@ async function getOpeningHour(date,restaurantId){
 // 日時と人数を選択すると予約可能か確認
 document.getElementById('reservationForm').addEventListener('change', async function() {
   const date = document.getElementById('date').value;
-  const time = document.getElementById('time').value;
+  let time = document.getElementById('time').value;
   const people = document.getElementById('people').value;
   const restaurantId = document.getElementById('restaurantId').value;
 
@@ -108,6 +112,9 @@ document.getElementById('reservationForm').addEventListener('change', async func
       localStorage.setItem('reservationTime', time);
       localStorage.setItem('reservationPeople', people);
 
+      await createTimeSelectOption();
+
+      time = document.getElementById('time').value;
       // 予約可能か確認（サーバー通信）
       await checkAvailability(restaurantId, date, time, people);
   }
@@ -156,7 +163,7 @@ function generateTimeOptionsInBusinessHours(selectedDate,selectElement, openTime
         for (let minute = 0; minute < 60; minute += 15) {
             // 開始時刻より前、または終了時刻より後はスキップ
             if (hour === openHour && minute < openMinute) continue;
-            if (hour === closeHour && minute > closeMinute) continue;
+            if (hour === closeHour && minute > closeMinute) break;
 
             const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 
@@ -165,19 +172,25 @@ function generateTimeOptionsInBusinessHours(selectedDate,selectElement, openTime
             option.textContent = timeString;
             selectElement.appendChild(option);
 
-            if (savedTime && savedTime === timeString && !selectedOptionFound) {
+
+            if (savedData.savedTime && savedData.savedTime === timeString && !selectedOptionFound) {
+                console.log(`ifの中timeString:${timeString}`);
                 option.selected = true; // 保存された時間が見つかったら選択する
                 selectedOptionFound = true; // もう選択したのでフラグを立てる
+                reservationFields.time.value = timeString;//これを忘れていた？
             }
         }
     }
 
     if(!selectedOptionFound){
         console.log("falseでした");
-        timeSelect.value = timeSelect.options[0].value;
+        const option = reservationFields.time.options[0];
+        reservationFields.time.value = option.value;
+        option.selected = true;
+
     }
 
-    console.log("timeSelect.value:::",timeSelect.value);
+    console.log("reservationFields.time.value:::",reservationFields.time.value);
 }
 
 // 予約可能かどうかを確認する関数
@@ -279,6 +292,8 @@ document.getElementById("finalizeReservation").addEventListener("click",function
 })
 
 favBtn.addEventListener('click',toggleFavorite);
+
+
 
 async function toggleFavorite(){
     const restaurantId = favBtn.dataset.restaurantId;
