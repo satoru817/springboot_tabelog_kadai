@@ -22,4 +22,19 @@ public interface ReservationRepository extends JpaRepository<Reservation,Integer
 
     //一覧画面(reservation/show)で使うメソッド
     Page<Reservation> findAllByUser(User user, Pageable pageable);
+
+    @Query("""
+            SELECT DISTINCT res FROM Reservation res
+            JOIN res.restaurant rest
+            WHERE res.user = :user
+            AND (rest.name LIKE %:searchQuery%
+            OR res.comment LIKE %:searchQuery%
+            OR rest.description LIKE %:searchQuery%
+            OR rest.address LIKE %:searchQuery%
+            OR rest.postalCode LIKE %:searchQuery%
+            OR rest.phoneNumber LIKE %:searchQuery%
+            )
+            """)
+    Page<Reservation> findAllByUserAndSearchQuery(@Param("searchQuery")String searchQuery,
+                                                  @Param("user")User user, Pageable pageable);
 }

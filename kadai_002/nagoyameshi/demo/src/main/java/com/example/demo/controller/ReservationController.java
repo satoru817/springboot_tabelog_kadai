@@ -14,10 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
@@ -36,10 +33,22 @@ public class ReservationController {
     //予約一覧画面
     @GetMapping("/show")
     public String show(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                       @RequestParam(name="searchQuery",required = false)String searchQuery,
                        @PageableDefault(page=0,size=10,sort="date",direction= Sort.Direction.DESC) Pageable pageable,
                        Model model){
         User user = userDetails.getUser();
-        Page<Reservation> reservations = reservationRepository.findAllByUser(user,pageable);
+        return execShow(user,pageable,searchQuery,model);
+    }
+
+    //AdminReservationControllerで使うための共通メソッド
+    public String execShow(User user,Pageable pageable,String searchQuery,Model model){
+        Page<Reservation> reservations ;
+        if(searchQuery!=null && !searchQuery.trim().isEmpty()){
+            reservations = reservationRepository.findAllByUserAndSearchQuery(searchQuery,user,pageable);
+        }else{
+            reservations = reservationRepository.findAllByUser(user,pageable);
+        }
+
         for(Reservation reservation : reservations){
             reservation.setFormattedDate(reservation.getDate().format(formatter));
             reservation.setFormattedCreatedAt(reservation.getCreatedAt().format(formatter));
@@ -47,10 +56,13 @@ public class ReservationController {
 
         LocalDateTime currentDateTime = LocalDateTime.now();
 
+        model.addAttribute("user",user);
+        model.addAttribute("searchQuery",searchQuery);
         model.addAttribute("currentDateTime",currentDateTime);
         model.addAttribute("reservations",reservations);
         return "reservation/show";
     }
+
 
     //予約を削除して、一覧画面に戻る
     @GetMapping("/delete/{id}")

@@ -23,13 +23,14 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     boolean existsByEmail(String email);
 
     @Query("""
-            SELECT u FROM User u WHERE
-            u.name LIKE %:keyword%
-            OR u.email LIKE %:keyword%
+            SELECT DISTINCT u FROM User u
+            INNER JOIN u.role r
+            WHERE LOWER(u.name) LIKE LOWER(CONCAT('%',:keyword,'%'))
+            OR LOWER(u.email) LIKE LOWER(CONCAT('%',:keyword,'%'))
             OR u.postalCode LIKE %:keyword%
-            OR u.address LIKE %:keyword%
+            OR LOWER(u.address) LIKE LOWER (CONCAT('%',:keyword,'%'))
             OR u.phoneNumber LIKE %:keyword%
-            OR u.role.name LIKE %:keyword%
+            OR LOWER(r.name) LIKE LOWER (CONCAT('%',:keyword,'%'))
             """)
     Page<User> findAllByKeyWord(@Param("keyword")String keyword,
                                 Pageable pageable);
