@@ -1,5 +1,7 @@
 // ページロード時に日時と人数をローカルストレージから取得
 //ブラウザのlocalStorageからのデータの取得
+const DEFAULT_PEOPLE = 2;
+
 const savedData = {
   savedDate : localStorage.getItem('reservationDate'),
   savedTime : localStorage.getItem('reservationTime'),
@@ -33,10 +35,11 @@ document.addEventListener('DOMContentLoaded',async function() {
   await createTimeSelectOption();
   // reservationFields.date.addEventListener('change',createTimeSelectOption);
 
-  // 人数の初期値を設定
-  if (savedData.savedPeople) reservationFields.people.value = savedData.savedPeople;
+  // 人数の初期値を設定(localStorageに値がなければ2が入るようにしている)
+  reservationFields.people.value = savedData.savedPeople || DEFAULT_PEOPLE;
 
   console.log("timeSelect.value:",reservationFields.time.value);
+
 
   await checkAvailability(restaurantId, reservationFields.date.value, reservationFields.time.value, reservationFields.people.value);
 });

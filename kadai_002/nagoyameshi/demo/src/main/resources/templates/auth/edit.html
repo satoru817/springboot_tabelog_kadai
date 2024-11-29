@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
-    <meta name="_csrf" th:content="${_csrf.token}">
-    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <meta th:replace="~{fragment::headResources}"/>
     <script th:src="@{/js/name_validation.js}" defer></script>
     <script th:src="@{/js/mail_validation.js}" defer></script>

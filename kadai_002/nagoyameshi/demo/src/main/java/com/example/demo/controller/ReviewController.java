@@ -7,6 +7,7 @@ import com.example.demo.entity.ReviewPhoto;
 import com.example.demo.repository.ReservationRepository;
 import com.example.demo.repository.ReviewPhotoRepository;
 import com.example.demo.repository.ReviewRepository;
+import com.example.demo.security.UserDetailsImpl;
 import com.example.demo.service.ImageService;
 import com.example.demo.service.ReviewContentChecker;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -34,11 +36,20 @@ public class ReviewController {
     private final ReservationRepository reservationRepository;
     private final ReviewContentChecker reviewContentChecker;
 
-    //todo:今のままでは他人のレビューを簡単に編集できてしまう。
+    @Transactional//entityの同一性比較のために ==や!=を使うためには同一トランザクション内である必要がある。
     @GetMapping("/create/{id}")
-    public String createReview(@PathVariable("id")Integer reservationId,
+    public String createReview(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                               @PathVariable("id")Integer reservationId,
                                Model model){
         Reservation reservation = reservationRepository.getReferenceById(reservationId);
+        log.info("userDetails.getUser():{}",userDetails.getUser().getName());
+        log.info("reservation.getUser():{}",reservation.getUser().getName());
+
+        //ADMINでない他人はレビューを編集できないようにチェックしている。
+        if(!userDetails.getUser().equals(reservation.getUser()) && !userDetails.getUser().getRole().getName().equals("ROLE_ADMIN")){
+            log.info("if節のなかに入っています。");
+            return "errorView";
+        }
         Optional<Review> optionalReview = reviewRepository.findByReservation(reservation);
         Review review = new Review();
         if(optionalReview.isPresent()){
@@ -58,11 +69,13 @@ public class ReviewController {
     // 合格した場合のみ登録する。そうでないときは保存しない。
     @Transactional
     @PostMapping("/upsert")
-    public String upsertReview(@ModelAttribute Review review,
+    public String upsertReview(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                               @ModelAttribute Review review,
                                RedirectAttributes redirectAttributes) {
         String content = review.getContent();
         log.info("content:{}",content);
         boolean containsBannedWords = reviewContentChecker.containsBannedWords(content);
+
         if(containsBannedWords){
             String message = "Your message cannot be posted for some reason";
             redirectAttributes.addFlashAttribute("message",message);
@@ -74,6 +87,12 @@ public class ReviewController {
 
             String message = "Your review was posted!";
             redirectAttributes.addFlashAttribute("message",message);
+
+            //管理者が編集した場合はレビュー一覧画面に遷移する
+            if(userDetails.getUser().getRole().getName().equals("ROLE_ADMIN")){
+                return "redirect:/admin/review/index";
+            }
+
             return "redirect:/reservation/show";
         }
 

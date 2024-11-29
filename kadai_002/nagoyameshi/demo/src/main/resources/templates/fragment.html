@@ -53,6 +53,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
             integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS"
             crossorigin="anonymous" defer></script>
+
+    <!--csrf関連-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
   </div>
 
   <title>部品化用のHTMLファイル</title>
@@ -121,6 +125,8 @@
         </button>
         <ul class="dropdown-menu">
           <li><a class="dropdown-custom" th:href="@{/reservation/show}"><i class="bi bi-list-ul me-2"></i>予約一覧(ユーザー用)</a></li>
+          <li sec:authorize="hasRole('ADMIN')"><hr class="dropdown-divider"></li>
+          <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-custom" th:href="@{/admin/review/index}"><i class="bi bi-chat-text me-2"></i>レビュー一覧</a></li>
         </ul>
       </div>
       <div sec:authorize="hasRole('ADMIN')" class="btn-group me-2">
@@ -144,14 +150,6 @@
           <li><a sec:authorize="hasRole('ADMIN')" class="dropdown-custom" th:href="@{/auth/admin_add}"><i class="bi bi-person-plus me-2"></i>管理者追加</a></li>
           <li sec:authorize="hasRole('ROLE_ADMIN')"><hr class="dropdown-divider"></li>
           <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-custom" th:href="@{/admin/company/editCompanyInfo}"><i class="bi bi-pencil-square me-2"></i>会社情報編集</a></li>
-        </ul>
-      </div>
-      <div class="btn-group me-2">
-        <button class="btn btn-custom dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-calendar-check me-1"></i>予約関連
-        </button>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-custom" th:href="@{/reservation/show}"><i class="bi bi-list-ul me-2"></i>予約一覧(ユーザー用)</a></li>
         </ul>
       </div>
     </div>
@@ -208,6 +206,471 @@
   </div>
 </div>
 
+<!--レビューと公開設定に関するモーダルの塊-->
+<div th:fragment="reviewAndModal" th:removew="tag">
+  <!-- レビュー一覧 -->
+  <div class="row">
+    <div class="col-md-6 mb-4" th:each="review : ${reviews}" th:unless="${(!review.isVisible) && (#authentication.principal.user.role.name != 'ROLE_ADMIN') && (#authentication.principal.user.userId != review.reservation.user.userId)}">
+      <div class="card" th:classappend="${review.isVisible} == false ? 'bg-warning-subtle'">
+        <div class="card-body">
+          <!--レストラン名:ここをリンクにしたいね-->
+          <div class="mb-2 d-flex justify-content-between">
+            <a th:href="@{/restaurant/__${review.reservation.restaurant.restaurantId}__}"
+               class="text-decoration-none">
+              <h5 th:text="${review.reservation.restaurant.name}"></h5>
+            </a>
+
+            <div th:if="${review.isVisible}" class="me-2">
+              <button class="badge text-bg-info shadow-sm" th:if="${review.reservation.user.name == #authentication.principal.user.name || #authentication.principal.user.role.name == 'ROLE_ADMIN'}">
+                <a th:href="@{/review/create/__${review.reservation.reservationId}__}"  class="text-decoration-none">編集</a>
+              </button>
+              <button sec:authorize="hasRole('ADMIN')" class="badge text-bg-danger shadow-sm"
+                      data-bs-toggle="modal"
+                      th:data-bs-target="${'#review_mask_' + review.reviewId}">非公開にする</button>
+            </div>
+            <div th:unless="${review.isVisible}" class="me-2">
+              <button class="badge text-bg-info shadow-sm me-2" th:if="${review.reservation.user.name == #authentication.principal.user.name || #authentication.principal.user.role.name == 'ROLE_ADMIN'}">
+                <a th:href="@{/review/create/__${review.reservation.reservationId}__}" class="text-decoration-none">編集</a>
+              </button>
+              <button class="badge text-bg-secondary shadow-sm"
+                      data-bs-toggle="modal"
+                      th:data-bs-target="${'#hiddenReason_' + review.reviewId}">非公開の理由</button>
+              <button sec:authorize="hasRole('ADMIN')" class="badge text-bg-info shadow-sm"
+                      data-bs-toggle="modal"
+                      th:data-bs-target="${'#review_unmask_' + review.reviewId}">公開する</button>
+            </div>
+          </div>
+          <div class="d-flex align-items-center mb-2">
+            <a th:href="@{/review/user/{id}(id=${review.reservation.user.userId})}"
+               class="text-decoration-none">
+              <div class="d-flex align-items-center">
+                <!-- ユーザーアイコン -->
+                <img th:if="${review.reservation.user.profileImage != null}"
+                     th:src="@{/images/__${review.reservation.user.profileImage}__}"
+                     class="rounded-circle me-2"
+                     style="width: 40px; height: 40px; object-fit: cover;"
+                     alt="User profile">
+                <img th:if="${review.reservation.user.profileImage == null}"
+                     th:src="@{/images/default_profile.png}"
+                     class="rounded-circle me-2"
+                     style="width: 40px; height: 40px; object-fit: cover;"
+                     alt="Default profile">
+                <!-- ユーザー名とレビュー表示 -->
+                <div>
+                  <h6 class="mb-0" th:text="${review.reservation.user.name}">User Name</h6>
+                  <div class="text-muted small" th:text="${review.reservation.formattedDate}">
+                    2024年10月6日
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+          <!-- 星評価 -->
+          <p class="card-text mb-2">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                <i class="fas fa-star" th:classappend="${i <= review.starCount} ? ' text-warning' : ' text-secondary'"></i>
+                            </span>
+          </p>
+          <!-- レビュー内容 -->
+          <div class="card-text mb-2" th:text="${review.content}">レビュー内容がここに表示されます。</div>
+
+          <!-- レビュー画像カルーセル -->
+          <div th:if="${not #lists.isEmpty(review.photos)}"
+               th:id="'reviewCarousel' + ${review.reviewId}"
+               class="carousel slide mb-3">
+            <div class="carousel-inner">
+              <div th:each="photo, photoStat : ${review.photos}"
+                   th:class="'carousel-item' + (${photoStat.first} ? ' active' : '')">
+                <img th:src="@{/images/__${photo.imageName}__}"
+                     class="d-block w-100 rounded"
+                     style="height: 200px; object-fit: cover;"
+                     alt="Review photo">
+              </div>
+            </div>
+            <button th:if="${review.photos.size() > 1}"
+                    class="carousel-control-prev"
+                    type="button"
+                    th:data-bs-target="'#reviewCarousel' + ${review.reviewId}"
+                    data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button th:if="${review.photos.size() > 1}"
+                    class="carousel-control-next"
+                    type="button"
+                    th:data-bs-target="'#reviewCarousel' + ${review.reviewId}"
+                    data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+            <!--モーダルを開くボタン-->
+            <button type="button" class="see-all-photos-btn"
+                    data-bs-toggle="modal" th:attr="data-bs-target='#photoModal__${review.reviewId}__'"
+                    aria-disabled="false" th:aria-label="${review.photos.size() + '枚の写真を見る'}">
+              <span th:text="${review.photos.size() + '枚の写真を見る'}"></span>
+            </button>
+          </div>
+          <!-- Modal Structure for Scrollable Gallery -->
+          <div th:id="photoModal__${review.reviewId}__" class="modal fade" tabindex="-1"
+               aria-labelledby="photoModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title"
+                      th:text="${review.reservation.restaurant.name}+'の写真一覧（'+${review.reservation.user.name}+'）'"></h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"
+                          aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+                  <div class="d-flex flex-wrap gap-1">
+                    <div th:each="image : ${review.photos}" class="photo-thumbnail">
+                      <img th:src="@{/images/__${image.imageName}__}" class="img-thumbnail"
+                           alt="店舗画像" style="width: 100%; max-width: 800px;">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!--レビュー非公開理由説明モーダル-->
+        <div class="modal fade" th:id="'hiddenReason_'+${review.reviewId}" tabindex="-1"
+             aria-labelledby="hiddenReasonLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">レビュー非公開の理由</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="container">
+                  <!-- データリスト定義 -->
+                  <dl class="row g-3">
+                    <!-- 非公開者 -->
+                    <dt sec:authorize="hasRole('ADMIN')" class="col-md-4">
+                      <label class="form-label mb-0">非公開者</label>
+                    </dt>
+                    <dd sec:authorize="hasRole('ADMIN')" class="col-md-8">
+                      <span th:text="${review.hiddenBy?.name ?: '未設定'}" class="text-body"></span>
+                    </dd>
+
+                    <!-- 非公開日時 -->
+                    <dt class="col-md-4">
+                      <label class="form-label mb-0">非公開日時</label>
+                    </dt>
+                    <dd class="col-md-8">
+                                                <span th:text="${#temporals.format(review.hiddenAt,'yyyy/MM/dd hh:mm')}"
+                                                      th:if="${review.hiddenAt}"
+                                                      class="text-body"></span>
+                      <span th:unless="${review.hiddenAt}" class="text-muted">未設定</span>
+                    </dd>
+
+                    <!-- 非公開理由 -->
+                    <dt class="col-md-4">
+                      <label class="form-label mb-0">非公開理由</label>
+                    </dt>
+                    <dd class="col-md-8">
+                                                <span th:text="${review.hiddenReason ?: '未設定'}"
+                                                      class="text-body"></span>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                        aria-label="モーダルを閉じる">閉じる</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div sec:authorize="hasRole('ADMIN')" class="modal fade" th:id="${'review_mask_' + review.reviewId}" tabindex="-1"
+             aria-labelledby="reviewMaskingLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">レビュー非公開化の確認</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label th:for="${'maskingReason_' + review.reviewId}"
+                         class="form-label">理由</label>
+                  <textarea class="form-control" th:id="${'maskingReason_' + review.reviewId}"
+                            rows="3" placeholder="理由を記入してください"></textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                <button type="button" class="btn btn-primary"
+                        th:id="${'doMask_' + review.reviewId}">非公開にする</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--公開化モーダル-->
+        <div sec:authorize="hasRole('ADMIN')" class="modal fade" th:id="${'review_unmask_' + review.reviewId}" tabindex="-1"
+             aria-labelledby="reviewUnMaskingLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">レビュー公開化の確認</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <p class="alert alert-info">このレビューを本当に公開しますか？</p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                <button type="button" class="btn btn-primary"
+                        th:id="${'doUnMask_' + review.reviewId}">公開する</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--レビューと公開設定に関するモーダル郡(個別レストランview用)-->
+<div th:fragment="reviewAndModalForRestaurant" th:remove="tag">
+  <!-- レビュー一覧 -->
+  <div class="row">
+    <div class="col-md-6 mb-4" th:each="reservation : ${restaurant.reservations}"  th:unless="${(reservation.review == null) || ( (!reservation.review.isVisible) && (#authentication.principal.user.role.name != 'ROLE_ADMIN') && (#authentication.principal.user.userId != reservation.user.userId))}">
+      <div class="card" th:classappend="${reservation.review.isVisible} == false ? 'bg-warning-subtle'">
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <a th:href="@{/review/user/{id}(id=${reservation.user.userId})}"
+               class="text-decoration-none">
+              <div class="d-flex align-items-center">
+                <!-- ユーザーアイコン -->
+                <img th:if="${reservation.user.profileImage != null}"
+                     th:src="@{/images/__${reservation.user.profileImage}__}"
+                     class="rounded-circle me-2"
+                     style="width: 40px; height: 40px; object-fit: cover;"
+                     alt="User profile">
+                <img th:if="${reservation.user.profileImage == null}"
+                     th:src="@{/images/default_profile.png}"
+                     class="rounded-circle me-2"
+                     style="width: 40px; height: 40px; object-fit: cover;"
+                     alt="Default profile">
+                <!-- ユーザー名とレビュー表示 -->
+                <div>
+                  <h6 class="mb-0" th:text="${reservation.user.name}">User Name</h6>
+                  <div class="text-muted small" th:text="${reservation.formattedDate}">
+                    2024年10月6日
+                  </div>
+                </div>
+              </div>
+            </a>
+            <div th:if="${reservation.review.isVisible}" class="me-2">
+              <button class="badge text-bg-info shadow-sm me-2" th:if="${reservation.user.name == #authentication.principal.user.name || #authentication.principal.user.role.name == 'ROLE_ADMIN'}">
+                <a th:href="@{/review/create/__${reservation.reservationId}__}" class="text-decoration-none">編集</a>
+              </button>
+              <button sec:authorize="hasRole('ADMIN')" class="badge text-bg-danger shadow-sm"
+                      data-bs-toggle="modal"
+                      th:data-bs-target="${'#review_mask_' + reservation.review.reviewId}">非公開にする</button>
+            </div>
+            <div th:unless="${reservation.review.isVisible}" class="me-2">
+              <button class="badge text-bg-info shadow-sm me-2" th:if="${reservation.user.name == #authentication.principal.user.name || #authentication.principal.user.role.name == 'ROLE_ADMIN'}">
+                <a th:href="@{/review/create/__${reservation.reservationId}__}" class="text-decoration-none">編集</a>
+              </button>
+              <button class="badge text-bg-secondary shadow-sm"
+                      data-bs-toggle="modal"
+                      th:data-bs-target="${'#hiddenReason_' + reservation.review.reviewId}">非公開の理由</button>
+              <button sec:authorize="hasRole('ADMIN')" class="badge text-bg-info shadow-sm"
+                      data-bs-toggle="modal"
+                      th:data-bs-target="${'#review_unmask_' + reservation.review.reviewId}">公開する</button>
+            </div>
+          </div>
+          <!-- 星評価 -->
+          <p class="card-text mb-2">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                <i class="fas fa-star" th:classappend="${i <= reservation.review.starCount} ? ' text-warning' : ' text-secondary'"></i>
+                            </span>
+          </p>
+          <!-- レビュー内容 -->
+          <div class="card-text mb-2" th:text="${reservation.review.content}">レビュー内容がここに表示されます。</div>
+
+          <!-- レビュー画像カルーセル -->
+          <div th:if="${not #lists.isEmpty(reservation.review.photos)}"
+               th:id="'reviewCarousel' + ${reservation.review.reviewId}"
+               class="carousel slide mb-3">
+            <div class="carousel-inner">
+              <div th:each="photo, photoStat : ${reservation.review.photos}"
+                   th:class="'carousel-item' + (${photoStat.first} ? ' active' : '')">
+                <img th:src="@{/images/__${photo.imageName}__}"
+                     class="d-block w-100 rounded"
+                     style="height: 200px; object-fit: cover;"
+                     alt="Review photo">
+              </div>
+            </div>
+            <button th:if="${reservation.review.photos.size() > 1}"
+                    class="carousel-control-prev"
+                    type="button"
+                    th:data-bs-target="'#reviewCarousel' + ${reservation.review.reviewId}"
+                    data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button th:if="${reservation.review.photos.size() > 1}"
+                    class="carousel-control-next"
+                    type="button"
+                    th:data-bs-target="'#reviewCarousel' + ${reservation.review.reviewId}"
+                    data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+            <!--モーダルを開くボタン-->
+            <button type="button" class="see-all-photos-btn"
+                    data-bs-toggle="modal" th:attr="data-bs-target='#photoModal__${reservation.review.reviewId}__'"
+                    aria-disabled="false" th:aria-label="${reservation.review.photos.size() + '枚の写真を見る'}">
+              <span th:text="${reservation.review.photos.size() + '枚の写真を見る'}"></span>
+            </button>
+          </div>
+          <!-- Modal Structure for Scrollable Gallery -->
+          <div th:id="photoModal__${reservation.review.reviewId}__" class="modal fade" tabindex="-1"
+               aria-labelledby="photoModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title"
+                      th:text="${reservation.restaurant.name}+'の写真一覧（'+${reservation.user.name}+'）'"></h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"
+                          aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+                  <div class="d-flex flex-wrap gap-1">
+                    <div th:each="image : ${reservation.review.photos}" class="photo-thumbnail">
+                      <img th:src="@{/images/__${image.imageName}__}" class="img-thumbnail"
+                           alt="店舗画像" style="width: 100%; max-width: 800px;">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!--レビュー非公開理由説明モーダル-->
+        <div class="modal fade" th:id="'hiddenReason_'+${reservation.review.reviewId}" tabindex="-1"
+             aria-labelledby="hiddenReasonLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">レビュー非公開の理由</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="container">
+                  <!-- データリスト定義 -->
+                  <dl class="row g-3">
+                    <!-- 非公開者 -->
+                    <dt sec:authorize="hasRole('ADMIN')" class="col-md-4">
+                      <label class="form-label mb-0">非公開者</label>
+                    </dt>
+                    <dd sec:authorize="hasRole('ADMIN')" class="col-md-8">
+                      <span th:text="${reservation.review.hiddenBy?.name ?: '未設定'}" class="text-body"></span>
+                    </dd>
+
+                    <!-- 非公開日時 -->
+                    <dt class="col-md-4">
+                      <label class="form-label mb-0">非公開日時</label>
+                    </dt>
+                    <dd class="col-md-8">
+                                                <span th:text="${#temporals.format(reservation.review.hiddenAt,'yyyy/MM/dd hh:mm')}"
+                                                      th:if="${reservation.review.hiddenAt}"
+                                                      class="text-body"></span>
+                      <span th:unless="${reservation.review.hiddenAt}" class="text-muted">未設定</span>
+                    </dd>
+
+                    <!-- 非公開理由 -->
+                    <dt class="col-md-4">
+                      <label class="form-label mb-0">非公開理由</label>
+                    </dt>
+                    <dd class="col-md-8">
+                                                <span th:text="${reservation.review.hiddenReason ?: '未設定'}"
+                                                      class="text-body"></span>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                        aria-label="モーダルを閉じる">閉じる</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div sec:authorize="hasRole('ADMIN')" class="modal fade" th:id="${'review_mask_' + reservation.review.reviewId}" tabindex="-1"
+             aria-labelledby="reviewMaskingLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">レビュー非公開化の確認</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label th:for="${'maskingReason_' + reservation.review.reviewId}"
+                         class="form-label">理由</label>
+                  <textarea class="form-control" th:id="${'maskingReason_' + reservation.review.reviewId}"
+                            rows="3" placeholder="理由を記入してください"></textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                <button type="button" class="btn btn-primary"
+                        th:id="${'doMask_' + reservation.review.reviewId}">非公開にする</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--公開化モーダル-->
+        <div sec:authorize="hasRole('ADMIN')" class="modal fade" th:id="${'review_unmask_' + reservation.review.reviewId}" tabindex="-1"
+             aria-labelledby="reviewUnMaskingLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">レビュー公開化の確認</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <p class="alert alert-info">このレビューを本当に公開しますか？</p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                <button type="button" class="btn btn-primary"
+                        th:id="${'doUnMask_' + reservation.review.reviewId}">公開する</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <div th:fragment="mailInput" th:remove="tag">

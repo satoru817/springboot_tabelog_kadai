@@ -22,4 +22,18 @@ public interface ReviewRepository extends JpaRepository<Review,Integer> {
     @Query("SELECT rev FROM Review rev " +
             "WHERE rev.reservation.user.userId = :userId")
     Page<Review> findAllByUserId(@Param("userId")Integer userId, Pageable pageable);
+
+    @Query("""
+            SELECT rev FROM Review rev
+            JOIN rev.reservation res
+            JOIN res.restaurant ret
+            JOIN res.user user
+            WHERE rev.content LIKE %:searchQuery%
+            OR rev.hiddenReason LIKE %:searchQuery%
+            OR ret.name LIKE %:searchQuery%
+            OR user.name LIKE %:searchQuery%
+            OR user.email LIKE %:searchQuery%
+            """)
+    Page<Review> findAllBySearchQuery(@Param("searchQuery")String searchQuery,
+                                      Pageable pageable);
 }

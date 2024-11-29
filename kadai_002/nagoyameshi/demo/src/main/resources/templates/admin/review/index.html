@@ -10,27 +10,30 @@
 <div th:replace="~{fragment::header}"></div>
 <main class="flex-grow-1">
     <div class="container my-4">
-        <!-- ユーザー情報セクション -->
+        <!-- 検索セクション -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="d-flex align-items-center">
-                    <img th:if="${reviews.getContent().size() > 0}"
-                         th:src="${reviews.getContent().get(0).reservation.user.profileImage != null ? '/images/' + reviews.getContent().get(0).reservation.user.profileImage : '/images/default_profile.png'}"
-                         class="rounded-circle me-3"
-                         style="width: 100px; height: 100px; object-fit: cover;"
-                         alt="User profile">
                     <div>
-                        <h2 th:if="${reviews.getContent().size() > 0}"
-                            th:text="${reviews.getContent().get(0).reservation.user.name + 'さんのレビュー'}">
-                            ユーザー名さんのレビュー
+                        <h2 th:text="${searchQuery} != null ? 'レビュー検索結果' : 'レビュー一覧'">
                         </h2>
                         <p class="text-muted">レビュー数: <span th:text="${reviews.getTotalElements()}">0</span>件</p>
                     </div>
                 </div>
             </div>
+            <div class="col-xl-3 col-lg-4 col-md-12">
+                <form method="get"
+                      th:with="userRole = ${#authentication.principal.user.role.name}"
+                      th:action="@{/admin/review/index}" class="w-100 mb-3">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" name="searchQuery" th:value="${searchQuery}"
+                               placeholder="検索キーワード">
+                        <button type="submit" class="btn shadow-sm btn">検索</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <!-- レビュー一覧 -->
         <div th:replace="~{fragment::reviewAndModal}"></div>
 
         <!-- ページネーション -->
@@ -39,15 +42,18 @@
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
                         <li class="page-item" th:classappend="${!reviews.hasPrevious()} ? 'disabled'">
-                            <a class="page-link" th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number - 1})}">前へ</a>
+                            <a class="page-link"
+                               th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number - 1})}">前へ</a>
                         </li>
                         <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, reviews.totalPages - 1)}"
                             th:classappend="${pageNumber == reviews.number} ? 'active'">
-                            <a class="page-link" th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${pageNumber})}"
+                            <a class="page-link"
+                               th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${pageNumber})}"
                                th:text="${pageNumber + 1}">1</a>
                         </li>
                         <li class="page-item" th:classappend="${!reviews.hasNext()} ? 'disabled'">
-                            <a class="page-link" th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number + 1})}">次へ</a>
+                            <a class="page-link"
+                               th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number + 1})}">次へ</a>
                         </li>
                     </ul>
                 </nav>
