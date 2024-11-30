@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
-@Entity
-@Table(name = "cards", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"userId", "stripeCardId"})
-})
 @Data
+@Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "cards")
 public class Card {
 
     @Id
@@ -39,20 +39,10 @@ public class Card {
     @Column(name="is_default",nullable = false)
     private Boolean isDefault = false;
 
-    @Column(name="created_at",nullable = false, updatable = false)
+    @Column(name="created_at",insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name="updated_at",nullable = false)
+    @Column(name="updated_at",insertable = false,updatable = false)
     private LocalDateTime updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 }

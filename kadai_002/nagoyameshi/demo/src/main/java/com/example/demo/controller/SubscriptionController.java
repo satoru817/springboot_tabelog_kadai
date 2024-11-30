@@ -2,24 +2,17 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.ApiResponse;
 import com.example.demo.dto.PaymentMethodRequest;
+import com.example.demo.entity.*;
 import com.example.demo.entity.Card;
-import com.example.demo.entity.Role;
 import com.example.demo.entity.Subscription;
-import com.example.demo.entity.User;
-import com.example.demo.repository.CardRepository;
-import com.example.demo.repository.RoleRepository;
-import com.example.demo.repository.SubscriptionRepository;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.*;
 import com.example.demo.security.UserDetailsImpl;
 import com.example.demo.security.UserDetailsServiceImpl;
 import com.example.demo.service.StripeService;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
-import com.stripe.model.Customer;
-import com.stripe.model.Event;
-import com.stripe.model.PaymentMethod;
-import com.stripe.model.SetupIntent;
+import com.stripe.model.*;
 import com.stripe.net.Webhook;
 import com.stripe.param.CustomerUpdateParams;
 import com.stripe.param.PaymentMethodAttachParams;
@@ -39,6 +32,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -56,6 +50,7 @@ public class SubscriptionController {
     private final CardRepository cardRepository;
     private final UserDetailsServiceImpl userDetailsService;
     private final RoleRepository roleRepository;
+    private final PaymentRepository paymentRepository;
     @Value("${stripe.api-key}")
     private String stripeApiKey;
 
@@ -123,8 +118,6 @@ public class SubscriptionController {
             //キャンセル時にカード情報は全てdetachされる。
             stripeService.cancelSubscription(subscriptionId);
 
-            //サブスクキャンセル時にそのユーザーのカード情報をdbから全消去する。
-            //fixme:ここでFK制約で消去できていない->ON DELETE CASCADEを追加
             List<Card> cards = cardRepository.findByUser(user);
             for(Card card:cards){
                 cardRepository.delete(card);
@@ -153,8 +146,9 @@ public class SubscriptionController {
 
     //todo:invoice.payment_failedに対応するひつようがある。（サブスクの支払い失敗への対応）
     //todo:クレジットカード情報編集ができるようにするひつようが有る。
+    @Transactional
     @PostMapping("/stripe/webhook")
-    public ResponseEntity<String> webhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
+    public ResponseEntity<String> webhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) throws StripeException {
 
         log.info("webhookイベントを受け取っています。");
         Stripe.apiKey = stripeApiKey; // Stripe APIキーを設定
@@ -186,8 +180,7 @@ public class SubscriptionController {
             log.info("サブスクリプションがキャンセルされました。");
             // 必要に応じてユーザーへの通知やログ記録を追加できます
         }
-        //fixme:ここにエラーがある
-        // カードが登録されたときの処理
+
         if ("setup_intent.succeeded".equals(event.getType())) {
             log.info("setup_intent.succeededが呼びだされています");
             SetupIntent setupIntent = (SetupIntent) event.getDataObjectDeserializer().getObject().orElse(null);
@@ -208,6 +201,84 @@ public class SubscriptionController {
                 }
             } else {
                 log.warn("SetupIntentが取得できませんでした。");
+            }
+        }
+
+        //支払いがされたときに記録しないといけない。
+        if ("invoice.paid".equals(event.getType())) {
+            log.info("invoice.paidが呼び出されています");
+            Invoice invoice = (Invoice) event.getDataObjectDeserializer().getObject().orElse(null);
+
+            if (invoice != null) {
+                String stripePaymentIntentId = invoice.getPaymentIntent();
+                //べき等性チェック
+                if (paymentRepository.existsByStripePaymentIntentId(stripePaymentIntentId)) {
+                    log.error("すでに登録されている支払いです");
+                } else {
+                    try {
+                        // Stripeの顧客IDからユーザーを特定
+                        Integer userId = Integer.valueOf(invoice.getSubscriptionDetails().getMetadata().get("userId"));
+                        User user = userRepository.findById(userId)
+                                .orElseThrow(() -> new RuntimeException("ユーザーが見つかりません: " + userId));
+
+                        // 支払い方法の情報を取得
+                        PaymentIntent paymentIntent = PaymentIntent.retrieve(stripePaymentIntentId);
+                        String paymentMethodId = paymentIntent.getPaymentMethod();
+
+                        // カード情報を取得または作成
+                        Card card = cardRepository.findByStripeCardId(paymentMethodId)
+                                .orElseGet(() -> {
+                                    try {
+                                        Card currentDefault = cardRepository.findByUserAndIsDefaultTrue(user)
+                                                .orElse(null);
+
+                                        if (currentDefault != null) {
+                                            currentDefault.setIsDefault(false);
+                                            cardRepository.save(currentDefault);
+                                        }
+
+                                        PaymentMethod paymentMethod = PaymentMethod.retrieve(paymentMethodId);
+                                        PaymentMethod.Card pmCard = paymentMethod.getCard();
+
+                                        Card newCard = Card.builder()
+                                                .user(user)
+                                                .stripeCardId(paymentMethodId)
+                                                .brand(pmCard.getBrand())
+                                                .last4(pmCard.getLast4())
+                                                .expMonth(pmCard.getExpMonth().byteValue())
+                                                .expYear(pmCard.getExpYear().shortValue())
+                                                .isDefault(true)
+                                                .build();
+                                        Card s = cardRepository.save(newCard);
+                                        cardRepository.flush();
+                                        return s;
+                                    } catch (StripeException e) {
+                                        log.error("カード情報の取得に失敗しました: {}", paymentMethodId, e);
+                                        return null;
+                                    }
+                                });
+
+                        // 支払い情報を作成
+                        Payment payment = Payment.builder()
+                                .user(user)
+                                .amount(invoice.getAmountPaid().intValue())
+                                .currency(invoice.getCurrency().toUpperCase())
+                                .stripePaymentIntentId(stripePaymentIntentId)
+                                .card(card)
+                                .status(PaymentStatus.SUCCEEDED)
+                                .description(invoice.getDescription())
+                                .metadata(invoice.getMetadata().toString())
+                                .build();
+
+                        // 保存
+                        paymentRepository.save(payment);
+                        log.info("支払い情報を保存しました: {}", stripePaymentIntentId);
+
+                    } catch (Exception e) {
+                        log.error("支払い情報の保存に失敗しました: {}", stripePaymentIntentId, e);
+                        throw e;
+                    }
+                }
             }
         }
 

@@ -172,3 +172,20 @@ CREATE TABLE IF NOT EXISTS company_info (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS payments (
+    payment_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    amount INT NOT NULL,  -- 支払い金額（単位は最小通貨単位、例：円）
+    currency VARCHAR(3) NOT NULL DEFAULT 'JPY',  -- 通貨コード
+    stripe_payment_intent_id VARCHAR(255) NOT NULL UNIQUE,  -- Stripeの支払いID
+    card_id BIGINT,  -- 使用したカード情報
+    status VARCHAR(50) NOT NULL,  -- succeeded, failed, pending など
+    description VARCHAR(255),  -- 支払いの説明
+    metadata JSON,  -- 追加情報を柔軟に保存
+    error_message VARCHAR(255),  -- エラーが発生した場合のメッセージ
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_payment_user_id FOREIGN KEY (user_id) REFERENCES users(user_id),
+    CONSTRAINT fk_payment_card_id FOREIGN KEY (card_id) REFERENCES cards(card_id)
+);

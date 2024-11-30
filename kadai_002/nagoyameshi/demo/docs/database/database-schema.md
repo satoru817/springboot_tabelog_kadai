@@ -1,165 +1,192 @@
 ```mermaid
 
+
 erDiagram
-    roles ||--o{ users : has
-    users ||--o{ verification_tokens : has
     users ||--o{ cards : has
-    users ||--o{ subscriptions : has
+    users ||--o| subscriptions : has
     users ||--o{ favorites : creates
     users ||--o{ reservations : makes
-    
-    restaurants ||--o{ category_restaurants : has
-    categories ||--o{ category_restaurants : belongs_to
-    restaurants ||--o{ restaurant_images : has
-    restaurants ||--o{ favorites : has
+    users ||--o{ reviews : writes
+    users }|--|| roles : has
+    users ||--o| verification_tokens : has
+
+    restaurants ||--o{ favorites : receives
     restaurants ||--o{ reservations : receives
+    restaurants ||--o{ restaurant_images : has
+    restaurants ||--o{ category_restaurants : has
     
+    categories ||--o{ category_restaurants : belongs_to
+
     reservations ||--o| reviews : has
     reviews ||--o{ review_photos : has
 
-    login_attempts {
-        BIGINT login_attempt_id PK
-        VARCHAR ip_address
-        INT attempt_count
-        TIMESTAMP last_attempt
-        TIMESTAMP blocked_until
+    cards ||--o{ subscriptions : used_in
+    cards ||--o{ payments : used_in
+
+    users ||--o{ payments : makes
+
+    users {
+        int user_id PK
+        int role_id FK
+        string name "NOT NULL UNIQUE"
+        string name_for_reservation "NOT NULL"
+        string password "NOT NULL"
+        string email "NOT NULL UNIQUE"
+        string stripe_customer_id
+        string postal_code
+        string address
+        string phone_number
+        string profile_image
+        boolean enabled "DEFAULT FALSE"
+        datetime created_at "NOT NULL DEFAULT CURRENT_TIMESTAMP"
+        datetime updated_at "NOT NULL DEFAULT CURRENT_TIMESTAMP"
     }
 
     roles {
-        INT id PK
-        VARCHAR name
-    }
-
-    users {
-        INT user_id PK
-        INT role_id FK
-        VARCHAR name
-        VARCHAR name_for_reservation
-        VARCHAR password
-        VARCHAR email
-        VARCHAR stripe_customer_id
-        VARCHAR postal_code
-        VARCHAR address
-        VARCHAR phone_number
-        VARCHAR profile_image
-        BOOLEAN enabled
-        DATETIME created_at
-        DATETIME updated_at
+        int id PK
+        string name "NOT NULL UNIQUE"
     }
 
     verification_tokens {
-        INT user_id FK
-        VARCHAR token
-        DATETIME created_at
-        DATETIME updated_at
+        int user_id "FK NOT NULL UNIQUE"
+        string token "NOT NULL"
+        datetime created_at "NOT NULL DEFAULT CURRENT_TIMESTAMP"
+        datetime updated_at "DEFAULT CURRENT_TIMESTAMP"
+    }
+
+    login_attempts {
+        bigint login_attempt_id PK
+        string ip_address "NOT NULL"
+        int attempt_count "DEFAULT 0"
+        timestamp last_attempt
+        timestamp blocked_until
     }
 
     cards {
-        BIGINT card_id PK
-        INT user_id FK
-        VARCHAR stripe_card_id
-        VARCHAR brand
-        VARCHAR last4
-        TINYINT exp_month
-        SMALLINT exp_year
-        BOOLEAN is_default
-        TIMESTAMP created_at
-        TIMESTAMP updated_at
+        bigint card_id PK
+        int user_id "FK NOT NULL"
+        string stripe_card_id "NOT NULL"
+        string brand
+        string last4
+        tinyint exp_month
+        smallint exp_year
+        boolean is_default "DEFAULT FALSE"
+        timestamp created_at "DEFAULT CURRENT_TIMESTAMP"
+        timestamp updated_at "DEFAULT CURRENT_TIMESTAMP"
     }
 
     subscriptions {
-        BIGINT subscription_id PK
-        INT user_id FK
-        VARCHAR stripe_subscription_id
-        BIGINT card_id FK
-        VARCHAR status
-        DATE start_date
-        DATE end_date
-        TIMESTAMP created_at
-        TIMESTAMP updated_at
+        bigint subscription_id PK
+        int user_id "FK NOT NULL UNIQUE"
+        string stripe_subscription_id "NOT NULL"
+        bigint card_id "FK NOT NULL"
+        string status "NOT NULL"
+        date start_date
+        date end_date
+        timestamp created_at "DEFAULT CURRENT_TIMESTAMP"
+        timestamp updated_at "DEFAULT CURRENT_TIMESTAMP"
     }
 
     categories {
-        INT category_id PK
-        VARCHAR category_name
+        int category_id PK
+        string category_name "NOT NULL"
     }
 
     restaurants {
-        INT restaurant_id PK
-        VARCHAR name
-        VARCHAR description
-        INT capacity
-        VARCHAR email
-        VARCHAR postal_code
-        VARCHAR address
-        VARCHAR phone_number
-        TIME monday_opening_time
-        TIME monday_closing_time
-        TIME tuesday_opening_time
-        TIME tuesday_closing_time
-        TIME wednesday_opening_time
-        TIME wednesday_closing_time
-        TIME thursday_opening_time
-        TIME thursday_closing_time
-        TIME friday_opening_time
-        TIME friday_closing_time
-        TIME saturday_opening_time
-        TIME saturday_closing_time
-        TIME sunday_opening_time
-        TIME sunday_closing_time
+        int restaurant_id PK
+        string name "NOT NULL"
+        string description "NOT NULL"
+        int capacity "NOT NULL"
+        string email "NOT NULL UNIQUE"
+        string postal_code "NOT NULL"
+        string address "NOT NULL"
+        string phone_number "NOT NULL UNIQUE"
+        time monday_opening_time
+        time monday_closing_time
+        time tuesday_opening_time
+        time tuesday_closing_time
+        time wednesday_opening_time
+        time wednesday_closing_time
+        time thursday_opening_time
+        time thursday_closing_time
+        time friday_opening_time
+        time friday_closing_time
+        time saturday_opening_time
+        time saturday_closing_time
+        time sunday_opening_time
+        time sunday_closing_time
     }
 
     category_restaurants {
-        INT category_restaurant_id PK
-        INT restaurant_id FK
-        INT category_id FK
+        int category_restaurant_id PK
+        int restaurant_id "FK NOT NULL"
+        int category_id "FK NOT NULL"
     }
 
     restaurant_images {
-        INT restaurant_image_id PK
-        INT restaurant_id FK
-        VARCHAR image_name
+        int restaurant_image_id PK
+        int restaurant_id "FK NOT NULL"
+        string image_name "NOT NULL"
     }
 
     favorites {
-        INT favorite_id PK
-        INT restaurant_id FK
-        INT user_id FK
-        DATETIME created_at
-        DATETIME updated_at
+        int favorite_id PK
+        int restaurant_id "FK NOT NULL"
+        int user_id "FK NOT NULL"
+        datetime created_at "DEFAULT CURRENT_TIMESTAMP"
+        datetime updated_at "DEFAULT CURRENT_TIMESTAMP"
     }
 
     reservations {
-        INT reservation_id PK
-        INT restaurant_id FK
-        INT user_id FK
-        DATETIME date
-        INT number_of_people
-        VARCHAR comment
-        DATETIME created_at
-        DATETIME updated_at
+        int reservation_id PK
+        int restaurant_id "FK NOT NULL"
+        int user_id "FK NOT NULL"
+        datetime date "NOT NULL"
+        int number_of_people "NOT NULL"
+        string comment
+        datetime created_at "DEFAULT CURRENT_TIMESTAMP"
+        datetime updated_at "DEFAULT CURRENT_TIMESTAMP"
     }
 
     reviews {
-        INT review_id PK
-        INT reservation_id FK
-        INT star_count
-        VARCHAR content
+        int review_id PK
+        int reservation_id "FK NOT NULL"
+        int star_count "NOT NULL"
+        string content
+        boolean is_visible "DEFAULT TRUE"
+        string hidden_reason
+        datetime hidden_at
+        int hidden_by "FK"
     }
 
     review_photos {
-        INT review_photo_id PK
-        INT review_id FK
-        VARCHAR image_name
+        int review_photo_id PK
+        int review_id "FK NOT NULL"
+        string image_name "NOT NULL"
     }
 
     company_info {
-        INT company_info_id PK
-        VARCHAR name
-        VARCHAR postal_code
-        VARCHAR address
-        VARCHAR phone_number
-        VARCHAR description
-        DATETIME created_at
-        DATETIME updated_at
+        int company_info_id PK
+        string name "NOT NULL"
+        string postal_code
+        string address
+        string phone_number
+        string description
+        datetime created_at "DEFAULT CURRENT_TIMESTAMP"
+        datetime updated_at "DEFAULT CURRENT_TIMESTAMP"
+    }
+
+    payments {
+        bigint payment_id PK
+        int user_id "FK NOT NULL"
+        int amount "NOT NULL"
+        string currency "NOT NULL DEFAULT 'JPY'"
+        string stripe_payment_intent_id "NOT NULL UNIQUE"
+        bigint card_id "FK"
+        string status "NOT NULL"
+        string description
+        json metadata
+        string error_message
+        timestamp created_at "DEFAULT CURRENT_TIMESTAMP"
+        timestamp updated_at "DEFAULT CURRENT_TIMESTAMP"
     }

@@ -100,6 +100,7 @@ public class StripeService {
         }
     }
 
+    @Transactional
     public void cancelSubscription(String subscriptionId) throws StripeException {
         log.info("cancelSubscriptionは呼びだされています。");
 
@@ -179,8 +180,8 @@ public class StripeService {
         }
 
         optionalUser.ifPresent(user -> {
-            updateUserRoleAndSendMail(user,
-                    stripeCustomerId);
+            updateUserRole(user,stripeCustomerId);
+            sendUpgradeEmail(user);
 
             // PaymentMethodServiceを使用して支払い方法を取得
             List<PaymentMethod> paymentMethods = null;
@@ -205,30 +206,39 @@ public class StripeService {
             }
         });
     }
-
+    //todo duplicate entryのエラーを解消するひつようが ある・
     private Card saveCardInformation(User user, String paymentMethodId) {
+        // まず既存のカードを検索・ここで引っかかるはずなんだけどね。
+
+        Card existingCard = cardRepository.findByStripeCardId(paymentMethodId).orElse(null);
+        if (existingCard != null) {
+            log.info("Existing card found for paymentMethodId: {}", paymentMethodId);
+            return existingCard;
+        }
+
         try {
             PaymentMethod paymentMethod = PaymentMethod.retrieve(paymentMethodId);
             if (paymentMethod.getCard() != null) {
                 PaymentMethod.Card card = paymentMethod.getCard();
 
-                Card newCard = new Card();
-                newCard.setUser(user);
-                newCard.setStripeCardId(paymentMethod.getId());
-                newCard.setBrand(card.getBrand());
-                newCard.setLast4(card.getLast4());
-                newCard.setExpMonth(card.getExpMonth().byteValue());
-                newCard.setExpYear(card.getExpYear().shortValue());
-                newCard.setIsDefault(true);
+                Card newCard = Card.builder()
+                        .user(user)
+                        .stripeCardId(paymentMethodId)
+                        .brand(card.getBrand())
+                        .last4(card.getLast4())
+                        .expMonth(card.getExpMonth().byteValue())
+                        .expYear(card.getExpYear().shortValue())
+                        .isDefault(true)
+                        .build();
 
                 cardRepository.save(newCard);
                 log.info("Card information saved for user: {}", user.getUserId());
-                return newCard; // Cardオブジェクトを返す
+                return newCard;
             }
         } catch (StripeException e) {
             log.error("Error retrieving payment method: {}", e.getMessage(), e);
         }
-        return null; // 取得できなかった場合はnullを返す
+        return null;
     }
 
     private void saveSubscriptionInformation(Subscription subscription, User user, Card card) {
@@ -293,17 +303,25 @@ public class StripeService {
     }
 
 
-
-
-    private void updateUserRoleAndSendMail(User user, String stripeCustomerId) {
+    // このメソッドはユーザー情報の更新のみを担当
+    private void updateUserRole(User user, String stripeCustomerId) {
         roleRepository.findRoleByName("ROLE_PAID_USER").ifPresent(role -> {
             user.setRole(role);
             user.setStripeCustomerId(stripeCustomerId);
             userRepository.save(user);
+        });
+    }
+
+    // メール送信は別メソッドに分離
+    private void sendUpgradeEmail(User user) {
+        try {
             SimpleMailMessage mailMessage = getSimpleMailMessage(user);
             javaMailSender.send(mailMessage);
-            log.info("User role updated to paid and mail sent to user: {}", user.getEmail());
-        });
+            log.info("Mail sent to user: {}", user.getEmail());
+        } catch (Exception e) {
+            // メール送信エラーをログに記録するだけで、トランザクションには影響を与えない
+            log.error("Failed to send email to user: {}", user.getEmail(), e);
+        }
     }
 
     private static SimpleMailMessage getSimpleMailMessage(User user) {
@@ -318,11 +336,6 @@ public class StripeService {
         return mailMessage;
     }
 
-    //TODO:必ずしもいつも再開できるわけではないらしい。
-    public void resumeSubscription(String subscriptionId) throws StripeException {
-        Subscription subscription = Subscription.retrieve(subscriptionId);
-        subscription.resume();
-    }
 
     //セットアップインテントを作成するためのサービスクラス
     public String createSetupIntent(String customerId) throws StripeException {
@@ -359,14 +372,16 @@ public class StripeService {
         userOptional.ifPresent(user -> {
             // Cardエンティティを作成し、情報をセット
             log.info("userは存在します:{}",user.getName());
-            Card card = new Card();
-            card.setStripeCardId(stripeCardId);
-            card.setBrand(brand);
-            card.setUser(user);
-            card.setLast4(last4);
-            card.setExpMonth(expMonth.byteValue());
-            card.setExpYear(expYear.shortValue());
-            card.setIsDefault(false);
+
+            Card card = Card.builder()
+                        .stripeCardId(stripeCardId)
+                        .brand(brand)
+                        .user(user)
+                        .last4(last4)
+                        .expMonth(expMonth.byteValue())
+                        .expYear(expYear.shortValue())
+                        .isDefault(false)
+                        .build();
 
             // カード情報をデータベースに保存
             cardRepository.save(card);
