@@ -37,4 +37,13 @@ public interface ReservationRepository extends JpaRepository<Reservation,Integer
             """)
     Page<Reservation> findAllByUserAndSearchQuery(@Param("searchQuery")String searchQuery,
                                                   @Param("user")User user, Pageable pageable);
+
+    @Query("""
+            SELECT res FROM Reservation res
+            JOIN res.restaurant rest
+            JOIN res.user user
+            WHERE rest.name LIKE %:searchQuery%
+            OR user.name LIKE %:searchQuery%
+            """)
+    Page<Reservation> findAllBySearchQuery(String searchQuery, Pageable pageable);
 }

@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -104,7 +105,7 @@ public class RestaurantService {
 
         if(logic!=null && logic.equals("or")){
 // JPQLの構築
-            StringBuilder jpql = new StringBuilder("SELECT DISTINCT r FROM Restaurant r JOIN r.categoryRestaurants cr WHERE 1=1");//最後にANDを書いてしまわないために1=1がある。
+            StringBuilder jpql = new StringBuilder("SELECT DISTINCT r FROM Restaurant r JOIN r.categoryRestaurants cr WHERE 1=1");//全部ANDから始められるように
             List<String> conditions = new ArrayList<>();
 
             // 動的パラメータ

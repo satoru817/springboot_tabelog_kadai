@@ -13,6 +13,8 @@ import static jakarta.persistence.FetchType.*;
 @Entity
 @Table(name="reservations")
 public class Reservation {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="reservation_id")
@@ -30,11 +32,6 @@ public class Reservation {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime date;
 
-    // 表示用メソッド。個人情報保護の観点で、時刻までは表示しない。
-    public String getFormattedDate() {
-        if (date == null) return "";
-        return date.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日"));
-    }
 
     @Column(name="number_of_people", nullable = false)
     private Integer numberOfPeople;
@@ -54,20 +51,15 @@ public class Reservation {
     @OneToOne(mappedBy="reservation", fetch= FetchType.LAZY)
     private Review review;
 
+    //表示用のゲッター
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH時mm分");
+
+    public String getFormattedDate(){
+        return date.format(formatter);
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+    public String getFormattedCreatedAt(){
+        return createdAt.format(formatter);
     }
-
-    @Transient
-    private String formattedDate;
-
-    @Transient
-    private String formattedCreatedAt;
 }

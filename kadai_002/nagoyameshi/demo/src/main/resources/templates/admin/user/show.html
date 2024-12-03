@@ -20,7 +20,8 @@
                             <h5 class="card-title">サブスクリプション一覧</h5>
                             <ul class="list-group">
                                 <li th:each="sbsc , iterStat : ${user.subscriptions}"
-                                    class="list-group-item list-group-item-action" th:classappend="${iterStat.last}? '' : 'border-bottom'">
+                                    class="list-group-item list-group-item-action" th:classappend="${iterStat.last}? '' : 'border-bottom'"
+                                    style="cursor:pointer;">
                                     <small>
                                         <span class="long_id text-primary user-select-all"
                                               th:data-full-id="${sbsc.stripeSubscriptionId}"
@@ -40,7 +41,8 @@
                             <h5 class="card-title">登録カード一覧</h5>
                             <ul class="list-group">
                                 <li th:each="card ,  iterStat : ${user.cards}"
-                                    class="list-group-item list-group-item-action" th:classappend="${iterStat.last}? '':'border-bottom'">
+                                    class="list-group-item list-group-item-action" th:classappend="${iterStat.last}? '':'border-bottom'"
+                                    style="cursor:pointer;">
                                     <small>
                                         <span class="long_id text-primary user-select-all"
                                               th:data-full-id="${card.stripeCardId}"

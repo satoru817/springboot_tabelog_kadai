@@ -37,9 +37,9 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="AnnotationType" />
-        <option value="HTML File" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -52,6 +52,9 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$MAVEN_REPOSITORY$/org/springframework/data/spring-data-commons/3.3.4/spring-data-commons-3.3.4.jar!/org/springframework/data/domain/Page.class" root0="SKIP_INSPECTION" />
+    <setting file="jar://$MAVEN_REPOSITORY$/org/springframework/data/spring-data-commons/3.3.4/spring-data-commons-3.3.4.jar!/org/springframework/data/domain/PageImpl.class" root0="SKIP_INSPECTION" />
+    <setting file="jar://$MAVEN_REPOSITORY$/org/springframework/data/spring-data-commons/3.3.4/spring-data-commons-3.3.4.jar!/org/springframework/data/domain/Pageable.class" root0="SKIP_INSPECTION" />
     <setting file="jar://$MAVEN_REPOSITORY$/org/springframework/security/spring-security-web/6.3.3/spring-security-web-6.3.3.jar!/org/springframework/security/web/FilterChainProxy.class" root0="SKIP_INSPECTION" />
     <setting file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/6.1.13/spring-expression-6.1.13.jar!/org/springframework/expression/spel/standard/SpelExpression.class" root0="SKIP_INSPECTION" />
   </component>

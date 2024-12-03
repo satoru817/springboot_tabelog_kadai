@@ -1,8 +1,8 @@
 const longIds = document.querySelectorAll('.long_id');
 
 longIds.forEach(span=>{
-    const li = span.closest('li');
-    li.addEventListener('dblclick',()=>{
+    const parent = span.closest('li')||span.closest('tr');
+    parent.addEventListener('dblclick',()=>{
         toggleDisplay(span);
     });
 });

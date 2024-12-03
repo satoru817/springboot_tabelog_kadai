@@ -29,5 +29,10 @@ public class AdminPaymentController {
         }else{
             payments = paymentRepository.findAll(pageable);
         }
+
+        model.addAttribute("payments",payments);
+
+        return "admin/payment/index";
+
     }
 }

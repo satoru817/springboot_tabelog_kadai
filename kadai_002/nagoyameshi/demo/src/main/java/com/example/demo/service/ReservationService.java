@@ -7,8 +7,11 @@ import com.example.demo.repository.ReservationRepository;
 import com.example.demo.repository.RestaurantRepository;
 import com.example.demo.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -49,5 +52,22 @@ public class ReservationService {
 
         return reservedCount+people <= restaurant.getCapacity();
 
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Reservation> findAll(Pageable pageable){
+        return reservationRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Reservation> findAllBySearchQuery(String searchQuery, Pageable pageable) {
+        return reservationRepository.findAllBySearchQuery(searchQuery,pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Reservation findById(Integer reservationId) {
+
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(()->new RuntimeException("Reservation not found with id:"+reservationId));
     }
 }

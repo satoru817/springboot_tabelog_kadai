@@ -1,9 +1,11 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.User;
+import com.example.demo.error.UserNotFoundException;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
@@ -12,6 +14,12 @@ import java.io.IOException;
 public class UserService {
     private final UserRepository userRepository;
     private final ImageService imageService;
+
+    @Transactional(readOnly = true)
+    public User findById(Integer userId){
+        return userRepository.findById(userId)
+                .orElseThrow(()->new UserNotFoundException("User not found with id:"+userId));
+    }
 
 
     //画像データの削除を追加する必要がある。

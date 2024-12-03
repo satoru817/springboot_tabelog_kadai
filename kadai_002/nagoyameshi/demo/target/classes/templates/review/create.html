@@ -19,7 +19,7 @@
                     <!-- Flash メッセージを表示する部分 -->
                     <div th:if="${message}" class="alert alert-warning" role="alert" th:text="${message}"></div>
 
-                    <h1 th:text="${review.reservation.restaurant.name}+'をレビュー'"></h1>
+                    <h1 th:text="${review.reservation.restaurant.name}+'をレビュー'" class="text-nowrap mb-4 text-center" ></h1>
 
                     <form method="post"
                           th:action="@{/review/upsert}" enctype="multipart/form-data"

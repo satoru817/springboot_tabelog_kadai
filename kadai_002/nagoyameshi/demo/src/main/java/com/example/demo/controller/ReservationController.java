@@ -28,7 +28,7 @@ import java.util.List;
 public class ReservationController {
     private final ReservationRepository reservationRepository;
     private final ReservationService reservationService;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH時mm分");
+
 
     //予約一覧画面
     @GetMapping("/show")
@@ -40,7 +40,7 @@ public class ReservationController {
         return execShow(user,pageable,searchQuery,model);
     }
 
-    //AdminReservationControllerで使うための共通メソッド
+    //AdminReservationControllerでも使うための共通メソッド
     public String execShow(User user,Pageable pageable,String searchQuery,Model model){
         Page<Reservation> reservations ;
         if(searchQuery!=null && !searchQuery.trim().isEmpty()){
@@ -49,16 +49,9 @@ public class ReservationController {
             reservations = reservationRepository.findAllByUser(user,pageable);
         }
 
-        for(Reservation reservation : reservations){
-            reservation.setFormattedDate(reservation.getDate().format(formatter));
-            reservation.setFormattedCreatedAt(reservation.getCreatedAt().format(formatter));
-        }
-
-        LocalDateTime currentDateTime = LocalDateTime.now();
-
         model.addAttribute("user",user);
         model.addAttribute("searchQuery",searchQuery);
-        model.addAttribute("currentDateTime",currentDateTime);
+        model.addAttribute("currentDateTime",LocalDateTime.now());
         model.addAttribute("reservations",reservations);
         return "reservation/show";
     }

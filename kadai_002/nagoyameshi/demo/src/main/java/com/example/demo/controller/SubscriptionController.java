@@ -367,6 +367,7 @@ public class SubscriptionController {
     }
 
     @GetMapping("/cardView")
+    @Transactional
     public String viewUserCards(@AuthenticationPrincipal UserDetailsImpl userDetails, Model model) {
         User user = userDetails.getUser();
         List<Card> cards = cardRepository.getByUser(user);
