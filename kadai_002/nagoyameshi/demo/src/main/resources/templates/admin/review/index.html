@@ -1,66 +1,85 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="https://www.thymeleaf.org">
-<head>
-    <meta th:replace="~{fragment::headResources}">
+  <head>
+    <meta th:replace="~{fragment::headResources}" />
     <title>レビュー一覧</title>
     <script th:src="@{/js/review_masking.js}" defer></script>
-</head>
-<body class="d-flex flex-column min-vh-100">
-<!-- ヘッダー -->
-<div th:replace="~{fragment::header}"></div>
-<main class="flex-grow-1">
-    <div class="container my-4">
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <!-- ヘッダー -->
+    <div th:replace="~{fragment::header}"></div>
+    <main class="flex-grow-1">
+      <div class="container my-4">
         <!-- 検索セクション -->
         <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex align-items-center">
-                    <div>
-                        <h2 th:text="${searchQuery} != null ? 'レビュー検索結果' : 'レビュー一覧'">
-                        </h2>
-                        <p class="text-muted">レビュー数: <span th:text="${reviews.getTotalElements()}">0</span>件</p>
-                    </div>
-                </div>
+          <div class="col-12">
+            <div class="d-flex align-items-center">
+              <div>
+                <h2 th:text="${searchQuery} != null ? 'レビュー検索結果' : 'レビュー一覧'"></h2>
+                <p class="text-muted">レビュー数: <span th:text="${reviews.getTotalElements()}">0</span>件</p>
+              </div>
             </div>
-            <div class="col-xl-3 col-lg-4 col-md-12">
-                <form method="get"
-                      th:with="userRole = ${#authentication.principal.user.role.name}"
-                      th:action="@{/admin/review/index}" class="w-100 mb-3">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="searchQuery" th:value="${searchQuery}"
-                               placeholder="検索キーワード">
-                        <button type="submit" class="btn shadow-sm btn">検索</button>
-                    </div>
-                </form>
-            </div>
+          </div>
+          <div class="col-xl-3 col-lg-4 col-md-12">
+            <form
+              method="get"
+              th:with="userRole = ${#authentication.principal.user.role.name}"
+              th:action="@{/admin/review/index}"
+              class="w-100 mb-3"
+            >
+              <div class="input-group mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="searchQuery"
+                  th:value="${searchQuery}"
+                  placeholder="検索キーワード"
+                />
+                <button type="submit" class="btn shadow-sm btn">検索</button>
+              </div>
+            </form>
+          </div>
         </div>
 
         <div th:replace="~{fragment::reviewAndModal}"></div>
 
         <!-- ページネーション -->
         <div th:if="${reviews.totalPages > 1}" class="row">
-            <div class="col-12">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item" th:classappend="${!reviews.hasPrevious()} ? 'disabled'">
-                            <a class="page-link"
-                               th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number - 1})}">前へ</a>
-                        </li>
-                        <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, reviews.totalPages - 1)}"
-                            th:classappend="${pageNumber == reviews.number} ? 'active'">
-                            <a class="page-link"
-                               th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${pageNumber})}"
-                               th:text="${pageNumber + 1}">1</a>
-                        </li>
-                        <li class="page-item" th:classappend="${!reviews.hasNext()} ? 'disabled'">
-                            <a class="page-link"
-                               th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number + 1})}">次へ</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+          <div class="col-12">
+            <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${!reviews.hasPrevious()} ? 'disabled'">
+                  <a
+                    class="page-link rounded-circle"
+                    th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number - 1})}"
+                    >前へ</a
+                  >
+                </li>
+                <li
+                  class="page-item"
+                  th:each="pageNumber : ${#numbers.sequence(0, reviews.totalPages - 1)}"
+                  th:classappend="${pageNumber == reviews.number} ? 'active'"
+                >
+                  <a
+                    class="page-link rounded-circle"
+                    th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${pageNumber})}"
+                    th:text="${pageNumber + 1}"
+                    >1</a
+                  >
+                </li>
+                <li class="page-item" th:classappend="${!reviews.hasNext()} ? 'disabled'">
+                  <a
+                    class="page-link rounded-circle"
+                    th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number + 1})}"
+                    >次へ</a
+                  >
+                </li>
+              </ul>
+            </nav>
+          </div>
         </div>
-    </div>
-</main>
-<div th:replace="~{fragment::footer}"></div>
-</body>
+      </div>
+    </main>
+    <div th:replace="~{fragment::footer}"></div>
+  </body>
 </html>

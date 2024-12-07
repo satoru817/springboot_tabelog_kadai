@@ -8,7 +8,10 @@ import com.example.demo.entity.Subscription;
 import com.example.demo.repository.*;
 import com.example.demo.security.UserDetailsImpl;
 import com.example.demo.security.UserDetailsServiceImpl;
+import com.example.demo.service.CardService;
 import com.example.demo.service.StripeService;
+import com.example.demo.service.SubscriptionService;
+import com.example.demo.service.UserService;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
@@ -51,12 +54,14 @@ public class SubscriptionController {
     private final UserDetailsServiceImpl userDetailsService;
     private final RoleRepository roleRepository;
     private final PaymentRepository paymentRepository;
+    private final CardService cardService;
+    private final UserService userService;
+    private final SubscriptionService subscriptionService;
     @Value("${stripe.api-key}")
     private String stripeApiKey;
 
     @Value("${stripe.webhook-secret}")
     private String webhookSecret;
-
 
 
     //fixme:このページはunpaid_userにしか見られないようにしないといけない。
@@ -80,21 +85,21 @@ public class SubscriptionController {
     }
 
 
-
     @PostMapping("/api/create-checkout-session")
     public ResponseEntity<Map<String, String>> createCheckoutSession(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletRequest request) {
         User user = userDetails.getUser();
-        String sessionId = stripeService.createStripeSession(user,request);
-        log.info("sessionId:{}",sessionId);
+        String sessionId = stripeService.createStripeSession(user, request);
+        log.info("sessionId:{}", sessionId);
         Map<String, String> response = new HashMap<>();
         response.put("sessionId", sessionId);
         return ResponseEntity.ok(response);
     }
 
 
-    //todo:stripe上でのdetachとdbに存在するユーザーに関連する全てのカード情報の消去が必要。
+    //サブスクをキャンセルするが、カード情報はstripeから消さない。これは再度同一カードでサブスクを開始したいときの入力を省略するため。
+    @Transactional
     @PostMapping("/api/cancel-subscription")
-    public ResponseEntity<Map<String, String>> cancelSubscription(
+    public ResponseEntity<Map<String, Object>> cancelSubscription(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             HttpServletRequest request) throws StripeException {
 
@@ -103,7 +108,8 @@ public class SubscriptionController {
 
         if (optionalSubscription.isEmpty()) {
             // サブスクリプションが見つからない場合はエラーレスポンスを返す
-            Map<String, String> errorResponse = new HashMap<>();
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
             errorResponse.put("error", "No active subscription found.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
@@ -114,35 +120,31 @@ public class SubscriptionController {
         log.info("stripe サブスクリプションId:{}", subscriptionId);
 
         try {
-            // Stripeサブスクリプションをキャンセル（いまの設定だと、即時キャンセルで再開時に再度支払いがすぐに発生する）
-            //キャンセル時にカード情報は全てdetachされる。
+
             stripeService.cancelSubscription(subscriptionId);
 
-            List<Card> cards = cardRepository.findByUser(user);
-            for(Card card:cards){
-                cardRepository.delete(card);
-            }
+            cardService.setAllNonDefaultForUser(user);
 
-            Optional<Role> optionalUnpaid = roleRepository.findRoleByName("ROLE_UNPAID_USER");
-            Role unpaidRole = optionalUnpaid.orElseThrow(() -> new RuntimeException("ROLE_UNPAID_USER not found"));
-            user.setRole(unpaidRole);
-            userRepository.save(user);//ROLEの切り替え処理
+            userService.togglePaymentStatus(user);
 
 
             // 成功メッセージを作成
-            Map<String, String> successResponse = new HashMap<>();
-            successResponse.put("success", "Subscription has been canceled.");
+            Map<String, Object> successResponse = new HashMap<>();
+            successResponse.put("success", true);
+            successResponse.put("message", "Subscription has been canceled.");
             log.info("サクセスメッセージを格納しました。");
             return ResponseEntity.ok(successResponse);
+
         } catch (StripeException e) {
             // Stripe関連のエラーが発生した場合の処理
             log.error("Stripeエラーが発生しました: {}", e.getMessage());
-            Map<String, String> errorResponse = new HashMap<>();
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
             errorResponse.put("error", "Failed to cancel subscription. Please try again.");
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
-
 
     //todo:invoice.payment_failedに対応するひつようがある。（サブスクの支払い失敗への対応）
     //todo:クレジットカード情報編集ができるようにするひつようが有る。
@@ -154,7 +156,6 @@ public class SubscriptionController {
         Stripe.apiKey = stripeApiKey; // Stripe APIキーを設定
         log.info("stripeApiKey: {}", stripeApiKey);
         log.info("sigHeader: {}", sigHeader);
-        log.info("payload: {}", payload);
         log.info("webhookSecret: {}", webhookSecret);
         Event event = null;
 
@@ -178,7 +179,7 @@ public class SubscriptionController {
         if ("customer.subscription.deleted".equals(event.getType())) {
             stripeService.processSubscriptionDeleted(event);
             log.info("サブスクリプションがキャンセルされました。");
-            // 必要に応じてユーザーへの通知やログ記録を追加できます
+
         }
 
         if ("setup_intent.succeeded".equals(event.getType())) {
@@ -187,14 +188,14 @@ public class SubscriptionController {
             if (setupIntent != null) {
                 String paymentMethodId = setupIntent.getPaymentMethod();
                 String customerId = setupIntent.getCustomer();
-                log.info("stripeCustomerIdをsetUpIntentから回収しました:{}",customerId);
+                log.info("stripeCustomerIdをsetUpIntentから回収しました:{}", customerId);
                 try {
                     // paymentMethodId から PaymentMethod オブジェクトを取得
                     PaymentMethod paymentMethod = PaymentMethod.retrieve(paymentMethodId);
-                    log.info("paymentMethodの獲得ができました.{}",paymentMethod.toJson());
+                    log.info("paymentMethodの獲得ができました.{}", paymentMethod.toJson());
 
                     // Stripeサービスでカード情報の保存処理を実行
-                    stripeService.savePaymentMethodToDatabase(paymentMethod,customerId);
+                    stripeService.savePaymentMethodToDatabase(paymentMethod, customerId);
                     log.info("カードが正常に登録されました。PaymentMethod ID: {}", paymentMethodId);
                 } catch (StripeException e) {
                     log.error("PaymentMethodの取得に失敗しました。PaymentMethod ID: {}", paymentMethodId, e);
@@ -215,6 +216,7 @@ public class SubscriptionController {
                 if (paymentRepository.existsByStripePaymentIntentId(stripePaymentIntentId)) {
                     log.error("すでに登録されている支払いです");
                 } else {
+
                     try {
                         // Stripeの顧客IDからユーザーを特定
                         Integer userId = Integer.valueOf(invoice.getSubscriptionDetails().getMetadata().get("userId"));
@@ -286,46 +288,13 @@ public class SubscriptionController {
         return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 
-//とりあえず再開機能はなしでいいかな？余裕があったらつけよう。
-//    @PostMapping("/api/resume-subscription")
-//    public ResponseEntity<Map<String, String>> resumeSubscription(
-//            @AuthenticationPrincipal UserDetailsImpl userDetails) throws StripeException {
-//
-//        User user = userDetails.getUser();
-//        Optional<Subscription> optionalSubscription = subscriptionRepository.findByUser(user);
-//
-//        if (optionalSubscription.isEmpty() || !optionalSubscription.get().getStatus().equals("cancelled")) {
-//            // サブスクリプションが見つからないか、キャンセル状態でない場合はエラーレスポンスを返す
-//            Map<String, String> errorResponse = new HashMap<>();
-//            errorResponse.put("error", "No canceled subscription found.");
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-//        }
-//
-//        Subscription subscription = optionalSubscription.get();
-//        String subscriptionId = subscription.getStripeSubscriptionId();
-//
-//        try {
-//            // Stripeサブスクリプションを再開
-//            stripeService.resumeSubscription(subscriptionId);
-//            // 成功メッセージを作成
-//            Map<String, String> successResponse = new HashMap<>();
-//            successResponse.put("success", "Subscription has been resumed.");
-//            return ResponseEntity.ok(successResponse);
-//        } catch (StripeException e) {
-//            // Stripe関連のエラーが発生した場合の処理
-//            log.error("Stripeエラーが発生しました: {}", e.getMessage());
-//            Map<String, String> errorResponse = new HashMap<>();
-//            errorResponse.put("error", "Failed to resume subscription. Please try again.");
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-//        }
-//    }
 
     @PostMapping("api/create-setup-intent")
     public ResponseEntity<String> createSetupIntent(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         String customerId = userDetails.getUser().getStripeCustomerId();
         try {
             String clientSecret = stripeService.createSetupIntent(customerId);
-            log.info("clientSecret:{}",clientSecret);
+            log.info("clientSecret:{}", clientSecret);
             return ResponseEntity.ok(clientSecret); // クライアントシークレットをレスポンスとして返す
         } catch (StripeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -360,9 +329,8 @@ public class SubscriptionController {
     }
 
 
-
     @GetMapping("/add_card")
-    public String addCard(){
+    public String addCard() {
         return "/subscription/add_card";
     }
 
@@ -377,96 +345,87 @@ public class SubscriptionController {
 
     @PostMapping("/cards/delete/{id}")
     public String deleteCard(@PathVariable("id") Integer cardId, RedirectAttributes redirectAttributes) {
-        // Step 1: カード情報を使ってCardをDBから取得
-        Optional<Card> optionalCard = cardRepository.findById(cardId);
 
-        if (optionalCard.isPresent()) {
-            Card card = optionalCard.get();
-            String stripeCardId = card.getStripeCardId();
-            String stripeCustomerId = card.getUser().getStripeCustomerId();
+        Card card = cardService.findById(cardId);
 
-            // Step 2: Stripeからカード情報を消去
-            try {
-                // ストライプ上で顧客から支払い方法を取得
-                PaymentMethod paymentMethod = PaymentMethod.retrieve(stripeCardId);
-                if (paymentMethod != null && paymentMethod.getCustomer().equals(stripeCustomerId)) {
-                    // 顧客から支払い方法を切り離す
-                    paymentMethod.detach();
-                    log.info("Successfully detached card from Stripe: {}", stripeCardId);
+        String stripeCardId = card.getStripeCardId();
 
-                }
-            } catch (StripeException e) {
-                log.error("Failed to delete card from Stripe: {}", e.getMessage());
-                redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete card from Stripe.");
-                return "redirect:/cards";
+        String stripeCustomerId = card.getUser().getStripeCustomerId();
+
+        // Step 2: Stripeからカード情報を消去
+        try {
+            // ストライプ上で顧客から支払い方法を取得
+            PaymentMethod paymentMethod = PaymentMethod.retrieve(stripeCardId);
+            if (paymentMethod != null) {
+                // 顧客から支払い方法を切り離す
+                paymentMethod.detach();
+                log.info("Successfully detached card from Stripe: {}", stripeCardId);
+
             }
-
-            // Step 3: DBからカードを削除
-            cardRepository.deleteById(cardId);
-            log.info("Card deleted from the database: {}", cardId);
-
-            redirectAttributes.addFlashAttribute("successMessage", "Card successfully deleted.");
-        } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "Card not found.");
+        } catch (StripeException e) {
+            log.error("Failed to delete card from Stripe: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete card from Stripe.");
+            return "redirect:/cards";
         }
+
+        // Step 3: DBからカードを削除
+        cardRepository.deleteById(cardId);
+        log.info("Card deleted from the database: {}", cardId);//ここでsubscriptionもdeleteされてしまっている？
+
+        redirectAttributes.addFlashAttribute("successMessage", "Card successfully deleted.");
 
         return "redirect:/cardView"; // カードページにリダイレクト
     }
 
+    @Transactional
     @PostMapping("/cards/set-default/{id}")
-    public String changeDefaultCard(@PathVariable("id") Integer cardId, RedirectAttributes redirectAttributes, Principal principal) {
+    public String changeDefaultCard(@PathVariable("id") Integer cardId, RedirectAttributes redirectAttributes, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // ユーザーを取得
-        String username = principal.getName();
-        Optional<User> optionalUser = userRepository.findByName(username); // ユーザーの取得
+        User user = userDetails.getUser();// ユーザーの取得
 
-        // ユーザーが存在する場合のみ処理を続ける
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
+        // ユーザーのデフォルトカードのみを探す
+        List<Card> cards = cardRepository.findByUserAndIsDefault(user, true);
 
-            // ユーザーのデフォルトカードのみを探す
-            List<Card> cards = cardRepository.findByUserAndIsDefault(user,true);
+        //すべてのカードをデフォルトでなくす
+        for (Card card : cards) {
+            card.setIsDefault(false);
+            cardRepository.save(card);
+            cardRepository.flush();// DBを更新
 
-             //すべてのカードをデフォルトでなくす
-            for (Card card : cards) {
-                card.setIsDefault(false);
-                cardRepository.save(card); // DBを更新
-
-            }
-
-            // 指定されたカードをデフォルトに設定
-            Optional<Card> optionalCard = cardRepository.findById(cardId);
-            if (optionalCard.isPresent()) {
-                Card defaultCard = optionalCard.get();
-                defaultCard.setIsDefault(true);
-                cardRepository.save(defaultCard); // DBを更新
-
-                try {
-                    // Stripeでデフォルトカードを顧客に設定する
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("invoice_settings", Collections.singletonMap("default_payment_method", defaultCard.getStripeCardId()));
-
-                    Customer customer = Customer.retrieve(defaultCard.getUser().getStripeCustomerId());
-                    customer.update(params);
-
-                    log.info("顧客のデフォルト支払い方法がStripeで更新されました。");
-                } catch (StripeException e) {
-                    log.error("Stripeの顧客情報を更新できませんでした: {}", e.getMessage());
-                }
-
-
-
-                redirectAttributes.addFlashAttribute("successMessage", "カードがデフォルトに設定されました。");
-            } else {
-                redirectAttributes.addFlashAttribute("errorMessage", "指定されたカードが見つかりませんでした。");
-            }
-        } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "ユーザーが見つかりませんでした。");
         }
+
+        // 指定されたカードをデフォルトに設定
+        Card toDefaultCard = cardService.findById(cardId);
+
+        toDefaultCard.setIsDefault(true);
+
+        cardRepository.save(toDefaultCard);
+
+        Subscription subscription = subscriptionService.findByUser(user);
+
+        subscription.setCard(toDefaultCard);
+
+        subscriptionRepository.save(subscription);
+
+        try {
+            // Stripeでデフォルトカードを顧客に設定する
+            Map<String, Object> params = new HashMap<>();
+            params.put("invoice_settings", Collections.singletonMap("default_payment_method", toDefaultCard.getStripeCardId()));
+
+            Customer customer = Customer.retrieve(toDefaultCard.getUser().getStripeCustomerId());
+            customer.update(params);
+
+            log.info("顧客のデフォルト支払い方法がStripeで更新されました。");
+        } catch (StripeException e) {
+            log.error("Stripeの顧客情報を更新できませんでした: {}", e.getMessage());
+        }
+
+
+        redirectAttributes.addFlashAttribute("successMessage", "カードがデフォルトに設定されました。");
+
 
         return "redirect:/cardView"; // カード一覧ページにリダイレクト
     }
-
-
 
 
 }

@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.constants.RoleName;
+import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.error.UserNotFoundException;
 import com.example.demo.repository.UserRepository;
@@ -12,8 +14,10 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Service
 public class UserService {
+
     private final UserRepository userRepository;
     private final ImageService imageService;
+    private final RoleService roleService;
 
     @Transactional(readOnly = true)
     public User findById(Integer userId){
@@ -40,5 +44,23 @@ public class UserService {
         }
 
 
+    }
+
+    public void togglePaymentStatus(User user){
+        if(user.getRole().getName().equals(RoleName.ADMIN.getRoleName())){
+            return;
+        }
+
+        if(user.getRole().getName().equals(RoleName.PAID.getRoleName())){
+            roleService.setUnpaid(user);
+            userRepository.save(user);
+            return;
+        }
+
+        if(user.getRole().getName().equals(RoleName.UNPAID.getRoleName())){
+            roleService.setPaid(user);
+            userRepository.save(user);
+
+        }
     }
 }

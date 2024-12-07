@@ -1,39 +1,37 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="https://www.thymeleaf.org">
-<head>
-    <meta th:replace="~{fragment::headResources}">
+  <head>
+    <meta th:replace="~{fragment::headResources}" />
     <title>レビュー詳細</title>
     <script th:src="@{/js/review_masking.js}" defer></script>
-</head>
-<body class="d-flex flex-column min-vh-100">
-<!-- ヘッダー -->
-<div th:replace="~{fragment::header}"></div>
-<main class="flex-grow-1">
-    <div class="container my-4">
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <!-- ヘッダー -->
+    <div th:replace="~{fragment::header}"></div>
+    <main class="flex-grow-1">
+      <div class="container my-4">
         <!-- ユーザー情報セクション -->
         <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex align-items-center">
-                    <img th:if="${reviews.size() > 0}"
-                         th:src="${reviews.get(0).reservation.user.profileImage != null ? '/images/' + reviews.get(0).reservation.user.profileImage : '/images/default_profile.png'}"
-                         class="rounded-circle me-3"
-                         style="width: 100px; height: 100px; object-fit: cover;"
-                         alt="User profile">
-                    <div>
-                        <h2
-                            th:text="${reviews.get(0).reservation.user.name + 'さんのレビュー'}">
-                            ユーザー名さんのレビュー
-                        </h2>
-                    </div>
-                </div>
+          <div class="col-12">
+            <div class="d-flex align-items-center">
+              <img
+                th:if="${reviews.size() > 0}"
+                th:src="${reviews.get(0).reservation.user.profileImage != null ? '/images/' + reviews.get(0).reservation.user.profileImage : '/images/default_profile.png'}"
+                class="rounded-circle me-3"
+                style="width: 100px; height: 100px; object-fit: cover"
+                alt="User profile"
+              />
+              <div>
+                <h2 th:text="${reviews.get(0).reservation.user.name + 'さんのレビュー'}">ユーザー名さんのレビュー</h2>
+              </div>
             </div>
+          </div>
         </div>
 
         <!-- レビュー -->
         <div th:replace="~{fragment::reviewAndModal}"></div>
-
-    </div>
-</main>
-<div th:replace="~{fragment::footer}"></div>
-</body>
+      </div>
+    </main>
+    <div th:replace="~{fragment::footer}"></div>
+  </body>
 </html>

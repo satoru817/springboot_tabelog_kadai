@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS roles (
 
 CREATE TABLE IF NOT EXISTS users (
     user_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    role_id INT NOT NULL, -- 管理者、無料会員、有料会員
+    role_id INT NOT NULL,
     name VARCHAR(255) NOT NULL UNIQUE,
     name_for_reservation VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
     enabled BOOLEAN DEFAULT FALSE,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_role_id FOREIGN KEY (role_id) REFERENCES roles(id)
+    CONSTRAINT fk_role_id FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE RESTRICT--ユーザーが削除されてもroleは削除しない
 );
 
 CREATE TABLE IF NOT EXISTS verification_tokens (
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS verification_tokens (
     token VARCHAR(255) NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_verification_user_id FOREIGN KEY (user_id) REFERENCES users(user_id)
+    CONSTRAINT fk_verification_user_id FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS login_attempts (
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS cards (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE (user_id, stripe_card_id),
-    CONSTRAINT fk_card_user_id FOREIGN KEY (user_id) REFERENCES users(user_id)
+    CONSTRAINT fk_card_user_id FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS subscriptions (
@@ -62,8 +62,8 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     end_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    CONSTRAINT fk_card_id FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE
+    CONSTRAINT fk_subscription_user_id FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_subscription_card_id FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS categories (
@@ -96,22 +96,21 @@ CREATE TABLE IF NOT EXISTS restaurants (
     sunday_closing_time TIME
 );
 
-
-CREATE TABLE  IF NOT EXISTS category_restaurants(--１つのレストランが複数のカテゴリーを持てるようにする
+CREATE TABLE IF NOT EXISTS category_restaurants (
     category_restaurant_id INT AUTO_INCREMENT PRIMARY KEY,
     restaurant_id INT NOT NULL,
     category_id INT NOT NULL,
     UNIQUE(restaurant_id,category_id),
-    FOREIGN KEY(restaurant_id) REFERENCES restaurants(restaurant_id) ON DELETE CASCADE,
-    FOREIGN KEY(category_id) REFERENCES categories(category_id) ON DELETE CASCADE
+    CONSTRAINT fk_category_restaurant_restaurant_id FOREIGN KEY(restaurant_id) REFERENCES restaurants(restaurant_id) ON DELETE CASCADE,
+    CONSTRAINT fk_category_restaurant_category_id FOREIGN KEY(category_id) REFERENCES categories(category_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS restaurant_images (--１つのレストランが複数のイメージを持てるようにする。
+CREATE TABLE IF NOT EXISTS restaurant_images (
     restaurant_image_id INT PRIMARY KEY AUTO_INCREMENT,
     restaurant_id INT NOT NULL,
     image_name VARCHAR(255) NOT NULL,
     UNIQUE(restaurant_id,image_name),
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id) ON DELETE CASCADE
+    CONSTRAINT fk_restaurant_image_restaurant_id FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS favorites (
@@ -121,10 +120,9 @@ CREATE TABLE IF NOT EXISTS favorites (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY (restaurant_id,user_id),
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    CONSTRAINT fk_favorite_restaurant_id FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id) ON DELETE CASCADE,
+    CONSTRAINT fk_favorite_user_id FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE IF NOT EXISTS reservations (
     reservation_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -135,8 +133,8 @@ CREATE TABLE IF NOT EXISTS reservations (
     comment VARCHAR(255),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    CONSTRAINT fk_reservation_restaurant_id FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id) ON DELETE CASCADE,
+    CONSTRAINT fk_reservation_user_id FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS reviews (
@@ -144,14 +142,14 @@ CREATE TABLE IF NOT EXISTS reviews (
     reservation_id INT NOT NULL,
     star_count INT NOT NULL,
     content VARCHAR(255),
-    is_visible BOOLEAN DEFAULT TRUE,--falseのとき、管理者をのぞく他のユーザーには見えないようにする。
+    is_visible BOOLEAN DEFAULT TRUE,
     hidden_reason VARCHAR(255),
     hidden_at DATETIME,
     hidden_by INT,
-    UNIQUE KEY(reservation_id),--１つの予約に付きレビューは1件しかできないようにしている
+    UNIQUE KEY(reservation_id),
     CHECK(star_count > 0 AND star_count < 6),
-    FOREIGN KEY (reservation_id) REFERENCES reservations(reservation_id) ON DELETE CASCADE,
-    FOREIGN KEY (hidden_by) REFERENCES users (user_id)
+    CONSTRAINT fk_review_reservation_id FOREIGN KEY (reservation_id) REFERENCES reservations(reservation_id) ON DELETE CASCADE,
+    CONSTRAINT fk_review_hidden_by FOREIGN KEY (hidden_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS review_photos (
@@ -159,7 +157,7 @@ CREATE TABLE IF NOT EXISTS review_photos (
     review_id INT NOT NULL,
     image_name VARCHAR(255) NOT NULL,
     UNIQUE KEY(review_id,image_name),
-    FOREIGN KEY (review_id) REFERENCES reviews(review_id) ON DELETE CASCADE--reviewが消去されたら対応するreview_photoも消えるようにする。
+    CONSTRAINT fk_review_photo_review_id FOREIGN KEY (review_id) REFERENCES reviews(review_id) ON DELETE CASCADE--レビューが削除されたら関連するreview_photoも削除
 );
 
 CREATE TABLE IF NOT EXISTS company_info (
@@ -176,16 +174,15 @@ CREATE TABLE IF NOT EXISTS company_info (
 CREATE TABLE IF NOT EXISTS payments (
     payment_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    amount INT NOT NULL,  -- 支払い金額（単位は最小通貨単位、例：円）
-    currency VARCHAR(3) NOT NULL DEFAULT 'JPY',  -- 通貨コード
-    stripe_payment_intent_id VARCHAR(255) NOT NULL UNIQUE,  -- Stripeの支払いID
-    card_id BIGINT,  -- 使用したカード情報
-    status VARCHAR(50) NOT NULL,  -- succeeded, failed, pending など
-    description VARCHAR(255),  -- 支払いの説明
-    metadata JSON,  -- 追加情報を柔軟に保存
-    error_message VARCHAR(255),  -- エラーが発生した場合のメッセージ
+    amount INT NOT NULL,
+    currency VARCHAR(3) NOT NULL DEFAULT 'JPY',
+    stripe_payment_intent_id VARCHAR(255) NOT NULL UNIQUE,
+    card_id BIGINT,
+    status VARCHAR(50) NOT NULL,
+    description VARCHAR(255),
+    metadata JSON,
+    error_message VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_payment_user_id FOREIGN KEY (user_id) REFERENCES users(user_id),
-    CONSTRAINT fk_payment_card_id FOREIGN KEY (card_id) REFERENCES cards(card_id)
+    CONSTRAINT fk_payment_user_id FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT,--決済記録のある顧客は削除できない
+    CONSTRAINT fk_payment_card_id FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE SET NULL--カードが削除されても決済記録は保持
 );

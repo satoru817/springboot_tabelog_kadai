@@ -1,52 +1,69 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="https://www.thymeleaf.org">
-<head>
+  <head>
     <title>My Cards</title>
-    <meta th:replace="~{fragment::headResources}"/>
-</head>
-<body class="d-flex flex-column min-vh-100">
-<div th:replace="~{fragment::header}"></div>
-<div class="container mt-5">
-    <h2 class="text-center mb-4">My Cards</h2>
-    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
-    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+    <meta th:replace="~{fragment::headResources}" />
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragment::header}"></div>
+    <div class="container mt-5">
+      <h2 class="text-center mb-4">My Cards</h2>
+      <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
+      <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
 
-    <div class="row justify-content-center">
+      <div class="row justify-content-center">
         <div class="col-md-8">
-            <div th:if="${#lists.isEmpty(cards)}">
-                <p class="text-center">No cards available.</p>
+          <div th:if="${#lists.isEmpty(cards)}">
+            <p class="text-center">No cards available.</p>
+          </div>
+          <div th:each="card : ${cards}" class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title" th:text="${card.brand + ' **** ' + card.last4}"></h5>
+              <p class="card-text">
+                Expiry: <span th:text="${card.expMonth}"></span>/<span th:text="${card.expYear}"></span><br />
+                <span th:if="${card.isDefault}" class="badge bg-success">Default</span>
+              </p>
+              <form
+                th:action="@{/cards/set-default/{cardId}(cardId=${card.cardId})}"
+                method="post"
+                style="display: inline"
+              >
+                <button type="submit" class="btn btn-submit me-2" th:disabled="${card.isDefault}">
+                  Set as Default
+                </button>
+              </form>
+              <form
+                th:action="@{/cards/delete/{cardId}(cardId=${card.cardId})}"
+                method="post"
+                style="display: inline"
+                th:id="'deleteForm-' + ${card.cardId}"
+              >
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  th:onclick="|deleteCard(${card.cardId}, ${card.isDefault})|"
+                >
+                  Delete
+                </button>
+              </form>
             </div>
-            <div th:each="card : ${cards}" class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title" th:text="${card.brand + ' **** ' + card.last4}"></h5>
-                    <p class="card-text">
-                        Expiry: <span th:text="${card.expMonth}"></span>/<span th:text="${card.expYear}"></span><br>
-                        <span th:if="${card.isDefault}" class="badge bg-success">Default</span>
-                    </p>
-                    <form th:action="@{/cards/set-default/{cardId}(cardId=${card.cardId})}" method="post" style="display: inline;">
-                        <button type="submit" class="btn btn-primary" th:disabled="${card.isDefault}">Set as Default</button>
-                    </form>
-                    <form th:action="@{/cards/delete/{cardId}(cardId=${card.cardId})}" method="post" style="display: inline;" th:id="'deleteForm-' + ${card.cardId}">
-                        <button type="button" class="btn btn-danger" onclick="deleteCard(${card.cardId}, ${card.isDefault})">Delete</button>
-                    </form>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
 
-<script>
-    function deleteCard(cardId, isDefault) {
+    <script>
+      function deleteCard(cardId, isDefault) {
         if (isDefault) {
-            // Redirect to the upgrade page
-            window.location.href = '/upgrade';
+          // Redirect to the upgrade page
+          window.location.href = '/upgrade';
         } else {
-            // Submit the form to delete the card
-            document.getElementById('deleteForm-' + cardId).submit();
+          // Submit the form to delete the card
+          document.getElementById('deleteForm-' + cardId).submit();
         }
-    }
-</script>
+      }
+    </script>
 
-<div th:replace="~{fragment::footer}"></div>
-</body>
+    <div th:replace="~{fragment::footer}"></div>
+  </body>
 </html>

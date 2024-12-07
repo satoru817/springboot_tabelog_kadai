@@ -1,143 +1,162 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja" xmlns:th="https://www.thymeleaf.org">
-<head>
-    <meta th:replace="~{fragment::headResources}"/>
+  <head>
+    <meta th:replace="~{fragment::headResources}" />
     <title>予約一覧</title>
     <script th:src="@{/js/reservation_user.js}" defer></script>
-    <link rel="stylesheet" th:href="@{/css/name_badge.css}">
-</head>
-<body class="d-flex flex-column min-vh-100 bg-light">
-<div th:replace="~{fragment::header}"></div>
+    <link rel="stylesheet" th:href="@{/css/name_badge.css}" />
+  </head>
+  <body class="d-flex flex-column min-vh-100 bg-light">
+    <div th:replace="~{fragment::header}"></div>
 
-<div class="container py-5 flex-grow-1">
-    <h1 class="text-center mb-5">予約一覧</h1>
+    <div class="container py-5 flex-grow-1">
+      <h1 class="text-center mb-5">予約一覧</h1>
 
-    <!-- Search Section -->
-    <div class="row justify-content-center mb-4">
+      <!-- Search Section -->
+      <div class="row justify-content-center mb-4">
         <div class="col-md-6 col-lg-4">
-            <form method="get" th:action="@{/admin/reservation/index}">
-                <div class="input-group">
-                    <input
-                            type="text"
-                            class="form-control"
-                            name="searchQuery"
-                            th:value="${searchQuery}"
-                            placeholder="予約を検索..."
-                    >
-                    <button type="submit" class="btn btn-primary">
-                        検索
-                    </button>
-                </div>
-            </form>
+          <form method="get" th:action="@{/admin/reservation/index}">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                name="searchQuery"
+                th:value="${searchQuery}"
+                placeholder="予約を検索..."
+              />
+              <button type="submit" class="btn btn-submit">検索</button>
+            </div>
+          </form>
         </div>
-    </div>
+      </div>
 
-    <!-- Reservations List -->
-    <div class="row justify-content-center">
+      <!-- Reservations List -->
+      <div class="row justify-content-center">
         <div class="col-md-10 col-lg-8">
-            <div class="d-flex justify-content-between flex-wrap">
-                <p th:if="${reservations.getTotalPages()>1}" class="fs-5 mb-3" th:text="${'検索結果:'+reservations.getTotalElements()+'件'+'('+(reservations.getNumber()+1) + '/' + reservations.getTotalPages()+'ページ)'}"></p>
-                <p th:unless="${reservations.getTotalPages()>1}" class="fs-5 mb-3" th:text="${'検索結果:'+reservations.getTotalElements()+'件'}"></p>
-            </div>
-            <div class="list-group">
-                <div th:each="reservation : ${reservations}"
-                     th:class="${reservation.date.isBefore(currentDateTime)} ?
+          <div class="d-flex justify-content-between flex-wrap">
+            <p
+              th:if="${reservations.getTotalPages()>1}"
+              class="fs-5 mb-3"
+              th:text="${'検索結果:'+reservations.getTotalElements()+'件'+'('+(reservations.getNumber()+1) + '/' + reservations.getTotalPages()+'ページ)'}"
+            ></p>
+            <p
+              th:unless="${reservations.getTotalPages()>1}"
+              class="fs-5 mb-3"
+              th:text="${'検索結果:'+reservations.getTotalElements()+'件'}"
+            ></p>
+          </div>
+          <div class="list-group">
+            <div
+              th:each="reservation : ${reservations}"
+              th:class="${reservation.date.isBefore(currentDateTime)} ?
                                   'list-group-item list-group-item-light mb-3 shadow-sm rounded' :
-                                  'list-group-item mb-3 shadow-sm rounded'">
-                    <!-- Restaurant Name and Status -->
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <a th:href="@{/restaurant/__${reservation.restaurant.restaurantId}__}"
-                            class="text-decoration-none">
-                            <h5 class="mb-0" th:text="${reservation.restaurant.name}">
-                                Restaurant Name
-                            </h5>
-                        </a>
-                        <span th:if="${reservation.date.isBefore(currentDateTime)}"
-                              class="badge bg-secondary">
-                                過去の予約
-                            </span>
-                    </div>
+                                  'list-group-item mb-3 shadow-sm rounded'"
+            >
+              <!-- Restaurant Name and Status -->
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <a th:href="@{/restaurant/__${reservation.restaurant.restaurantId}__}" class="text-decoration-none">
+                  <h5 class="mb-0" th:text="${reservation.restaurant.name}">Restaurant Name</h5>
+                </a>
+                <span th:if="${reservation.date.isBefore(currentDateTime)}" class="badge bg-secondary">
+                  過去の予約
+                </span>
+              </div>
 
-                    <!-- Reservation Details -->
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <p class="mb-2">
-                                <strong class="text-muted">ユーザー:</strong>
-                                <a th:href="@{/admin/user/show/__${reservation.user.userId}__}">
-                                    <span class="badge text-bg-info shadow-sm badge_hover" th:text="${reservation.user.name}"></span>
-                                </a>
-                            </p>
-                            <p class="mb-2">
-                                <strong class="text-muted">日時:</strong>
-                                <span th:text="${reservation.formattedDate}">Date</span>
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <p class="mb-2">
-                                <strong class="text-muted">人数:</strong>
-                                <span th:text="${reservation.numberOfPeople + '人'}">People</span>
-                            </p>
-                            <p class="mb-2">
-                                <strong class="text-muted">コメント:</strong>
-                                <span th:text="${reservation.comment ?: 'コメントなし'}">Comment</span>
-                            </p>
-                            <p class="mb-2">
-                                <stron class="text-muted">レビュー:</stron>
-                                <span th:if="${reservation.review == null}" class="badge text-bg-secondary" >レビューなし</span>
-                                <a th:if="${reservation.review}" th:href="@{/admin/reservation/review/show/__${reservation.reservationId}__}" class="badge text-bg-info text-decoration-none badge_hover">レビュー確認<span class="ms-2 badge text-bg-secondary" th:text="${'★' + reservation.review.starCount}"></span></a>
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Creation Date -->
-                    <small class="text-muted d-block mt-3">
-                        予約作成日時: <span th:text="${reservation.formattedCreatedAt}">Created Date</span>
-                    </small>
+              <!-- Reservation Details -->
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <p class="mb-2">
+                    <strong class="text-muted">ユーザー:</strong>
+                    <a th:href="@{/admin/user/show/__${reservation.user.userId}__}">
+                      <span class="badge text-bg-info shadow-sm badge_hover" th:text="${reservation.user.name}"></span>
+                    </a>
+                  </p>
+                  <p class="mb-2">
+                    <strong class="text-muted">日時:</strong>
+                    <span th:text="${reservation.formattedDate}">Date</span>
+                  </p>
                 </div>
+                <div class="col-md-6">
+                  <p class="mb-2">
+                    <strong class="text-muted">人数:</strong>
+                    <span th:text="${reservation.numberOfPeople + '人'}">People</span>
+                  </p>
+                  <p class="mb-2">
+                    <strong class="text-muted">コメント:</strong>
+                    <span th:text="${reservation.comment ?: 'コメントなし'}">Comment</span>
+                  </p>
+                  <p class="mb-2">
+                    <stron class="text-muted">レビュー:</stron>
+                    <span th:if="${reservation.review == null}" class="badge text-bg-secondary">レビューなし</span>
+                    <a
+                      th:if="${reservation.review}"
+                      th:href="@{/admin/reservation/review/show/__${reservation.reservationId}__}"
+                      class="badge text-bg-info text-decoration-none badge_hover"
+                      >レビュー確認<span
+                        class="ms-2 badge text-bg-secondary"
+                        th:text="${'★' + reservation.review.starCount}"
+                      ></span
+                    ></a>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Creation Date -->
+              <small class="text-muted d-block mt-3">
+                予約作成日時: <span th:text="${reservation.formattedCreatedAt}">Created Date</span>
+              </small>
             </div>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- Pagination -->
-    <div th:if="${reservations.totalPages > 1}" class="d-flex justify-content-center mt-4">
+      <!-- Pagination -->
+      <div th:if="${reservations.totalPages > 1}" class="d-flex justify-content-center mt-4">
         <nav aria-label="予約一覧ページ">
-            <ul class="pagination">
-                <!-- Previous Button -->
-                <li class="page-item">
-                    <span th:if="${reservations.isFirst()}" class="page-link text-muted">&laquo;</span>
-                    <a th:unless="${reservations.isFirst()}"
-                       class="page-link"
-                       th:href="@{/admin/reservation/index(page=${reservations.number-1},searchQuery=${searchQuery})}">
-                        &laquo;
-                    </a>
-                </li>
+          <ul class="pagination">
+            <!-- Previous Button -->
+            <li class="page-item">
+              <span th:if="${reservations.isFirst()}" class="page-link rounded-circle text-muted">&laquo;</span>
+              <a
+                th:unless="${reservations.isFirst()}"
+                class="page-link rounded-circle"
+                th:href="@{/admin/reservation/index(page=${reservations.number-1},searchQuery=${searchQuery})}"
+              >
+                &laquo;
+              </a>
+            </li>
 
-                <!-- Page Numbers -->
-                <li th:each="i : ${#numbers.sequence(0, reservations.totalPages-1)}"
-                    th:class="${'page-item' + (i == reservations.number ? ' active' : '')}">
-                        <span th:if="${i == reservations.number}"
-                              class="page-link"
-                              th:text="${i+1}">1</span>
-                    <a th:unless="${i == reservations.number}"
-                       class="page-link"
-                       th:href="@{/admin/reservation/index(page=${i},searchQuery=${searchQuery})}"
-                       th:text="${i+1}">1</a>
-                </li>
+            <!-- Page Numbers -->
+            <li
+              th:each="i : ${#numbers.sequence(0, reservations.totalPages-1)}"
+              th:class="${'page-item' + (i == reservations.number ? ' active' : '')}"
+            >
+              <span th:if="${i == reservations.number}" class="page-link rounded-circle" th:text="${i+1}">1</span>
+              <a
+                th:unless="${i == reservations.number}"
+                class="page-link rounded-circle"
+                th:href="@{/admin/reservation/index(page=${i},searchQuery=${searchQuery})}"
+                th:text="${i+1}"
+                >1</a
+              >
+            </li>
 
-                <!-- Next Button -->
-                <li class="page-item">
-                    <span th:if="${reservations.isLast()}" class="page-link text-muted">&raquo;</span>
-                    <a th:unless="${reservations.isLast()}"
-                       class="page-link"
-                       th:href="@{/admin/reservation/index(page=${reservations.number+1},searchQuery=${searchQuery})}">
-                        &raquo;
-                    </a>
-                </li>
-            </ul>
+            <!-- Next Button -->
+            <li class="page-item">
+              <span th:if="${reservations.isLast()}" class="page-link rounded-circle text-muted">&raquo;</span>
+              <a
+                th:unless="${reservations.isLast()}"
+                class="page-link rounded-circle"
+                th:href="@{/admin/reservation/index(page=${reservations.number+1},searchQuery=${searchQuery})}"
+              >
+                &raquo;
+              </a>
+            </li>
+          </ul>
         </nav>
+      </div>
     </div>
-</div>
 
-<div th:replace="~{fragment::footer}"></div>
-</body>
+    <div th:replace="~{fragment::footer}"></div>
+  </body>
 </html>

@@ -1,33 +1,37 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="https://www.thymeleaf.org">
-<head>
-    <meta th:replace="~{fragment::headResources}">
+  <head>
+    <meta th:replace="~{fragment::headResources}" />
     <title>レビュー一覧</title>
     <script th:src="@{/js/review_masking.js}" defer></script>
-</head>
-<body class="d-flex flex-column min-vh-100">
-<!-- ヘッダー -->
-<div th:replace="~{fragment::header}"></div>
-<main class="flex-grow-1">
-    <div class="container my-4">
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <!-- ヘッダー -->
+    <div th:replace="~{fragment::header}"></div>
+    <main class="flex-grow-1">
+      <div class="container my-4">
         <!-- ユーザー情報セクション -->
         <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex align-items-center">
-                    <img th:if="${reviews.getContent().size() > 0}"
-                         th:src="${reviews.getContent().get(0).reservation.user.profileImage != null ? '/images/' + reviews.getContent().get(0).reservation.user.profileImage : '/images/default_profile.png'}"
-                         class="rounded-circle me-3"
-                         style="width: 100px; height: 100px; object-fit: cover;"
-                         alt="User profile">
-                    <div>
-                        <h2 th:if="${reviews.getContent().size() > 0}"
-                            th:text="${reviews.getContent().get(0).reservation.user.name + 'さんのレビュー'}">
-                            ユーザー名さんのレビュー
-                        </h2>
-                        <p class="text-muted">レビュー数: <span th:text="${reviews.getTotalElements()}">0</span>件</p>
-                    </div>
-                </div>
+          <div class="col-12">
+            <div class="d-flex align-items-center">
+              <img
+                th:if="${reviews.getContent().size() > 0}"
+                th:src="${reviews.getContent().get(0).reservation.user.profileImage != null ? '/images/' + reviews.getContent().get(0).reservation.user.profileImage : '/images/default_profile.png'}"
+                class="rounded-circle me-3"
+                style="width: 100px; height: 100px; object-fit: cover"
+                alt="User profile"
+              />
+              <div>
+                <h2
+                  th:if="${reviews.getContent().size() > 0}"
+                  th:text="${reviews.getContent().get(0).reservation.user.name + 'さんのレビュー'}"
+                >
+                  ユーザー名さんのレビュー
+                </h2>
+                <p class="text-muted">レビュー数: <span th:text="${reviews.getTotalElements()}">0</span>件</p>
+              </div>
             </div>
+          </div>
         </div>
 
         <!-- レビュー一覧 -->
@@ -35,26 +39,41 @@
 
         <!-- ページネーション -->
         <div th:if="${reviews.totalPages > 1}" class="row">
-            <div class="col-12">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item" th:classappend="${!reviews.hasPrevious()} ? 'disabled'">
-                            <a class="page-link" th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number - 1})}">前へ</a>
-                        </li>
-                        <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, reviews.totalPages - 1)}"
-                            th:classappend="${pageNumber == reviews.number} ? 'active'">
-                            <a class="page-link" th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${pageNumber})}"
-                               th:text="${pageNumber + 1}">1</a>
-                        </li>
-                        <li class="page-item" th:classappend="${!reviews.hasNext()} ? 'disabled'">
-                            <a class="page-link" th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number + 1})}">次へ</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+          <div class="col-12">
+            <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${!reviews.hasPrevious()} ? 'disabled'">
+                  <a
+                    class="page-link rounded-circle"
+                    th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number - 1})}"
+                    >前へ</a
+                  >
+                </li>
+                <li
+                  class="page-item"
+                  th:each="pageNumber : ${#numbers.sequence(0, reviews.totalPages - 1)}"
+                  th:classappend="${pageNumber == reviews.number} ? 'active'"
+                >
+                  <a
+                    class="page-link rounded-circle"
+                    th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${pageNumber})}"
+                    th:text="${pageNumber + 1}"
+                    >1</a
+                  >
+                </li>
+                <li class="page-item" th:classappend="${!reviews.hasNext()} ? 'disabled'">
+                  <a
+                    class="page-link rounded-circle"
+                    th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number + 1})}"
+                    >次へ</a
+                  >
+                </li>
+              </ul>
+            </nav>
+          </div>
         </div>
-    </div>
-</main>
-<div th:replace="~{fragment::footer}"></div>
-</body>
+      </div>
+    </main>
+    <div th:replace="~{fragment::footer}"></div>
+  </body>
 </html>

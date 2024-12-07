@@ -5,27 +5,27 @@
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>Membership Upgrade</title>
-    <meta th:replace="~{fragment::headResources}"></meta>
-    <style>
-        .card {
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .btn-upgrade {
-            background-color: #007bff;
-            color: white;
-        }
-        .btn-upgrade:hover {
-            background-color: #0056b3;
-        }
-        .btn-downgrade {
-            background-color: #dc3545;
-            color: white;
-        }
-        .btn-downgrade:hover {
-            background-color: #c82333;
-        }
-    </style>
+    <meta th:replace="~{fragment::headResources}">
+<!--    <style>-->
+<!--        .card {-->
+<!--            border-radius: 10px;-->
+<!--            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);-->
+<!--        }-->
+<!--        .btn-upgrade {-->
+<!--            background-color: #007bff;-->
+<!--            color: white;-->
+<!--        }-->
+<!--        .btn-upgrade:hover {-->
+<!--            background-color: #0056b3;-->
+<!--        }-->
+<!--        .btn-downgrade {-->
+<!--            background-color: #dc3545;-->
+<!--            color: white;-->
+<!--        }-->
+<!--        .btn-downgrade:hover {-->
+<!--            background-color: #c82333;-->
+<!--        }-->
+<!--    </style>-->
 </head>
 <body class="d-flex flex-column min-vh-100">
 <div th:replace="~{fragment::header}"></div>
@@ -49,8 +49,9 @@
                 <div class="card-footer">
                     <!-- Paid User の場合、Free Planに切り替えるボタンを表示 -->
                     <button sec:authorize="hasRole('ROLE_PAID_USER')"
-                            class="btn btn-downgrade"
-                            onclick="cancelSubscription()">Switch to Free Plan</button>
+                            class="btn btn-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#cancelConfirmModal">Switch to Free Plan</button>
 
                     <!-- Unpaid User の場合、Current Planとして表示 -->
                     <button sec:authorize="hasRole('ROLE_UNPAID_USER')"
@@ -78,12 +79,12 @@
                     <!-- Unpaid User の場合、有料プランにアップグレードするボタンを表示 -->
                     <button sec:authorize="hasRole('UNPAID_USER')"
                             th:if="${ifUserHasCancelledSubscription}"
-                            class="btn btn-upgrade"
+                            class="btn btn-submit"
                             onclick="resumeSubscription()">Resume Subscription</button>
                     <!--以前サブスクを停止した人はすぐ再開できるようにする-->
                     <button sec:authorize="hasRole('UNPAID_USER')"
                             th:unless="${ifUserHasCancelledSubscription}"
-                            class="btn btn-upgrade"
+                            class="btn btn-submit"
                             onclick="startSubscription()">Upgrade Now</button>
 
                     <!-- Paid User の場合、Current Planとして表示 -->
@@ -93,97 +94,99 @@
                 </div>
             </div>
         </div>
-
+        <div class="modal fade" id="cancelConfirmModal" tabindex="-1" aria-labelledby="cancelConfirmModalLabel" aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelConfirmModalLabel">サブスクリプション解約の確認</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>サブスクリプションを解約してよろしいですか？</p>
+                        <p>解約後即時に有料機能が使用できなくなります。</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                        <button type="button" class="btn btn-danger" onclick="executeCancelSubscription()">解約する</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
 </div>
 
 <script src="https://js.stripe.com/v3"></script>
 <script>
-    function startSubscription() {
-        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-        fetch('/api/create-checkout-session', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                [csrfHeader]: csrfToken // CSRFトークンをヘッダーに追加
-            },
-            body: JSON.stringify({ plan: 'PAID' }), // 現状この情報は使っていない。削除してもいい。
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.sessionId) {
-                const stripe = Stripe('pk_test_51Pv9EXRopxX1etdHzZttNbnYsg8oSmZBfAEyZfHUaDabBazuhmtBWZFFsk99VqwTfkNHU4wDKrqBYtEVvbgNjRpN00kLWtdxTj');
-                stripe.redirectToCheckout({
-                    sessionId:data.sessionId
-                });
-            } else {
-                alert('Failed to create subscription. Please try again.');
-            }
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-    }
 
-    function cancelSubscription() {
-        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    // モーダルでの確認後に実行される関数
+    async function executeCancelSubscription() {
+        try {
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-        fetch('/api/cancel-subscription', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                [csrfHeader]: csrfToken
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
+            const response = await fetch('/api/cancel-subscription', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                }
+            });
+
+            const data = await response.json();
+            console.log('Response data:', data);
+            console.log('Type of data.success:', typeof data.success);
+            console.log('Value of data.success:', data.success);
+
             if (data.success) {
-                alert('Subscription has been canceled.');
-                // リロードして現在の状態を反映させる
+                alert('サブスクリプションを解約しました。');
                 window.location.reload(true);
             } else {
-                alert('Failed to cancel subscription. Please try again.');
+                alert('解約処理に失敗しました。もう一度お試しください。');
             }
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error('Error:', error);
-        });
+            alert('エラーが発生しました。もう一度お試しください。');
+        }
     }
 
-    function resumeSubscription() {
-    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    // サブスクリプション開始
+    async function startSubscription() {
+        try {
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-    fetch('/api/resume-subscription', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            [csrfHeader]: csrfToken
+            const response = await fetch('/api/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify({ plan: 'PAID' })
+            });
+
+            const data = await response.json();
+
+            if (data.sessionId) {
+                const stripe = Stripe('pk_test_51Pv9EXRopxX1etdHzZttNbnYsg8oSmZBfAEyZfHUaDabBazuhmtBWZFFsk99VqwTfkNHU4wDKrqBYtEVvbgNjRpN00kLWtdxTj');
+                await stripe.redirectToCheckout({
+                    sessionId: data.sessionId
+                });
+            } else {
+                alert('サブスクリプションの作成に失敗しました。もう一度お試しください。');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('エラーが発生しました。もう一度お試しください。');
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Subscription has been resumed.');
-            // リロードして現在の状態を反映させる
-            window.location.reload(true);
-        } else {
-            alert('Failed to resume subscription. Please try again.');
-        }
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
     }
 
 </script>
 
 
 <div th:replace="~{fragment::footer}"></div>
+
 
 </body>
 </html>

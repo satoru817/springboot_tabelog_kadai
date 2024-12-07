@@ -1,16 +1,16 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="https://www.thymeleaf.org">
-<head>
+  <head>
     <title>ログインブロック</title>
-    <meta th:replace="~{fragment::headResources}"/>
-</head>
-<body>
-<div class="container">
-    <h1 class="mt-5">10回以上ログインミスをしたのでログインブロックがかかりました</h1>
-    <div class="alert alert-danger mt-3" role="alert">
+    <meta th:replace="~{fragment::headResources}" />
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mt-5">10回以上ログインミスをしたのでログインブロックがかかりました</h1>
+      <div class="alert alert-danger mt-3" role="alert">
         <p th:text="${error}"></p>
+      </div>
     </div>
-</div>
-<div th:replace="~{fragment::footer}"></div>
-</body>
+    <div th:replace="~{fragment::footer}"></div>
+  </body>
 </html>

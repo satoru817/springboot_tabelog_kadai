@@ -1,17 +1,17 @@
 .badge_hover {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000;
-    will-change: transform, opacity;
-    transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000;
+  will-change: transform, opacity;
+  transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .badge_hover:hover {
-    transform: translateY(-2px) translateZ(0) scale(1.03);
-    opacity: 0.95;
+  transform: translateY(-2px) translateZ(0) scale(1.03);
+  opacity: 0.95;
 }
 
 /* オプション：クリック時のエフェクト */
 .badge_hover:active {
-    transform: translateY(0) translateZ(0) scale(0.98);
+  transform: translateY(0) translateZ(0) scale(0.98);
 }

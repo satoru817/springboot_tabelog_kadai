@@ -55,6 +55,8 @@ public class StripeService {
     private final SubscriptionRepository subscriptionRepository;
     private final PaymentMethodService paymentMethodService;
     private final UserDetailsServiceImpl userDetailsService;
+    private final UserService userService;
+    private final SubscriptionService subscriptionService;
 
     @Value("${stripe.api-key}")
     private String stripeApiKey;
@@ -105,31 +107,9 @@ public class StripeService {
         log.info("cancelSubscriptionは呼びだされています。");
 
         try {
-            // Subscriptionを直接削除する
             Subscription subscription = Subscription.retrieve(subscriptionId);
-            String customerId = subscription.getCustomer();
-
-            // 顧客のカード情報を取得
-            Map<String, Object> params = new HashMap<>();
-            params.put("customer", customerId);
-            params.put("type", "card");
-
-            PaymentMethodCollection paymentMethods = PaymentMethod.list(params);
-
-            // カード情報のdetach
-            for (PaymentMethod paymentMethod : paymentMethods.getData()) {
-                try {
-                    paymentMethod.detach();
-                    log.info("Detached card: " + paymentMethod.getId());
-                } catch (StripeException e) {
-                    log.error("Failed to detach card: " + paymentMethod.getId(), e);
-                }
-            }
-
-            // サブスクリプションのキャンセル
             subscription.cancel(); // 即時キャンセル
             log.info("Subscription " + subscriptionId + " has been cancelled.");
-
         } catch (StripeException e) {
             log.error("Failed to cancel subscription: " + subscriptionId, e);
             throw e;
@@ -206,7 +186,7 @@ public class StripeService {
             }
         });
     }
-    //todo duplicate entryのエラーを解消するひつようが ある・
+
     private Card saveCardInformation(User user, String paymentMethodId) {
         // まず既存のカードを検索・ここで引っかかるはずなんだけどね。
 
@@ -276,29 +256,47 @@ public class StripeService {
 
 
     @Transactional
-    public void processSubscriptionDeleted(Event event) {
+    public void processSubscriptionDeleted(Event event) throws StripeException {
         // イベントデータからサブスクリプションIDを取得
         Subscription subscription = (Subscription) event.getData().getObject();
         String subscriptionId = subscription.getId();
 
+        //ストライプ上でユーザーからカードを切り離す
+        detachCardInformationInStripe(subscription);
+
         // データベースから該当のサブスクリプションを取得
-        com.example.demo.entity.Subscription dbSubscription = subscriptionRepository.findByStripeSubscriptionId(subscriptionId);
-        if (dbSubscription != null) {
-            // サブスクリプションを「キャンセル」状態に更新
-            dbSubscription.setStatus("canceled");
-            subscriptionRepository.save(dbSubscription);
+        com.example.demo.entity.Subscription dbSubscription = subscriptionService.findByStripeSubscriptionId(subscriptionId);
 
-            // ユーザーのroleの変更処理
-            User user = dbSubscription.getUser();
-            Role unpaidRole = roleRepository.findRoleByName("ROLE_UNPAID_USER")
-                    .orElseThrow(() -> new RuntimeException("ROLE_UNPAID_USERが見つかりません"));
+        // サブスクリプションを「キャンセル」状態に更新
+        dbSubscription.setStatus("canceled");
+        subscriptionRepository.save(dbSubscription);
 
-            // ユーザーのroleを更新
-            user.setRole(unpaidRole);
-            userRepository.save(user);
+        // ユーザーのroleの変更処理
+        User user = dbSubscription.getUser();
 
-        } else {
-            log.warn("キャンセルされたサブスクリプションが見つかりません: {}", subscriptionId);
+        cardRepository.deleteByUser(user);
+
+    }
+
+    private void detachCardInformationInStripe(Subscription subscription) throws StripeException {
+
+        String customerId = subscription.getCustomer();
+
+        // 顧客のカード情報を取得
+        Map<String, Object> params = new HashMap<>();
+        params.put("customer", customerId);
+        params.put("type", "card");
+
+        PaymentMethodCollection paymentMethods = PaymentMethod.list(params);
+
+        // カード情報のdetach
+        for (PaymentMethod paymentMethod : paymentMethods.getData()) {
+            try {
+                paymentMethod.detach();
+                log.info("Detached card: " + paymentMethod.getId());
+            } catch (StripeException e) {
+                log.error("Failed to detach card: " + paymentMethod.getId(), e);
+            }
         }
     }
 

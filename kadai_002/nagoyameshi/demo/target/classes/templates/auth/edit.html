@@ -1,246 +1,286 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="https://www.thymeleaf.org">
-<head>
-    <meta th:replace="~{fragment::headResources}"/>
+  <head>
+    <meta th:replace="~{fragment::headResources}" />
     <script th:src="@{/js/name_validation.js}" defer></script>
     <script th:src="@{/js/mail_validation.js}" defer></script>
     <script th:src="@{/js/user_edit.js}" defer></script>
     <script th:src="@{/js/name_for_reservation_validation.js}" defer></script>
 
     <!--croppie-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js" integrity="sha512-Gs+PsXsGkmr+15rqObPJbenQ2wB3qYvTHuJO6YJzPe/dTLvhy0fmae2BcnaozxDo5iaF8emzmCZWbQ1XXiX2Ig==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.css" integrity="sha512-2eMmukTZtvwlfQoG8ztapwAH5fXaQBzaMqdljLopRSA0i6YKM8kBAOrSSykxu9NN9HrtD45lIqfONLII2AFL/Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"
+      integrity="sha512-Gs+PsXsGkmr+15rqObPJbenQ2wB3qYvTHuJO6YJzPe/dTLvhy0fmae2BcnaozxDo5iaF8emzmCZWbQ1XXiX2Ig=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      defer
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.css"
+      integrity="sha512-2eMmukTZtvwlfQoG8ztapwAH5fXaQBzaMqdljLopRSA0i6YKM8kBAOrSSykxu9NN9HrtD45lIqfONLII2AFL/Q=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <title>会員情報編集</title>
-</head>
+  </head>
 
-<body class="d-flex flex-column min-vh-100">
-<div th:replace="~{fragment::header}"></div>
-<div>
-
-    <main>
+  <body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragment::header}"></div>
+    <div>
+      <main>
         <div class="container pt-4 pb-5">
-            <div class="row justify-content-center">
-                <div class="col-xl-5 col-lg-6 col-md-8">
+          <div class="row justify-content-center">
+            <div class="col-xl-5 col-lg-6 col-md-8">
+              <h1 class="mb-4 text-center">会員情報編集</h1>
 
-                    <h1 class="mb-4 text-center">会員情報編集</h1>
+              <form method="post" th:action="@{/userUpdate}" th:object="${user}" id="registration_form">
+                <div th:replace="~{fragment::nameInput}"></div>
 
-                    <form method="post" th:action="@{/userUpdate}" th:object="${user}" id="registration_form">
+                <div th:replace="~{fragment::nameForReservationInput}"></div>
 
-                        <div th:replace="~{fragment::nameInput}"></div>
-
-                        <div th:replace="~{fragment::nameForReservationInput}"></div>
-
-                        <div class="form-group row mb-3">
-                            <div class="col-md-5">
-                                <label for="postalCode" class="col-form-label text-md-left fw-bold">
-                                    <div class="d-flex align-items-center">
-                                        <span class="me-1">郵便番号</span>
-                                    </div>
-                                </label>
-                            </div>
-                            <div class="col-md-7">
-                                <input type="text" class="form-control" th:field="*{postalCode}" autocomplete="postal-code" autofocus placeholder="101-0022">
-                            </div>
-                        </div>
-
-                        <div class="form-group row mb-3">
-                            <div class="col-md-5">
-                                <label for="address" class="col-form-label text-md-left fw-bold">
-                                    <div class="d-flex align-items-center">
-                                        <span class="me-1">住所</span>
-                                    </div>
-                                </label>
-                            </div>
-                            <div class="col-md-7">
-                                <input type="text" class="form-control" th:field="*{address}" placeholder="東京都千代田区千代田１−１">
-                            </div>
-                        </div>
-
-                        <div class="form-group row mb-3">
-                            <div class="col-md-5">
-                                <label for="phoneNumber" class="col-form-label text-md-left fw-bold">
-                                    <div class="d-flex align-items-center">
-                                        <span class="me-1">電話番号</span>
-                                    </div>
-                                </label>
-                            </div>
-                            <div class="col-md-7">
-                                <input type="text" class="form-control" th:field="*{phoneNumber}" autocomplete="tel-national" placeholder="090-1234-5678">
-                            </div>
-                        </div>
-
-                        <!--ajaxで重なるメールアドレスが無いか確認する-->
-                        <div th:replace="~{fragment::mailInput}"></div>
-
-                        <!--切り取り後の画像(base64文字列)を保存するhidden input -->
-                        <input type="hidden" th:field="*{icon}" >
-
-                        <div class="form-group row mb-3">
-                            <div class="col-md-5">
-                                <div class="d-flex align-items-center col-form-label text-md-left fw-bold">
-                                    アイコン画像
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="position-relative d-inline-block">
-                                    <!--プロフィール画像表示部分-->
-                                    <img th:src="${user.profileImage != null ? '/images/'+user.profileImage: '/images/default_profile.png'}"
-                                         class="rounded-circle profile-image"
-                                         style="width: 150px; height: 150px; object-fit: cover;"
-                                         alt="User profile">
-
-                                    <!--編集アイコン-->
-                                    <div class="btn btn-light btn-sm position-absolute bottom-0 end-0 rounded-circle edit-icon bg-light shadow"
-                                         data-bs-toggle="modal"
-                                         data-bs-target="#imageEditModal">
-                                        <i class="bi bi-pencil-fill"></i>
-                                    </div>
-                                </div>
-                                <div class="alert alert-danger d-none" id="icon_replace_alert">If you proceed above icon image will be replaced by the below one.</div>
-                                <div id="result-preview" class="mt-3 d-none">
-                                    <img id="result-image" class="rounded-circle"
-                                         style="width: 150px; height: 150px; object-fit:cover;
-                                border: 2px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#cancelEditModal">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!--画像編集キャンセルモーダル-->
-                        <div class="modal fade" id="cancelEditModal" tabindex="-1" aria-labelledby="cancelEditModal" aria-hidden="true">
-                            <div class="modal-dialog bg-light rounded-2">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="cancelEditModalLabel">アイコン画像編集のキャンセル</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <!--編集後の画像を表示する-->
-                                    <div class="modal-body d-flex flex-column">
-                                        <div class="text-center mb-3">
-                                            <img class="rounded-circle current-profile-image"
-                                                 style="width:150px; height: 150px; object-fit: cover;"
-                                                 alt="Current profile image"
-                                                id="cancelImage">
-                                        </div>
-                                        <div class="alert alert-danger">
-                                            Do you want to discard your new icon?
-                                        </div>
-                                    </div>
-
-                                    <!--アクションボタン-->
-                                    <div class="d-flex justify-content-center gap-2">
-                                        <button type="button" class="btn btn-danger mb-2" id="editCancelBtn">
-                                            編集をキャンセル
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                        <!--画像編集モーダル-->
-                        <div class="modal fade" id="imageEditModal" tabindex="-2" aria-labelledby="imageEditModalLabel" aria-hidden="true">
-                            <div class="modal-dialog bg-light rounded-2">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="imageEditModalLabel">プロフィール画像の編集</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <!--現在の画像表示-->
-                                        <div class="text-center mb-3">
-                                            <img th:src="${user.profileImage !=null? '/images/'+user.profileImage: '/images/default_profile.png'}"
-                                                 class="rounded-circle current-profile-image"
-                                                 style="width:150px; height: 150px; object-fit: cover;"
-                                                 alt="Current profile image">
-                                        </div>
-
-                                        <!--アクションボタン-->
-                                        <div class="d-flex justify-content-center gap-2">
-                                            <button type="button" class="btn btn-primary" id="selectImageBtn">
-                                                画像を変更
-                                            </button>
-                                            <button type="button" class="btn btn-danger" id="deleteImageBtn">
-                                                画像を削除
-                                            </button>
-                                        </div>
-
-                                        <!--非表示のファイル入力-->
-                                        <input type="file" id="imageInput" class="d-none" accept="image/*">
-
-                                        <!--Croppie表示エリア-->
-                                        <div id="croppieContainer" class="d-none mt-3">
-                                            <div id="croppieElement"></div>
-                                            <div class="text-center mt-3">
-                                                <button type="button" class="btn btn-success" id="cropButton">
-                                                    切り取り確定
-                                                </button>
-                                                <button type="button" class="btn btn-secondary ms-2" id="cancelCropBtn">
-                                                    キャンセル
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!--削除確認モーダル-->
-                        <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModal" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="deleteConfirmModalLabel">確認</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body alert alert-danger">
-                                        Are you sure you want to delete the current profile image?
-                                        <img th:src="${user.profileImage !=null? '/images/'+user.profileImage: '/images/default_profile.png'}"
-                                             class="rounded-circle current-profile-image"
-                                             style="width:150px; height: 150px; object-fit: cover;"
-                                             alt="Current profile image">
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
-                                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">削除</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-
-
-                        <div th:if="${sameUserFoundError}" class="text-danger mb-3" th:text="${sameUserFoundError}"></div>
-                        <div th:if="${tokenNotFound}" class="text-danger mb-3" th:text="${tokenNotFound}"></div>
-                        <div class="text-danger mb-3" style="display:none;" id="input_mistakes">入力内容に不備があります。御確認下さい</div>
-
-                        <div class="form-group d-flex justify-content-center mb-3">
-                            <a href="/passwordChange" class="btn btn-outline-secondary w-50">
-                                <i class="bi bi-key me-2"></i>password reset
-                            </a>
-                        </div>
-
-                        <div class="form-group d-flex justify-content-center  my-4">
-                            <button type="submit" class="btn btn-primary w-50 ">編集内容登録</button>
-                        </div>
-                    </form>
-
+                <div class="form-group row mb-3">
+                  <div class="col-md-5">
+                    <label for="postalCode" class="col-form-label text-md-left fw-bold">
+                      <div class="d-flex align-items-center">
+                        <span class="me-1">郵便番号</span>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="col-md-7">
+                    <input
+                      type="text"
+                      class="form-control"
+                      th:field="*{postalCode}"
+                      autocomplete="postal-code"
+                      autofocus
+                      placeholder="101-0022"
+                    />
+                  </div>
                 </div>
+
+                <div class="form-group row mb-3">
+                  <div class="col-md-5">
+                    <label for="address" class="col-form-label text-md-left fw-bold">
+                      <div class="d-flex align-items-center">
+                        <span class="me-1">住所</span>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="col-md-7">
+                    <input
+                      type="text"
+                      class="form-control"
+                      th:field="*{address}"
+                      placeholder="東京都千代田区千代田１−１"
+                    />
+                  </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                  <div class="col-md-5">
+                    <label for="phoneNumber" class="col-form-label text-md-left fw-bold">
+                      <div class="d-flex align-items-center">
+                        <span class="me-1">電話番号</span>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="col-md-7">
+                    <input
+                      type="text"
+                      class="form-control"
+                      th:field="*{phoneNumber}"
+                      autocomplete="tel-national"
+                      placeholder="090-1234-5678"
+                    />
+                  </div>
+                </div>
+
+                <!--ajaxで重なるメールアドレスが無いか確認する-->
+                <div th:replace="~{fragment::mailInput}"></div>
+
+                <!--切り取り後の画像(base64文字列)を保存するhidden input -->
+                <input type="hidden" th:field="*{icon}" />
+
+                <div class="form-group row mb-3">
+                  <div class="col-md-5">
+                    <div class="d-flex align-items-center col-form-label text-md-left fw-bold">アイコン画像</div>
+                  </div>
+                  <div class="col-md-7">
+                    <div class="position-relative d-inline-block">
+                      <!--プロフィール画像表示部分-->
+                      <img
+                        th:src="${user.profileImage != null ? '/images/'+user.profileImage: '/images/default_profile.png'}"
+                        class="rounded-circle profile-image"
+                        style="width: 150px; height: 150px; object-fit: cover"
+                        alt="User profile"
+                      />
+
+                      <!--編集アイコン-->
+                      <div
+                        class="btn btn-light btn-sm position-absolute bottom-0 end-0 rounded-circle edit-icon bg-light shadow"
+                        data-bs-toggle="modal"
+                        data-bs-target="#imageEditModal"
+                      >
+                        <i class="bi bi-pencil-fill"></i>
+                      </div>
+                    </div>
+                    <div class="alert alert-danger d-none" id="icon_replace_alert">
+                      If you proceed above icon image will be replaced by the below one.
+                    </div>
+                    <div id="result-preview" class="mt-3 d-none">
+                      <img
+                        id="result-image"
+                        class="rounded-circle"
+                        style="
+                          width: 150px;
+                          height: 150px;
+                          object-fit: cover;
+                          border: 2px solid #ddd;
+                          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        "
+                        data-bs-toggle="modal"
+                        data-bs-target="#cancelEditModal"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!--画像編集キャンセルモーダル-->
+                <div
+                  class="modal fade"
+                  id="cancelEditModal"
+                  tabindex="-1"
+                  aria-labelledby="cancelEditModal"
+                  aria-hidden="true"
+                >
+                  <div class="modal-dialog bg-light rounded-2">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="cancelEditModalLabel">アイコン画像編集のキャンセル</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <!--編集後の画像を表示する-->
+                      <div class="modal-body d-flex flex-column">
+                        <div class="text-center mb-3">
+                          <img
+                            class="rounded-circle current-profile-image"
+                            style="width: 150px; height: 150px; object-fit: cover"
+                            alt="Current profile image"
+                            id="cancelImage"
+                          />
+                        </div>
+                        <div class="alert alert-danger">Do you want to discard your new icon?</div>
+                      </div>
+
+                      <!--アクションボタン-->
+                      <div class="d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-danger mb-2" id="editCancelBtn">編集をキャンセル</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!--画像編集モーダル-->
+                <div
+                  class="modal fade"
+                  id="imageEditModal"
+                  tabindex="-2"
+                  aria-labelledby="imageEditModalLabel"
+                  aria-hidden="true"
+                >
+                  <div class="modal-dialog bg-light rounded-2">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="imageEditModalLabel">プロフィール画像の編集</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <!--現在の画像表示-->
+                        <div class="text-center mb-3">
+                          <img
+                            th:src="${user.profileImage !=null? '/images/'+user.profileImage: '/images/default_profile.png'}"
+                            class="rounded-circle current-profile-image"
+                            style="width: 150px; height: 150px; object-fit: cover"
+                            alt="Current profile image"
+                          />
+                        </div>
+
+                        <!--アクションボタン-->
+                        <div class="d-flex justify-content-center gap-2">
+                          <button type="button" class="btn btn-submit" id="selectImageBtn">画像を変更</button>
+                          <button type="button" class="btn btn-danger" id="deleteImageBtn">画像を削除</button>
+                        </div>
+
+                        <!--非表示のファイル入力-->
+                        <input type="file" id="imageInput" class="d-none" accept="image/*" />
+
+                        <!--Croppie表示エリア-->
+                        <div id="croppieContainer" class="d-none mt-3">
+                          <div id="croppieElement"></div>
+                          <div class="text-center mt-3">
+                            <button type="button" class="btn btn-success" id="cropButton">切り取り確定</button>
+                            <button type="button" class="btn btn-secondary ms-2" id="cancelCropBtn">キャンセル</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!--削除確認モーダル-->
+                <div
+                  class="modal fade"
+                  id="deleteConfirmModal"
+                  tabindex="-1"
+                  aria-labelledby="deleteConfirmModal"
+                  aria-hidden="true"
+                >
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deleteConfirmModalLabel">確認</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body alert alert-danger">
+                        Are you sure you want to delete the current profile image?
+                        <img
+                          th:src="${user.profileImage !=null? '/images/'+user.profileImage: '/images/default_profile.png'}"
+                          class="rounded-circle current-profile-image"
+                          style="width: 150px; height: 150px; object-fit: cover"
+                          alt="Current profile image"
+                        />
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">削除</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div th:if="${sameUserFoundError}" class="text-danger mb-3" th:text="${sameUserFoundError}"></div>
+                <div th:if="${tokenNotFound}" class="text-danger mb-3" th:text="${tokenNotFound}"></div>
+                <div class="text-danger mb-3" style="display: none" id="input_mistakes">
+                  入力内容に不備があります。御確認下さい
+                </div>
+
+                <div class="form-group d-flex justify-content-center mb-3">
+                  <a href="/passwordChange" class="btn btn-outline-secondary w-50">
+                    <i class="bi bi-key me-2"></i>password reset
+                  </a>
+                </div>
+
+                <div class="form-group d-flex justify-content-center my-4">
+                  <button type="submit" class="btn btn-submit w-50">編集内容登録</button>
+                </div>
+              </form>
             </div>
+          </div>
         </div>
-    </main>
-
-
-</div>
-<!-- フッター -->
-<div th:replace="~{fragment::footer}"></div>
-
-</body>
-
+      </main>
+    </div>
+    <!-- フッター -->
+    <div th:replace="~{fragment::footer}"></div>
+  </body>
 </html>
-
-
-

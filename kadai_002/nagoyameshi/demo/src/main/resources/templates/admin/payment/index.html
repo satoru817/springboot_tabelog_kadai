@@ -1,97 +1,175 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="https://www.thymeleaf.org">
-<head>
+  <head>
     <div th:replace="~{fragment::headResources}"></div>
     <title>支払い一覧</title>
-<!--    <script th:src="@{/js/table.js}" defer></script>-->
+    <!--    <script th:src="@{/js/table.js}" defer></script>-->
     <script th:src="@{/js/long_id_toggle.js}" defer></script>
-    <link rel="stylesheet" th:href="@{/css/name_badge.css}">
-</head>
-<body class="d-flex flex-column min-vh-100">
-<div class="wrapper">
-    <!-- ヘッダー -->
-    <div th:replace="~{fragment::header}"></div>
+    <link rel="stylesheet" th:href="@{/css/name_badge.css}" />
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <div class="wrapper">
+      <!-- ヘッダー -->
+      <div th:replace="~{fragment::header}"></div>
 
-    <main>
+      <main>
         <div class="container pt-4 pb-5 container">
-            <div class="row justify-content-center">
-                <div class="col-xxl-6 col-xl-6 col-lg-6">
+          <h1 class="mb-4 text-center">支払い一覧</h1>
 
-                    <h1 class="mb-4 text-center">支払い一覧</h1>
-
-                    <div class="d-flex justify-content-between align-items-end">
-                        <form method="get" th:action="@{/admin/payment/index}" class="mb-3">
-                            <div class="input-group">
-                                <input type="text" class="form-control" name="searchQuery" th:value="${searchQuery}" placeholder="キーワード">
-                                <button type="submit" class="btn text-white shadow-sm btn">検索</button>
-                            </div>
-                        </form>
+          <div class="row justify-content-center">
+            <div class="col-xxl-3 col-xl-3 col-lg-3">
+              <div class="card shadow-sm p-3 mb-4">
+                <h5 class="card-title mb-3">検索フィルター</h5>
+                <form method="get" th:action="@{/admin/payment/index}">
+                  <div class="mb-3">
+                    <div class="input-group">
+                      <span class="input-group-text bg-white">
+                        <i class="bi bi-person"></i>
+                      </span>
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="userName"
+                        th:value="${userName}"
+                        placeholder="ユーザー名..."
+                      />
                     </div>
-                </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <div class="input-group">
+                      <span class="input-group-text bg-white">
+                        <i class="bi bi-envelope"></i>
+                      </span>
+                      <input
+                        type="email"
+                        class="form-control"
+                        name="email"
+                        th:value="${email}"
+                        placeholder="メールアドレス..."
+                      />
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">支払い日</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-white">
+                        <i class="bi bi-calendar"></i>
+                      </span>
+                      <input type="date" class="form-control" name="paymentDate" th:value="${paymentDate}" />
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn w-100 search_button">
+                    <i class="bi bi-search me-2"></i>検索する
+                  </button>
+                </form>
+              </div>
             </div>
-            <div class="row justify-content-center">
-                <div class="col-xxl-6 col-xl-6 col-lg-6">
-                    <div th:if="${successMessage}" class="alert alert-info">
-                        <span th:text="${successMessage}"></span>
-                    </div>
 
-                    <table class="table table-striped table-hover">
-                        <thead>
+            <div class="col-xxl-6 col-xl-6 col-lg-6">
+              <div th:if="${successMessage}" class="alert alert-info alert-dismissible fade show">
+                <i class="bi bi-info-circle me-2"></i>
+                <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                      <thead class="table-light">
                         <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">ユーザー</th>
-                            <th scope="col">金額</th>
-                            <th scope="col">ストライプ支払いId</th>
-                            <th scope="col">支払い日</th>
+                          <th scope="col">ID</th>
+                          <th scope="col">ユーザー</th>
+                          <th scope="col">金額</th>
+                          <th scope="col">ストライプ支払いId</th>
+                          <th scope="col">支払い日</th>
                         </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="payment:${payments}"  >
-                            <td th:text="${payment.paymentId}"></td>
-                            <td>
-                                <a th:href="@{/admin/user/show/__${payment.user.userId}__}">
-                                    <span class="badge text-bg-info shadow-sm badge_hover" th:text="${payment.user.name}"></span>
-                                </a>
-                            </td>
-                            <td th:text="${payment.amount}+'円'"></td>
-                            <td style="cursor:pointer;">
-                                <small>
-                                    <span class="long_id text-primary user-select-all" th:text="${#strings.substring(payment.stripePaymentIntentId,0,8)+'...'}"
-                                          th:data-full-id="${payment.stripePaymentIntentId}"></span>
-                                </small>
-                            </td>
-                            <td th:text="${#temporals.format(payment.createdAt,'yyyy/MM/dd')}"></td>
+                      </thead>
+                      <tbody>
+                        <tr th:each="payment:${payments}">
+                          <td class="text-muted" th:text="${payment.paymentId}"></td>
+                          <td>
+                            <a th:href="@{/admin/user/show/__${payment.user.userId}__}" class="text-decoration-none">
+                              <span
+                                class="badge text-bg-info shadow-sm badge_hover"
+                                th:text="${payment.user.name}"
+                              ></span>
+                            </a>
+                          </td>
+                          <td>
+                            <span
+                              class="fw-medium"
+                              th:text="${#numbers.formatDecimal(payment.amount, 0, 'COMMA', 0, 'POINT')}"
+                            ></span>
+                            <small class="text-muted">円</small>
+                          </td>
+                          <td style="cursor: pointer">
+                            <small>
+                              <span
+                                class="long_id text-primary user-select-all"
+                                th:text="${#strings.substring(payment.stripePaymentIntentId,0,8)+'...'}"
+                                th:data-full-id="${payment.stripePaymentIntentId}"
+                              >
+                              </span>
+                            </small>
+                          </td>
+                          <td>
+                            <span
+                              class="text-muted"
+                              th:text="${#temporals.format(payment.createdAt,'yyyy/MM/dd')}"
+                            ></span>
+                          </td>
                         </tr>
-                        </tbody>
+                      </tbody>
                     </table>
+                  </div>
                 </div>
+              </div>
             </div>
-            <!-- ページネーション -->
-            <div th:if="${payments.getTotalPages()>1}" class="d-flex justify-content-center">
-                <nav aria-label="ユーザー一覧ページ">
-                    <ul class="pagination">
-                        <li class="page-item">
-                            <span th:if="${payments.isFirst()}"class="page-link disabled">前</span>
-                            <a th:unless="${payments.isFirst()}" th:href="@{/admin/payment/index(page=${payments.getNumber()-1},searchQuery=${searchQuery})}" class="page-link page-link">前</a>
-                        </li>
-                        <li th:each="i:${#numbers.sequence(0,payments.getTotalPages()-1)}" class="page-item">
-                            <span th:if="${i == payments.getNumber()}" class="page-link active active" th:text="${i + 1}" ></span>
-                            <a th:unless="${i == payments.getNumber()}" th:href="@{/admin/payment/index(page=${i},searchQuery=${searchQuery})}" class="page-link page-link" th:text="${i+1}"></a>
-                        </li>
-                        <li class="page-item">
-                            <span th:if="${payments.isLast()}" class="page-link disabled">次</span>
-                            <a th:unless="${payments.isLast()}" th:href="@{/admin/payment/index(page=${payments.getNumber()+1},searchQuery=${searchQuery})}" class="page-link page-link">次</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+          </div>
+          <!-- ページネーション -->
+          <div th:if="${payments.getTotalPages()>1}" class="d-flex justify-content-center mt-4">
+            <nav aria-label="支払い一覧ページ">
+              <ul class="pagination">
+                <li class="page-item" th:classappend="${payments.isFirst()} ? 'disabled'">
+                  <a
+                    class="page-link rounded-circle rounded-circle"
+                    th:href="@{/admin/payment/index(page=${payments.getNumber()-1},userName=${userName},paymentDate=${paymentDate},email=${email})}"
+                  >
+                    <i class="bi bi-chevron-left"></i>
+                  </a>
+                </li>
+                <li
+                  th:each="i:${#numbers.sequence(0,payments.getTotalPages()-1)}"
+                  class="page-item"
+                  th:classappend="${i == payments.getNumber()} ? 'active'"
+                >
+                  <a
+                    class="page-link rounded-circle rounded-circle"
+                    th:href="@{/admin/payment/index(page=${i},userName=${userName},paymentDate=${paymentDate},email=${email})}"
+                    th:text="${i+1}"
+                  >
+                  </a>
+                </li>
+                <li class="page-item" th:classappend="${payments.isLast()} ? 'disabled'">
+                  <a
+                    class="page-link rounded-circle rounded-circle"
+                    th:href="@{/admin/payment/index(page=${payments.getNumber()+1},userName=${userName},paymentDate=${paymentDate},email=${email})}"
+                  >
+                    <i class="bi bi-chevron-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
         </div>
-    </main>
+      </main>
+    </div>
 
-
-</div>
-
-<!-- フッター -->
-<div th:replace="~{fragment::footer}"></div>
-</body>
+    <!-- フッター -->
+    <div th:replace="~{fragment::footer}"></div>
+  </body>
 </html>

@@ -24,4 +24,7 @@ public interface CardRepository extends JpaRepository<Card,Integer> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Card> findByUserAndIsDefaultTrue(User user);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    void deleteByUser(User user);
 }

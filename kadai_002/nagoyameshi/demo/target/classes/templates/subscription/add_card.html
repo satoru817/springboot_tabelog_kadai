@@ -1,117 +1,114 @@
-<!DOCTYPE html>
-<html lang="ja" xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
-<head>
-  <meta name="_csrf" th:content="${_csrf.token}">
-  <meta name="_csrf_header" th:content="${_csrf.headerName}">
-  <title>支払い方法追加</title>
-  <meta th:replace="~{fragment::headResources}"/>
-  <style>
-    .card {
+<!doctype html>
+<html
+  lang="ja"
+  xmlns:th="https://www.thymeleaf.org"
+  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+>
+  <head>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>支払い方法追加</title>
+    <meta th:replace="~{fragment::headResources}" />
+    <style>
+      .card {
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .btn-submit {
-        background-color: #28a745;
-        color: white;
-    }
-    .btn-submit:hover {
-        background-color: #218838;
-    }
-  </style>
-</head>
-<body class="d-flex flex-column min-vh-100">
-<div th:replace="~{fragment::header}"></div>
-<div class="container mt-5">
-  <h2 class="text-center mb-4">Add Payment Method</h2>
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card text-center">
-        <div class="card-header">
-          <h4>クレジットカード情報の入力</h4>
-        </div>
-        <div class="card-body">
-          <form id="payment-form">
-            <div id="card-element"></div>
-            <div id="card-errors" role="alert"></div>
-            <button class="btn btn-submit mt-3" id="submit">カードを追加する</button>
-          </form>
+      }
+    </style>
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragment::header}"></div>
+    <div class="container mt-5">
+      <h2 class="text-center mb-4">Add Payment Method</h2>
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card text-center">
+            <div class="card-header">
+              <h4>クレジットカード情報の入力</h4>
+            </div>
+            <div class="card-body">
+              <form id="payment-form">
+                <div id="card-element"></div>
+                <div id="card-errors" role="alert"></div>
+                <button class="btn btn-submit mt-3" id="submit">カードを追加する</button>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
-<script src="https://js.stripe.com/v3"></script>
-<script>
-  const stripe = Stripe('pk_test_51Pv9EXRopxX1etdHzZttNbnYsg8oSmZBfAEyZfHUaDabBazuhmtBWZFFsk99VqwTfkNHU4wDKrqBYtEVvbgNjRpN00kLWtdxTj');
-  const elements = stripe.elements();
+    <script src="https://js.stripe.com/v3"></script>
+    <script>
+      const stripe = Stripe(
+        'pk_test_51Pv9EXRopxX1etdHzZttNbnYsg8oSmZBfAEyZfHUaDabBazuhmtBWZFFsk99VqwTfkNHU4wDKrqBYtEVvbgNjRpN00kLWtdxTj',
+      );
+      const elements = stripe.elements();
 
-  // ZIPコードを無効にするオプション
-  const cardElement = elements.create('card', {
-      hidePostalCode: true
-  });
-
-  cardElement.mount('#card-element');
-
-  const form = document.getElementById('payment-form');
-
-  form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-
-      // サーバーからクライアントシークレットを取得
-      const response = await fetch('/api/create-setup-intent', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').getAttribute('content')
-          }
+      // ZIPコードを無効にするオプション
+      const cardElement = elements.create('card', {
+        hidePostalCode: true,
       });
 
-      const clientSecretData = await response.text();
+      cardElement.mount('#card-element');
 
-      console.log('clientSecretData:'+clientSecretData);
+      const form = document.getElementById('payment-form');
 
-      // ストライプのセットアップインテントを確認
-      const {setupIntent, error} = await stripe.confirmCardSetup(
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        // サーバーからクライアントシークレットを取得
+        const response = await fetch('/api/create-setup-intent', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').getAttribute('content'),
+          },
+        });
+
+        const clientSecretData = await response.text();
+
+        console.log('clientSecretData:' + clientSecretData);
+
+        // ストライプのセットアップインテントを確認
+        const { setupIntent, error } = await stripe.confirmCardSetup(
           clientSecretData, // 取得したクライアントシークレットを使用
           {
-              payment_method: {
-                  card: cardElement,
-              },
-          }
-      );
+            payment_method: {
+              card: cardElement,
+            },
+          },
+        );
 
-      if (error) {
+        if (error) {
           // エラー処理
           document.getElementById('card-errors').textContent = error.message;
-      } else {
+        } else {
           // 成功した場合、サーバーに送信する
           fetch('/api/add-payment-method', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-                  'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').getAttribute('content')
-              },
-              body: JSON.stringify({ paymentMethodId: setupIntent.payment_method })
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').getAttribute('content'),
+            },
+            body: JSON.stringify({ paymentMethodId: setupIntent.payment_method }),
           })
-          .then(response => response.json())
-          .then(data => {
+            .then((response) => response.json())
+            .then((data) => {
               if (data.success) {
-                  alert('カードが正常に追加されました！');
-                  window.location.reload(true); // ページをリロードして状態を更新
+                alert('カードが正常に追加されました！');
+                window.location.reload(true); // ページをリロードして状態を更新
               } else {
-                  alert('カードの追加に失敗しました。もう一度お試しください。');
+                alert('カードの追加に失敗しました。もう一度お試しください。');
               }
-          })
-          .catch((error) => {
+            })
+            .catch((error) => {
               console.error('Error:', error);
-          });
-      }
-  });
-</script>
+            });
+        }
+      });
+    </script>
 
-
-<div th:replace="~{fragment::footer}"></div>
-</body>
+    <div th:replace="~{fragment::footer}"></div>
+  </body>
 </html>

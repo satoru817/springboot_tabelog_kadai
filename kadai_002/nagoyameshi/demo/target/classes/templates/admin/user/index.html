@@ -1,99 +1,121 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="https://www.thymeleaf.org">
-<head>
+  <head>
     <div th:replace="~{fragment::headResources}"></div>
     <title>ユーザー一覧</title>
     <script th:src="@{/js/table.js}" defer></script>
     <style>
-        tbody > tr{
-            transition: background-color 0.3s;
-        }
-        tbody > tr:hover {
-            --bs-table-striped-bg:rgba(255,0,0,0.1) !important;
-            --bs-table-bg:rgba(255,0,0,0.1) !important;
-            outline: 1px solid var(--bs-info) !important;
-            cursor: pointer;
-        }
+      tbody > tr {
+        transition: background-color 0.3s;
+      }
+      tbody > tr:hover {
+        --bs-table-striped-bg: rgba(255, 0, 0, 0.1) !important;
+        --bs-table-bg: rgba(255, 0, 0, 0.1) !important;
+        outline: 1px solid var(--bs-info) !important;
+        cursor: pointer;
+      }
     </style>
-</head>
-<body class="d-flex flex-column min-vh-100">
-<div class="wrapper">
-    <!-- ヘッダー -->
-    <div th:replace="~{fragment::header}"></div>
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <div class="wrapper">
+      <!-- ヘッダー -->
+      <div th:replace="~{fragment::header}"></div>
 
-    <main>
+      <main>
         <div class="container pt-4 pb-5 container">
-            <div class="row justify-content-center">
-                <div class="col-xxl-9 col-xl-10 col-lg-11">
+          <div class="row justify-content-center">
+            <div class="col-xxl-9 col-xl-10 col-lg-11">
+              <h1 class="mb-4 text-center">会員一覧</h1>
 
-                    <h1 class="mb-4 text-center">会員一覧</h1>
-
-                    <div class="d-flex justify-content-between align-items-end">
-                        <form method="get" th:action="@{/admin/user/}" class="mb-3">
-                            <div class="input-group">
-                                <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="キーワード">
-                                <button type="submit" class="btn text-white shadow-sm btn">検索</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div th:if="${successMessage}" class="alert alert-info">
-                    <span th:text="${successMessage}"></span>
-                </div>
-
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">ロール</th>
-                        <th scope="col">氏名</th>
-                        <th scope="col">予約者名</th>
-                        <th scope="col">メールアドレス</th>
-                        <th scope="col">登録日</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="user:${users}" th:data-href="@{/admin/user/show/__${user.userId}__}" >
-                        <td th:text="${user.userId}"></td>
-                        <td class="align-middle">
-                            <div th:replace="~{fragment::role_display}"></div>
-                        </td>
-                        <td th:text="${user.name}"></td>
-                        <td th:text="${user.nameForReservation}"></td>
-                        <td th:text="${user.email}"></td>
-                        <td th:text="${#temporals.format(user.createdAt,'yyyy/MM/dd')}"></td>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <!-- ページネーション -->
-                <div th:if="${users.getTotalPages()>1}" class="d-flex justify-content-center">
-                    <nav aria-label="ユーザー一覧ページ">
-                        <ul class="pagination">
-                            <li class="page-item">
-                                <span th:if="${users.isFirst()}"class="page-link disabled">前</span>
-                                <a th:unless="${users.isFirst()}" th:href="@{/admin/user/(page=${users.getNumber()-1},keyword=${keyword})}" class="page-link page-link">前</a>
-                            </li>
-                            <li th:each="i:${#numbers.sequence(0,users.getTotalPages()-1)}" class="page-item">
-                                <span th:if="${i == users.getNumber()}" class="page-link active active" th:text="${i + 1}" ></span>
-                                <a th:unless="${i == users.getNumber()}" th:href="@{/admin/user/(page=${i},keyword=${keyword})}" class="page-link page-link" th:text="${i+1}"></a>
-                            </li>
-                            <li class="page-item">
-                                <span th:if="${users.isLast()}" class="page-link disabled">次</span>
-                                <a th:unless="${users.isLast()}" th:href="@{/admin/user/(page=${users.getNumber()+1},keyword=${keyword})}" class="page-link page-link">次</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+              <div class="d-flex justify-content-between align-items-end">
+                <form method="get" th:action="@{/admin/user/}" class="mb-3">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="keyword"
+                      th:value="${keyword}"
+                      placeholder="キーワード"
+                    />
+                    <button type="submit" class="btn shadow-sm btn">検索</button>
+                  </div>
+                </form>
+              </div>
             </div>
+
+            <div th:if="${successMessage}" class="alert alert-info">
+              <span th:text="${successMessage}"></span>
+            </div>
+
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">ロール</th>
+                  <th scope="col">氏名</th>
+                  <th scope="col">予約者名</th>
+                  <th scope="col">メールアドレス</th>
+                  <th scope="col">登録日</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="user:${users}" th:data-href="@{/admin/user/show/__${user.userId}__}">
+                  <td th:text="${user.userId}"></td>
+                  <td class="align-middle">
+                    <div th:replace="~{fragment::role_display}"></div>
+                  </td>
+                  <td th:text="${user.name}"></td>
+                  <td th:text="${user.nameForReservation}"></td>
+                  <td th:text="${user.email}"></td>
+                  <td th:text="${#temporals.format(user.createdAt,'yyyy/MM/dd')}"></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- ページネーション -->
+            <div th:if="${users.getTotalPages()>1}" class="d-flex justify-content-center">
+              <nav aria-label="ユーザー一覧ページ">
+                <ul class="pagination">
+                  <li class="page-item">
+                    <span th:if="${users.isFirst()}" class="page-link rounded-circle disabled">前</span>
+                    <a
+                      th:unless="${users.isFirst()}"
+                      th:href="@{/admin/user/(page=${users.getNumber()-1},keyword=${keyword})}"
+                      class="page-link rounded-circle page-link rounded-circle"
+                      >前</a
+                    >
+                  </li>
+                  <li th:each="i:${#numbers.sequence(0,users.getTotalPages()-1)}" class="page-item">
+                    <span
+                      th:if="${i == users.getNumber()}"
+                      class="page-link rounded-circle active active"
+                      th:text="${i + 1}"
+                    ></span>
+                    <a
+                      th:unless="${i == users.getNumber()}"
+                      th:href="@{/admin/user/(page=${i},keyword=${keyword})}"
+                      class="page-link rounded-circle page-link rounded-circle"
+                      th:text="${i+1}"
+                    ></a>
+                  </li>
+                  <li class="page-item">
+                    <span th:if="${users.isLast()}" class="page-link rounded-circle disabled">次</span>
+                    <a
+                      th:unless="${users.isLast()}"
+                      th:href="@{/admin/user/(page=${users.getNumber()+1},keyword=${keyword})}"
+                      class="page-link rounded-circle page-link rounded-circle"
+                      >次</a
+                    >
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
         </div>
-    </main>
+      </main>
+    </div>
 
-
-</div>
-
-<!-- フッター -->
-<div th:replace="~{fragment::footer}"></div>
-</body>
+    <!-- フッター -->
+    <div th:replace="~{fragment::footer}"></div>
+  </body>
 </html>

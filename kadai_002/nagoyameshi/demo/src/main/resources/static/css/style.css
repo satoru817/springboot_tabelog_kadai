@@ -1,456 +1,463 @@
-/*const ColorPalette = () => {
-  const colors = {
-    primary: {
-      main: '#FF6B6B',      // 明るく楽しげな赤
-      light: '#FFB4B4',     // ソフトなアクセント
-      dark: '#FF4444',      // 強調用
-    },
-    secondary: {
-      main: '#FFD93D',      // 明るい黄色
-      light: '#FFE869',     // パステル調
-      dark: '#FFB302',      // アクセント
-    },
-    neutral: {
-      light: '#FFFFFF',     // 白背景
-      main: '#F8F9FA',      // うすいグレー
-      dark: '#495057',      // テキスト
-    },
-    accent: {
-      accent1: '#4ECDC4',   // ミントグリーン
-      accent2: '#FFB6B9',   // パステルピンク
-      accent3: '#95E1D3',   // ペールターコイズ
-    }
-  };
-*/
 /* カラー定義 */
 :root {
-    /* メインカラー */
-    --primary-red: #FF6B6B;     /* 明るく楽しげな赤 */
-    --primary-light: #FFB4B4; /*ソフトなアクセント*/
-    --primary-dark: #FF4444; /*強調用*/
+  /* プライマリーカラー */
+  --color-primary: #ff6b6b; /* 明るく楽しげな赤 */
+  --color-primary-light: #ffb4b4; /* ソフトなアクセント */
+  --color-primary-dark: #ff4444; /* 強調用 */
 
-    --primary-white: #FDFBF7;   /* 温かみのある白 - 背景色 */
-    --primary-black: #495057;   /* やわらかい黒 - テキスト主体 */
+  /* セカンダリーカラー */
+  --color-secondary: #ffd93d; /* 明るい黄色 */
+  --color-secondary-light: #ffe869; /* パステル調 */
+  --color-secondary-dark: #ffb302; /* アクセント */
 
-    /* アクセントカラー */
-    --accent-gold: #D4B156;     /* 上品な金色 */
-    --accent-brown: #8C7851;    /* 温かみのある茶色 */
+  /* ニュートラル */
+  --color-neutral-light: #ffffff; /* 白背景 */
+  --color-neutral: #f8f9fa; /* うすいグレー */
+  --color-neutral-dark: #495057; /* テキスト */
 
-    /* サブカラー */
-    --light-gray: #F8F9FA;      /* 温かみのあるライトグレー */
-    --medium-gray: #9B9B9B;     /* ニュートラルグレー */
-    --dark-gray: #4A4A4A;       /* ソフトな濃色 */
+  /* アクセントカラー - ミントグリーン系 */
+  --color-accent-mint: #4ecdc4; /* ミントグリーン（オリジナル） */
+  --color-accent-mint-medium: #3bb1a9; /* 深いミント */
+  --color-accent-mint-dark: #2a8e87; /* 濃いミント */
 
-    /* 機能色 */
-    --success: #7A8C73;         /* 和風な緑 */
-    --warning: #CF8E6D;         /* 柔らかいオレンジ */
-    --danger: #C1666B;          /* 優しい赤 */
+  /* アクセントカラー - パステルピンク系 */
+  --color-accent-pink: #ffb6b9; /* パステルピンク（オリジナル） */
+  --color-accent-pink-medium: #ff9a9e; /* 深いピンク */
+  --color-accent-pink-dark: #ff7e83; /* 濃いピンク */
 
-    /* その他 */
-    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* より繊細な影 */
+  /* アクセントカラー - ターコイズ系 */
+  --color-accent-turquoise: #95e1d3; /* ペールターコイズ（オリジナル） */
+  --color-accent-turquoise-medium: #7bc5b7; /* 深いターコイズ */
+  --color-accent-turquoise-dark: #62a99c; /* 濃いターコイズ */
+
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* より繊細な影 */
 }
 
 /* 全体の設定 */
 body {
-    font-family: 'Noto Sans JP', sans-serif;
-    color: var(--primary-black);
-    background-color: var(--light-gray);
-    line-height: 1.6;
+  font-family: 'Noto Sans JP', sans-serif;
+  color: var(--color-neutral-dark);
+  background-color: var(--color-neutral);
+  line-height: 1.6;
 }
 
 /* ヘッダー */
 header {
-    background-color: var(--primary-red);
-    color: var(--primary-white);
-    padding: 1rem;
-    text-align: center;
+  background-color: var(--color-primary);
+  color: var(--color-neutral-light);
+  padding: 1rem;
+  text-align: center;
 }
 
 /* ナビゲーションバー */
 .navbar-red {
-    background-color: var(--primary-red);
-    padding: 0.5rem;
+  background-color: var(--color-primary);
+  padding: 0.5rem;
 }
 
 nav a {
-    color: var(--primary-white);
-    margin: 0 15px;
-    text-decoration: none;
+  color: var(--color-neutral-light);
+  margin: 0 15px;
+  text-decoration: none;
 }
 
 /* ボタン */
-button, .btn {
-    background-color: var(--primary-gold);
-    color: var(--primary-black);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+.btn-danger {
+  background-color: var(--color-accent-pink) !important;
 }
 
-button:hover, .btn:hover {
-    background-color: #e0b800; /* 金色の濃いバリエーション */
+.btn-danger:hover {
+  background-color: var(--color-accent-pink-medium) !important;
+  color: var(--color-neutral-dark) !important;
 }
 
-button:active, .btn:active {
-    background-color: var(--primary-black);
-    color: var(--primary-white);
+.btn-danger:active {
+  background-color: var(--color-accent-pink-dark) !important;
+  color: var(--color-neutral-dark) !important;
 }
 
+button,
+.btn {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-custom {
+  background-color: var(--color-primary);
+  color: var(--color-neutral-light);
+  border: none;
+}
+
+.btn-custom:hover {
+  background-color: var(--color-primary-dark); /* ホバー時の背景色 */
+  color: var(--color-neutral-light); /* ホバー時の文字色 */
+}
+
+.modal-footer .btn-submit {
+  background-color: var(--color-accent-mint-medium);
+  color: var(--color-neutral-dark);
+}
+
+.modal-footer .btn-submit:hover {
+  background-color: #e0b800;
+}
+
+.btn-secondary {
+  background-color: white;
+  border: 1px solid var(--color-primary-turquoise);
+  color: var(--color-neutral-dark);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-neutral); /* 黒の濃いバリエーション */
+  border-color: var(--color-neutral);
+  color: var(--color-neutral-light);
+}
+
+.btn-submit {
+  background-color: var(--color-accent-mint) !important;
+  color: var(--color-neutral-light) !important;
+}
+
+.btn-submit:hover {
+  background-color: #45b8b0 !important;
+}
+
+.btn-submit:active {
+  background-color: #3da8a0 !important; /* さらに暗めに */
+}
+
+.search_button {
+  background-color: var(--color-accent-mint);
+  color: var(--color-neutral-light);
+}
+
+.search_button:hover {
+  background-color: var(--color-accent-mint-medium);
+}
+
+.search_button:active {
+  background-color: var(--color-accent-mint-dark) !important;
+}
+
+/*bootstrapバッジの上書き*/
+
+.bg-success {
+  background-color: black !important;
+}
+
+.badge.text-bg-info {
+  background-color: var(--color-accent-turquoise) !important;
+  color: var(--color-neutral-dark) !important;
+}
 /* フッター */
 footer {
-    background-color: var(--primary-black);
-    color: var(--primary-white);
-    text-align: center;
-    padding: 1rem;
-    position: relative;
-    bottom: 0;
-    width: 100%;
+  background-color: var(--color-accent-mint-dark);
+  color: var(--color-neutral-light);
+  text-align: center;
+  padding: 1rem;
+  position: relative;
+  bottom: 0;
+  width: 100%;
 }
 
 /* アラートメッセージ */
 .alert {
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 5px;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 5px;
 }
 
 .alert-success {
-    background-color: #eaffd4;
-    color: #4caf50;
+  background-color: #eaffd4;
+  color: #4caf50;
 }
 
 .alert-danger {
-    background-color: #ffe1e1;
-    color: #ff0000;
+  background-color: #ffe1e1;
+  color: #ff0000;
 }
 
 /* カード */
 .card {
-    background-color: var(--primary-white);
-    border: 1px solid #f5f5f5;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.2s ease-in-out;
+  background-color: var(--color-neutral-light);
+  border: 1px solid #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out;
 }
 
 .card-header {
-    background-color: var(--primary-gold);
-    color: var(--primary-black);
-    font-weight: 500;
-    padding: 10px 15px;
-    text-align: center;
+  background-color: var(--color-neutral);
+  color: var(--color-neutral-dark);
+  font-weight: 500;
+  padding: 10px 15px;
+  text-align: center;
 }
 
 .card-body {
-    padding: 15px;
-    color: var(--primary-black);
+  padding: 15px;
+  color: var(--color-neutral-dark);
 }
+/**/
 
 /* ドロップダウンメニュー */
 .dropdown-menu {
-    background-color: var(--primary-white);
-    border: none;
+  background-color: var(--color-neutral-light);
+  border: none;
 }
 
 .dropdown-item {
-    color: var(--primary-black);
+  color: var(--color-neutral-dark);
 }
 
-.dropdown-item:hover, .dropdown-item:focus {
-    background-color: var(--primary-gold);
-    color: var(--primary-black);
-}
-
-/* Bootstrapボタンの上書き */
-.btn-primary {
-    background-color: var(--success);
-    border-color: var(--success);
-    color: var(--primary-white);
-}
-
-.btn-primary:hover {
-    background-color: var(--dark-gray); /* 金色の濃いバリエーション */
-    border-color: #e0b800;
-    color: var(--primary-white);
-}
-
-.btn-secondary {
-    background-color: white;
-    border: 1px solid var(--success);
-    color: var(--primary-black);
-
-}
-
-.btn-secondary:hover {
-    background-color: var(--medium-gray); /* 黒の濃いバリエーション */
-    border-color: var(--medium-gray);
-    color: var(--primary-white);
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--color-accent-turquoise);
+  color: var(--color-neutral-dark);
 }
 
 /* ページネーション */
-.page-link {
-    background-color: var(--primary-gold);
-    color: var(--primary-black);
+.page-link rounded-circle {
+  background-color: var(--color-accent-turquoise);
+  color: var(--color-neutral-dark);
 }
 
-.page-link:hover {
-    background-color: #e0b800;
+.page-link rounded-circle:hover {
+  background-color: #e0b800;
 }
 
-.page-item.active .page-link {
-    background-color: var(--primary-red);
-    color: var(--primary-white);
-    border-color: var(--primary-red);
+.page-item.active .page-link rounded-circle {
+  background-color: var(--color-primary);
+  color: var(--color-neutral-light);
+  border-color: var(--color-primary);
 }
 
 /* モーダル */
 .modal-content {
-    background-color: var(--primary-white);
-    color: var(--primary-black);
-    border-radius: 8px;
+  background-color: var(--color-neutral-light);
+  color: var(--color-neutral-dark);
+  border-radius: 8px;
 }
 
 .modal-header {
-    background-color: var(--primary-red);
-    color: var(--primary-white);
-}
-
-.modal-footer .btn-primary {
-    background-color: var(--primary-gold);
-    color: var(--primary-black);
-}
-
-.modal-footer .btn-primary:hover {
-    background-color: #e0b800;
-}
-
-/* btn-custom ボタンのスタイル */
-.btn-custom {
-    background-color: var(--primary-red);
-    color: var(--primary-white);
-    border: none;
-}
-
-.btn-custom:hover {
-    background-color: var(--primary-dark); /* ホバー時の背景色 */
-    color: var(--primary-white); /* ホバー時の文字色 */
+  background-color: var(--color-accent-mint);
+  color: var(--color-neutral-light);
 }
 
 /* ドロップダウンメニューのスタイル */
 .dropdown-menu {
-    background-color: var(--primary-light); /* メニューの背景色 */
-    color: var(--primary-white);
-    border: none;
-    box-shadow: var(--box-shadow); /* 自然な影 */
+  background-color: var(--color-primary-light); /* メニューの背景色 */
+  color: var(--color-neutral-light);
+  border: none;
+  box-shadow: var(--box-shadow); /* 自然な影 */
 }
 
-
 .dropdown-custom {
-  background-color: var(--primary-light);
-  color: var(--dark-gray);
+  background-color: var(--color-primary-light);
+  color: var(--color-neutral-dark);
   padding: 8px 16px; /* 適切なパディング */
   display: block; /* リンクをブロック要素に */
   text-decoration: none; /* 下線を消す */
-  border-radius:8px;
-  white-space:nowrap;
+  border-radius: 8px;
+  white-space: nowrap;
 }
 
-
-.dropdown-custom:hover, .dropdown-custom:focus {
-    background-color: var(--primary-dark); /* ホバー時の背景色 */
-    color: var(--primary-white); /* ホバー時の文字色 */
+.dropdown-custom:hover,
+.dropdown-custom:focus {
+  background-color: var(--color-primary-dark); /* ホバー時の背景色 */
+  color: var(--color-neutral-light); /* ホバー時の文字色 */
 }
-
-
 
 .navbar .navbar-toggler {
-    color: var(--primary-white); /* ナビゲーションの文字色 */
-    border-color: var(--primary-white);
+  color: var(--color-neutral-light); /* ナビゲーションの文字色 */
+  border-color: var(--color-neutral-light);
 }
 
-
 #categoryList {
-    display: flex;
-    flex-wrap: wrap; /* 複数のボタンが横に並ぶ */
-    align-items: center;
-    justify-content: flex-start;
-    margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap; /* 複数のボタンが横に並ぶ */
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 10px;
 }
 
 .category-button {
-    display: flex;
-    align-items: center;
-    box-shadow: var(--box-shadow);
-    border-radius: 5px;
-    background-color: var(--primary-red);
-    color: var(--primary-white);
-    cursor: pointer;
-    flex: 0 1 auto; /* ボタンが横に並ぶ */
+  display: flex;
+  align-items: center;
+  box-shadow: var(--box-shadow);
+  border-radius: 5px;
+  background-color: var(--color-primary);
+  color: var(--color-neutral-light);
+  cursor: pointer;
+  flex: 0 1 auto; /* ボタンが横に並ぶ */
 }
 
 .category-name {
-    margin-right: 2mm; /* カテゴリ名とボタンの間に隙間を追加 */
-    padding: 8px;
+  margin-right: 2mm; /* カテゴリ名とボタンの間に隙間を追加 */
+  padding: 8px;
 }
 
 .category-button .btn {
-    padding: 3px 8px; /* ボタンを小さくする */
-    margin: 0 2px; /* ボタン間のスペースを少し追加 */
-    font-size: 0.8rem; /* ボタンのフォントサイズを小さく */
-    border-radius: 8px !important; /* ボタンの角を丸く */
-    background-color: var(--primary-gold);
-    color: var(--primary-white); /* テキスト色を落ち着いたトーンに */
+  padding: 3px 8px; /* ボタンを小さくする */
+  margin: 0 2px; /* ボタン間のスペースを少し追加 */
+  font-size: 0.8rem; /* ボタンのフォントサイズを小さく */
+  border-radius: 8px !important; /* ボタンの角を丸く */
+  background-color: var(--color-accent-turquoise);
+  color: var(--color-neutral-light); /* テキスト色を落ち着いたトーンに */
 }
 
-.round-btn{
-    border-radius: 8px !important;
+.round-btn {
+  border-radius: 8px !important;
 }
 
 .category-button .btn:hover {
-    background-color: #d9ada6; /* 和風カラーでのホバー時の色変更 */
+  background-color: var(--color-primary-light); /* 和風カラーでのホバー時の色変更 */
 }
 
-#category_label{
-    padding: 10px 20px; /* パディングを追加 */
-    border: 1px solid #b5c48f; /* 抹茶の濃い色のボーダー */
-    border-radius: 5px; /* 角を丸める */
-    cursor: pointer; /* ポインタを表示 */
-    background-color: var(--primary-black);
-    color: var(--primary-white);
-    transition: background-color 0.3s, color 0.3s; /* 背景色と文字色の変化をスムーズに */
+#category_label {
+  padding: 10px 20px; /* パディングを追加 */
+  border: 1px solid var(--color-accent-turquoise); /* 抹茶の濃い色のボーダー */
+  border-radius: 5px; /* 角を丸める */
+  cursor: pointer; /* ポインタを表示 */
+  background-color: var(--color-neutral-dark);
+  color: var(--color-neutral-light);
+  transition:
+    background-color 0.3s,
+    color 0.3s; /* 背景色と文字色の変化をスムーズに */
 }
 
-#category_label:hover{
-    background-color: var(--medium-gray);
-    color: var(--primary-white);
+#category_label:hover {
+  background-color: var(--color-neutral);
+  color: var(--color-neutral-light);
 }
 
-
-.category-button input:checked + #category_label{
-     background-color: var(--light-gray);
-     color: var(--primary-black);
+.category-button input:checked + #category_label {
+  background-color: var(--color-secondary-light);
+  color: var(--color-neutral-dark);
 }
 .hidden-btn {
-    opacity: 0; /* 初期状態は透明 */
-    width: 0; /* 幅を0にする */
-    overflow: hidden; /* 内容を隠す */
-    transition: opacity 0.3s ease, width 0.3s ease; /* トランジションを適用 */
-    padding:0 !important;
-    margin:0;
-    height:0;
+  opacity: 0; /* 初期状態は透明 */
+  width: 0; /* 幅を0にする */
+  overflow: hidden; /* 内容を隠す */
+  transition:
+    opacity 0.3s ease,
+    width 0.3s ease; /* トランジションを適用 */
+  padding: 0 !important;
+  margin: 0;
+  height: 0;
 }
 
 .hidden-btn.show {
-    opacity: 1; /* 表示時は不透明 */
-    width: auto; /* 幅を自動にする */
-    height:auto;
-    padding:0px 8px !important;
+  opacity: 1; /* 表示時は不透明 */
+  width: auto; /* 幅を自動にする */
+  height: auto;
+  padding: 0px 8px !important;
 }
 
 /*レストラン登録時の画像プレビューの設定*/
 .image-preview {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .image-preview img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border: 1px solid #ddd;
-    padding: 5px;
-    border-radius: 5px;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: 1px solid var(--color-neutral);
+  padding: 5px;
+  border-radius: 5px;
 }
 
 /*カルーセルの矢印の設定*/
 
 .arrow_box {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin: 20px 0 0;
-    position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 20px 0 0;
+  position: relative;
 }
 
 .prev-arrow,
 .next-arrow {
-    display: block;
-    width: 50px;
-    height: 50px;
-    background: coral;
-    border-radius: 50%;
-    transition: all .3s ease;
-    cursor: pointer;
-    position:relative;
+  display: block;
+  width: 50px;
+  height: 50px;
+  background: var(--color-primary-light);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
 }
 
 .prev-arrow {
-    transform: rotate(180deg);
-    margin-right: 20px;
+  transform: rotate(180deg);
+  margin-right: 20px;
 }
 
 .prev-arrow::before,
-.next-arrow::before{
-    position:absolute;
-    content: "";
-    width:10px;
-    height:10px;
-    border-right: 2px solid #FFF;
-    border-top: 2px solid #FFF;
-    top:0;
-    bottom:0;
-    left:0;
-    right:0;
-    margin:auto;
-    transform:rotate(45deg);
+.next-arrow::before {
+  position: absolute;
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid #fff;
+  border-top: 2px solid #fff;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  transform: rotate(45deg);
 }
 
-.breadcrumb{
-    background-color:coral;
-    border-radius: var(--bs-border-radius-xl)!important;
-    padding: .5rem ! important;
-    margin-bottom: 0 !important;
+.breadcrumb {
+  background-color: var(--color-primary-light);
+  border-radius: var(--bs-border-radius-xl) !important;
+  padding: 0.5rem !important;
+  margin-bottom: 0 !important;
 }
 
-.page-link{
-    margin:0;
+.page-link rounded-circle {
+  margin: 0;
 }
 
-
-
-@media screen and (min-width:1400px){
-	.container{
-	max-width:1200px;
-	}
+@media screen and (min-width: 1400px) {
+  .container {
+    max-width: 1200px;
+  }
 }
 
 .checkbox-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px; /* ボタンの間隔 */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* ボタンの間隔 */
 }
 
 .category-button {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .category-button input {
-    display: none; /* チェックボックスを隠す */
+  display: none; /* チェックボックスを隠す */
 }
 
-.card-link{
-    text-decoration:none;
+.card-link {
+  text-decoration: none;
 }
 
 .horizontal-card-image {
-    width: 100%; /* 横幅を100%に設定 */
-    height: 273px; /* 高さを固定 (必要に応じて調整) */
-    object-fit: cover; /* 画像が枠内に収まるように */
+  width: 100%; /* 横幅を100%に設定 */
+  height: 273px; /* 高さを固定 (必要に応じて調整) */
+  object-fit: cover; /* 画像が枠内に収まるように */
 }
 
 .categories,
@@ -458,44 +465,42 @@ footer {
   display: none;
 }
 
-.btn-group>label {
+.btn-group > label {
   border-radius: 8px;
-  background-color: var(--light-gray);
+  background-color: var(--bs-gray-300);
   padding: 0 4px;
+}
+
+.btn-group > label:hover {
+  background-color: var(--bs-gray-100);
+}
+
+.btn-group input:checked + label {
+  background-color: var(--color-accent-turquoise);
+}
+
+.pagination {
   box-shadow: var(--box-shadow);
 }
 
-.btn-group input:checked+label {
-  background-color: var(--dark-gray);
-  /* チェック時の背景色 */
-  color: white;
-  /* チェック時のテキスト色（必要に応じて） */
+.card-img-show {
+  height: 350px !important;
 }
 
-.pagination{
-    box-shadow: var(--box-shadow);
+.select-logic label {
+  border-radius: 8px;
+  background-color: var(--color-accent-turquoise);
+  padding: 0 8px;
+  box-shadow: var(--box-shadow);
 }
 
-
-.card-img-show{
-    height:350px !important;
+.select-logic input:checked + label {
+  background-color: var(--color-primary-light);
 }
 
-.select-logic label{
-    border-radius:8px;
-    background-color: var(--primary-gold);
-    padding: 0 8px;
-    box-shadow: var(--box-shadow);
+.select-logic label:hover {
+  background-color: var(--color-accent-mint);
 }
-
-.select-logic input:checked+label{
-    background-color: coral;
-}
-
-.select-logic label:hover{
- background-color: #8b7500;
-}
-
 
 .see-all-photos-btn {
   position: absolute;
@@ -516,186 +521,184 @@ footer {
 }
 
 /*レビューモーダル*/
-.photo-upload .upload-label{
-    display: inline-block;
-    cursor: pointer;
+.photo-upload .upload-label {
+  display: inline-block;
+  cursor: pointer;
 }
 
-.upload-box{
-    width: 100px;
-    height: 100px;
-    border: 20x dashed #ccc;
-    display: flex;
-    align-items: center;
-    color: #aaa;
-    font-size: 24px;
+.upload-box {
+  width: 100px;
+  height: 100px;
+  border: 20x dashed var(--color-neutral);
+  display: flex;
+  align-items: center;
+  color: var(--color-neutral);
+  font-size: 24px;
 }
 
-.preview-img{
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    margin: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    cursor: pointer;
+.preview-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin: 5px;
+  border-radius: 5px;
+  border: 1px solid var(--color-neutral);
+  cursor: pointer;
 }
 
 .preview-img:hover {
-    opacity: 0.8;
-    transform: scale(1.05);
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  opacity: 0.8;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .modal-body img {
-    max-height: 400px;
-    width: auto;
-    max-width: 100%;
-    object-fit: contain;
-    margin: 0 auto;
-    display: block;
+  max-height: 400px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
 }
 
 /*星のなめらかな表示*/
 .star-rating {
-    display: flex;          /* 子要素を横並びに */
-    align-items: center;    /* 子要素を縦方向の中央に揃える */
-    font-size: 1.2rem;     /* 星とテキストのサイズ */
+  display: flex; /* 子要素を横並びに */
+  align-items: center; /* 子要素を縦方向の中央に揃える */
+  font-size: 1.2rem; /* 星とテキストのサイズ */
 }
 
 .stars-outer {
-    position: relative;     /* 内側の星の位置決めの基準点となる */
-    display: inline-block;  /* ブロック要素としつつ、横幅は内容に合わせる */
+  position: relative; /* 内側の星の位置決めの基準点となる */
+  display: inline-block; /* ブロック要素としつつ、横幅は内容に合わせる */
 }
 
 .stars-outer::before {
-    content: "★★★★★";   /* グレーの星5つを表示（背景） */
-    color: #ccc;           /* グレーの星の色 */
+  content: '★★★★★'; /* グレーの星5つを表示（背景） */
+  color: var(--color-neutral); /* グレーの星の色 */
 }
 
 .stars-inner {
-    position: absolute;     /* stars-outerを基準に位置を決める */
-    top: 0;                /* 上端をstars-outerの上端に合わせる */
-    left: 0;               /* 左端をstars-outerの左端に合わせる */
-    white-space: nowrap;   /* 星が改行されないようにする */
-    overflow: hidden;      /* 評価値に応じて幅が変わる。幅を超えた部分は隠す */
-    color: #ffc107;        /* 黄色の星の色 */
+  position: absolute; /* stars-outerを基準に位置を決める */
+  top: 0; /* 上端をstars-outerの上端に合わせる */
+  left: 0; /* 左端をstars-outerの左端に合わせる */
+  white-space: nowrap; /* 星が改行されないようにする */
+  overflow: hidden; /* 評価値に応じて幅が変わる。幅を超えた部分は隠す */
+  color: var(--color-accent-mint); /* 黄色の星の色 */
 }
 
 .stars-inner::before {
-    content: "★★★★★";   /* 黄色の星5つを表示（前景） */
+  content: '★★★★★'; /* 黄色の星5つを表示（前景） */
 }
 
-.icon-upload{
-    width: 150px;
-    height:150px;
-    position: relative;
-    margin: 0 auto;
+.icon-upload {
+  width: 150px;
+  height: 150px;
+  position: relative;
+  margin: 0 auto;
 }
 
-.upload-label{
-    width:100%;
-    height:100%;
+.upload-label {
+  width: 100%;
+  height: 100%;
 }
 
-.icon-upload-box{
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 2px dashed var(--medium-gray);
-    display: flex;
-    justify-content: center;
-    cursor:pointer;
-    transition: all 0.3s ease;
+.icon-upload-box {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px dashed var(--color-neutral);
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
-.plus-icon{
-    margin: auto;
-}
-
-.img-container{
-    max-height: 400px;
-    margin: auto;
+.plus-icon {
+  margin: auto;
 }
 
-.cr-boundary {
-    margin: 0 auto;
-}
-
-.cr-slider-wrap {
-    margin: 15px auto;
-    width: 200px;
-}
-
-.cr-viewport {
-    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.1);
+.img-container {
+  max-height: 400px;
+  margin: auto;
 }
 
 .cr-boundary {
-    margin: 0 auto;
+  margin: 0 auto;
 }
 
 .cr-slider-wrap {
-    margin: 15px auto;
-    width: 200px;
+  margin: 15px auto;
+  width: 200px;
 }
 
 .cr-viewport {
-    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.1);
+}
+
+.cr-boundary {
+  margin: 0 auto;
+}
+
+.cr-slider-wrap {
+  margin: 15px auto;
+  width: 200px;
+}
+
+.cr-viewport {
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.1);
 }
 
 #result-preview {
-    transition: all 0.3s ease;
+  transition: all 0.3s ease;
 }
 
-img{
-    transition: transform 0.3s ease;
+img {
+  transition: transform 0.3s ease;
 }
 
 img:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 /*サブメニューのGPUによる描写*/
 
-
-.dropdown_submenu{
-    position: relative;
+.dropdown_submenu {
+  position: relative;
 }
 
-.dropdown_submenu > .dropdown-menu{
-    top: 0;
-    left: 100%;
-    margin-top: 0;
-    visibility: hidden;/*完全に非表示&クリック不可*/
-    opacity: 0;/*フェードアニメーション用*/
-    transform: translateX(-10px);/*スライドイン効果*/
-    transition: all 0.3s ease;/*アニメーション設定*/
+.dropdown_submenu > .dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: 0;
+  visibility: hidden; /*完全に非表示&クリック不可*/
+  opacity: 0; /*フェードアニメーション用*/
+  transform: translateX(-10px); /*スライドイン効果*/
+  transition: all 0.3s ease; /*アニメーション設定*/
 }
 
-.dropdown_submenu:hover > .dropdown-menu{
-    visibility: visible;
-    opacity: 1;
-    transform: translateX(0);
+.dropdown_submenu:hover > .dropdown-menu {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(0);
 }
 
-
-.dropdown_submenu > .dropdown-item:after{
-    display:inline-block;
-    float: right;
-    margin-left: 0.5em;
-    vertical-align: middle;
-    content: "";
-    border-top: 0.3em solid transparent;
-    border-right: 0;
-    border-bottom: 0.3em solid transparent;
-    border-left: 0.3em solid;
+.dropdown_submenu > .dropdown-item:after {
+  display: inline-block;
+  float: right;
+  margin-left: 0.5em;
+  vertical-align: middle;
+  content: '';
+  border-top: 0.3em solid transparent;
+  border-right: 0;
+  border-bottom: 0.3em solid transparent;
+  border-left: 0.3em solid;
 }
 
 /*ホバー時に矢印表示*/
-.list-group-item:hover .bi-chevron-right{
-    opacity: 1 !important;
+.list-group-item:hover .bi-chevron-right {
+  opacity: 1 !important;
 }
 
-.transition_opacity{
-    transition: opacity 0.3s ease-in-out;
+.transition_opacity {
+  transition: opacity 0.3s ease-in-out;
 }

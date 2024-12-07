@@ -1,265 +1,329 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-  <meta th:replace="~{fragment::headResources}">
-  <script th:src="@{/js/restaurant_show.js}" defer></script>
-  <script th:src="@{/js/review_masking.js}" defer></script>
-  <title>レストラン詳細</title>
-</head>
-<body class="d-flex flex-column min-vh-100">
-<!-- ヘッダー -->
-<div th:replace="~{fragment::header}"></div>
+  <head>
+    <meta th:replace="~{fragment::headResources}" />
+    <script th:src="@{/js/restaurant_show.js}" defer></script>
+    <script th:src="@{/js/review_masking.js}" defer></script>
+    <title>レストラン詳細</title>
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <!-- ヘッダー -->
+    <div th:replace="~{fragment::header}"></div>
 
-<main>
-  <div class="container pt-4 pb-5 container">
-    <div class="row justify-content-center">
-      <nav class="mb-4" style="--bs-breadcrumb-divider:'>';" aria-label="breadcrumb">
-        <ol class="breadcrumb mb-0">
-          <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li><!--todo:ホームをまだ作っていない。-->
-          <li class="breadcrumb-item"><a th:href="@{/restaurant}">レストラン一覧</a>
-          <li class="breadcrumb-item active" aria-current="page">レストラン詳細</li>
-        </ol>
-      </nav>
+    <main>
+      <div class="container pt-4 pb-5 container">
+        <div class="row justify-content-center">
+          <nav class="mb-4" style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+              <!--todo:ホームをまだ作っていない。-->
+              <li class="breadcrumb-item"><a th:href="@{/restaurant}">レストラン一覧</a></li>
+              <li class="breadcrumb-item active" aria-current="page">レストラン詳細</li>
+            </ol>
+          </nav>
 
-      <!-- タイトルとお気に入りボタンを横に並べる -->
-      <div class="d-flex justify-content-center align-items-center mb-4">
-        <h1 class="mb-0 mr-4" th:text="${restaurant.getName()}"></h1>
-        <div class="d-flex ms-4" sec:authorize="hasAnyRole('PAID_USER','ADMIN')">
-          <button th:data-restaurant-id = "${restaurant.restaurantId}"
-             th:data-is-favorite = "${restaurant.isFavorite}"
-             class="btn btn-outline-danger"
-          id="toggle-favorite"
-             th:text="${restaurant.isFavorite ? '&#9829; Remove from Favorites' : '&#9825; Add to Favorites'}">
-          </button >
-        </div>
-        <div class="d-flex ms-4" sec:authorize="hasRole('UNPAID_USER')">
-          <a th:href="@{/upgrade}"
-             class="btn btn-outline-danger"
-             th:text="${restaurant.isFavorite ? '&#9829; Remove from Favorites' : '&#9825; Add to Favorites'}">
-          </a>
-        </div>
-      </div>
-
-      <div th:if="${errorMessage}" class="alert alert-danger">
-        <span th:text="${errorMessage}"></span>
-      </div>
-
-      <div class="mb-4">
-        <div th:id="carouselExampleIndicators__${restaurant.getRestaurantId()}__" class="carousel slide" data-bs-ride="carousel"
-             style="position:relative;">
-          <!-- Carousel Content -->
-          <div class="carousel-inner">
-            <div class="carousel-item active">
-              <img th:if="${restaurant.images.size() > 0}" th:src="@{/images/__${restaurant.images[0].imageName}__}" class="card-img-show horizontal-card-image" alt="店舗画像">
-              <img th:unless="${restaurant.images.size() > 0}" th:src="@{/images/noImage.png}" class="card-img-top horizontal-card-image" alt="NO IMAGE">
+          <!-- タイトルとお気に入りボタンを横に並べる -->
+          <div class="d-flex justify-content-center align-items-center mb-4">
+            <h1 class="mb-0 mr-4" th:text="${restaurant.getName()}"></h1>
+            <div class="d-flex ms-4" sec:authorize="hasAnyRole('PAID_USER','ADMIN')">
+              <button
+                th:data-restaurant-id="${restaurant.restaurantId}"
+                th:data-is-favorite="${restaurant.isFavorite}"
+                class="btn btn-outline-danger"
+                id="toggle-favorite"
+                th:text="${restaurant.isFavorite ? '&#9829; Remove from Favorites' : '&#9825; Add to Favorites'}"
+              ></button>
             </div>
-            <div th:each="image, iterStat : ${restaurant.images}" th:if="${iterStat.index > 0}" class="carousel-item">
-              <img th:src="@{/images/__${image.imageName}__}" class="card-img-show horizontal-card-image" alt="店舗画像">
+            <div class="d-flex ms-4" sec:authorize="hasRole('UNPAID_USER')">
+              <a
+                th:href="@{/upgrade}"
+                class="btn btn-outline-danger"
+                th:text="${restaurant.isFavorite ? '&#9829; Remove from Favorites' : '&#9825; Add to Favorites'}"
+              >
+              </a>
             </div>
           </div>
-          <!-- Controls -->
-          <button class="carousel-control-prev" type="button" th:attr="data-bs-target='#carouselExampleIndicators__${restaurant.getRestaurantId()}__'" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button class="carousel-control-next" type="button" th:attr="data-bs-target='#carouselExampleIndicators__${restaurant.getRestaurantId()}__'" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
 
-          <!-- See All Photos Button -->
-          <button id="restaurant-banner-see-all-photos" type="button" class="see-all-photos-btn"
-                  data-bs-toggle="modal" th:attr="data-bs-target='#photoModal__${restaurant.getRestaurantId()}__'"
-                  aria-disabled="false" th:aria-label="${restaurant.images.size() + '枚の写真を見る'}">
-            <span th:text="${restaurant.images.size() + '枚の写真を見る'}"></span>
-          </button>
-        </div>
-      </div>
+          <div th:if="${errorMessage}" class="alert alert-danger">
+            <span th:text="${errorMessage}"></span>
+          </div>
 
-      <!-- Modal Structure for Scrollable Gallery -->
-      <div th:id="photoModal__${restaurant.getRestaurantId()}__" class="modal fade" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" th:text="${restaurant.name} + 'の写真一覧'"></h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
-              <div class="d-flex flex-wrap gap-1">
-                <div th:each="image : ${restaurant.images}" class="photo-thumbnail">
-                  <img th:src="@{/images/__${image.imageName}__}" class="img-thumbnail" alt="店舗画像" style="width: 100%; max-width: 800px;">
+          <div class="mb-4">
+            <div
+              th:id="carouselExampleIndicators__${restaurant.getRestaurantId()}__"
+              class="carousel slide"
+              data-bs-ride="carousel"
+              style="position: relative"
+            >
+              <!-- Carousel Content -->
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <img
+                    th:if="${restaurant.images.size() > 0}"
+                    th:src="@{/images/__${restaurant.images[0].imageName}__}"
+                    class="card-img-show horizontal-card-image"
+                    alt="店舗画像"
+                  />
+                  <img
+                    th:unless="${restaurant.images.size() > 0}"
+                    th:src="@{/images/noImage.png}"
+                    class="card-img-top horizontal-card-image"
+                    alt="NO IMAGE"
+                  />
+                </div>
+                <div
+                  th:each="image, iterStat : ${restaurant.images}"
+                  th:if="${iterStat.index > 0}"
+                  class="carousel-item"
+                >
+                  <img
+                    th:src="@{/images/__${image.imageName}__}"
+                    class="card-img-show horizontal-card-image"
+                    alt="店舗画像"
+                  />
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+              <!-- Controls -->
+              <button
+                class="carousel-control-prev"
+                type="button"
+                th:attr="data-bs-target='#carouselExampleIndicators__${restaurant.getRestaurantId()}__'"
+                data-bs-slide="prev"
+              >
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button
+                class="carousel-control-next"
+                type="button"
+                th:attr="data-bs-target='#carouselExampleIndicators__${restaurant.getRestaurantId()}__'"
+                data-bs-slide="next"
+              >
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
 
-
-
-    </div>
-
-    <div class="container">
-      <div class="row">
-        <div class="col-md-8 container mb-4">
-          <div class="row pb-2 mb-2 border-bottom">
-            <div class="col-4">
-              <span class="fw-bold">レストラン名</span>
-            </div>
-
-            <div class="col">
-              <span th:text="${restaurant.getName()}"></span>
-            </div>
-          </div>
-
-          <div class="row pb-2 mb-2 border-bottom">
-            <div class="col-4">
-              <span class="fw-bold">説明</span>
-            </div>
-
-            <div class="col">
-              <span class="pre-wrap" th:text="${restaurant.getDescription()}"></span>
-            </div>
-          </div>
-
-
-          <div class="row pb-2 mb-2 border-bottom">
-            <div class="col-4">
-              <span class="fw-bold">定員</span>
-            </div>
-
-            <div  class="col">
-              <span th:text="${restaurant.getCapacity()+'人'}"></span>
+              <!-- See All Photos Button -->
+              <button
+                id="restaurant-banner-see-all-photos"
+                type="button"
+                class="see-all-photos-btn"
+                data-bs-toggle="modal"
+                th:attr="data-bs-target='#photoModal__${restaurant.getRestaurantId()}__'"
+                aria-disabled="false"
+                th:aria-label="${restaurant.images.size() + '枚の写真を見る'}"
+              >
+                <span th:text="${restaurant.images.size() + '枚の写真を見る'}"></span>
+              </button>
             </div>
           </div>
 
-          <div class="row pb-2 mb-2 border-bottom">
-            <div class="col-4">
-              <span class="fw-bold">郵便番号</span>
-            </div>
-
-            <div class="col">
-              <span th:text="${restaurant.getPostalCode()}"></span>
-            </div>
-          </div>
-
-          <div class="row pb-2 mb-2 border-bottom">
-            <div class="col-4">
-              <span class="fw-bold">住所</span>
-            </div>
-
-            <div class="col">
-              <span th:text="${restaurant.getAddress()}"></span>
-            </div>
-          </div>
-
-          <div class="row pb-2 mb-2 border-bottom">
-            <div class="col-4">
-              <span class="fw-bold">電話番号</span>
-            </div>
-
-            <div class="col">
-              <span th:text="${restaurant.getPhoneNumber()}"></span>
-            </div>
-          </div>
-        </div>
-
-        <div sec:authorize = "isAnonymous()" class="col-lg-4 px-0 ps-lg-4 mb-4">
-          <div class="card">
-            <div  class="card-body">
-              <p class="card-text">予約するには<a th:hreef="@{/login}">ログイン</a>が必要です。</p>
-              <button type="submit" class="btn text-white shadow-sm w-100" disabled>予約する</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card col-md-4 reservation-card shadow bg-light">
-          <h5 class="text-center mb-4 mt-3">レストランの予約</h5>
-
-          <form id="reservationForm" >
-            <!--隠しフィールドとしてのrestaurantId-->
-            <input type="hidden" th:value="${restaurant.getRestaurantId()}" id="restaurantId">
-            <!-- 人数の選択フィールド -->
-            <div class="mb-3">
-              <div class="input-group">
-                <span class="input-group-text" id="people-icon"><i class="bi bi-people-fill"></i></span>
-                <select id="people" class="form-select" aria-label="people" aria-describedby="people-icon">
-                  <option selected disabled>人数を選択</option>
-                  <!-- 人数のオプションを生成（最大20人） -->
-                  <script>
-                    for (let i = 1; i <= 20; i++) {
-                        document.write(`<option value="${i}">${i}名</option>`);
-                    }
-                  </script>
-                </select>
-              </div>
-            </div>
-
-            <!-- 日付と時間の選択フィールド -->
-            <div class="row g-2 mb-3">
-              <div class="col">
-                <div class="input-group">
-                  <input type="date" id="date" class="form-control" value="" min="">
+          <!-- Modal Structure for Scrollable Gallery -->
+          <div
+            th:id="photoModal__${restaurant.getRestaurantId()}__"
+            class="modal fade"
+            tabindex="-1"
+            aria-labelledby="photoModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" th:text="${restaurant.name} + 'の写真一覧'"></h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-              </div>
-              <div class="col">
-                <div class="input-group">
-                  <span class="input-group-text" id="time-icon"><i class="bi bi-clock-fill"></i></span>
-                  <select id="time" class="form-select">
-                  <!---時刻の選択肢は動的に作成する-->
-                  </select>
-                </div>
-              </div>
-            </div>
-
-
-            <!-- メッセージ表示部分 -->
-            <div id="availabilityMessage" class="message d-flex justify-content-center alert alert-info ">
-              <i class="bi bi-info-circle" ></i> 予約可能か確認中です...
-            </div>
-
-            <!-- 本予約ボタン -->
-            <div class="d-flex justify-content-center">
-              <button type="button" id="confirmReservation" class="btn btn-primary mt-2 mb-2" style="display: none;"  data-bs-target="#confirmReservationModal">本予約する</button><!--todo:モーダルが開いて、本予約できるようにする。-->
-            </div>
-
-            <!-- 予約確認モーダル -->
-            <div class="modal fade" id="confirmReservationModal" tabindex="-1" aria-labelledby="confirmReservationLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="confirmReservationLabel">予約の確認</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <div class="mb-3">
-                      <label for="reservationComment" class="form-label">コメント</label>
-                      <textarea class="form-control" id="reservationComment" rows="3" placeholder="コメントを入力してください"></textarea>
+                <div class="modal-body" style="max-height: 80vh; overflow-y: auto">
+                  <div class="d-flex flex-wrap gap-1">
+                    <div th:each="image : ${restaurant.images}" class="photo-thumbnail">
+                      <img
+                        th:src="@{/images/__${image.imageName}__}"
+                        class="img-thumbnail"
+                        alt="店舗画像"
+                        style="width: 100%; max-width: 800px"
+                      />
                     </div>
-                    <p id="reservationDetails"></p>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
-                    <button type="button" class="btn btn-primary" id="finalizeReservation">予約を確定する</button>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
-          </form>
+        <div class="container">
+          <div class="row">
+            <div class="col-md-8 container mb-4">
+              <div class="row pb-2 mb-2 border-bottom">
+                <div class="col-4">
+                  <span class="fw-bold">レストラン名</span>
+                </div>
+
+                <div class="col">
+                  <span th:text="${restaurant.getName()}"></span>
+                </div>
+              </div>
+
+              <div class="row pb-2 mb-2 border-bottom">
+                <div class="col-4">
+                  <span class="fw-bold">説明</span>
+                </div>
+
+                <div class="col">
+                  <span class="pre-wrap" th:text="${restaurant.getDescription()}"></span>
+                </div>
+              </div>
+
+              <div class="row pb-2 mb-2 border-bottom">
+                <div class="col-4">
+                  <span class="fw-bold">定員</span>
+                </div>
+
+                <div class="col">
+                  <span th:text="${restaurant.getCapacity()+'人'}"></span>
+                </div>
+              </div>
+
+              <div class="row pb-2 mb-2 border-bottom">
+                <div class="col-4">
+                  <span class="fw-bold">郵便番号</span>
+                </div>
+
+                <div class="col">
+                  <span th:text="${restaurant.getPostalCode()}"></span>
+                </div>
+              </div>
+
+              <div class="row pb-2 mb-2 border-bottom">
+                <div class="col-4">
+                  <span class="fw-bold">住所</span>
+                </div>
+
+                <div class="col">
+                  <span th:text="${restaurant.getAddress()}"></span>
+                </div>
+              </div>
+
+              <div class="row pb-2 mb-2 border-bottom">
+                <div class="col-4">
+                  <span class="fw-bold">電話番号</span>
+                </div>
+
+                <div class="col">
+                  <span th:text="${restaurant.getPhoneNumber()}"></span>
+                </div>
+              </div>
+            </div>
+
+            <div sec:authorize="isAnonymous()" class="col-lg-4 px-0 ps-lg-4 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <p class="card-text">予約するには<a th:hreef="@{/login}">ログイン</a>が必要です。</p>
+                  <button type="submit" class="btn shadow-sm w-100" disabled>予約する</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card col-md-4 reservation-card shadow bg-light">
+              <h5 class="text-center mb-4 mt-3">レストランの予約</h5>
+
+              <form id="reservationForm">
+                <!--隠しフィールドとしてのrestaurantId-->
+                <input type="hidden" th:value="${restaurant.getRestaurantId()}" id="restaurantId" />
+                <!-- 人数の選択フィールド -->
+                <div class="mb-3">
+                  <div class="input-group">
+                    <span class="input-group-text" id="people-icon"><i class="bi bi-people-fill"></i></span>
+                    <select id="people" class="form-select" aria-label="people" aria-describedby="people-icon">
+                      <option selected disabled>人数を選択</option>
+                      <!-- 人数のオプションを生成（最大20人） -->
+                      <script>
+                        for (let i = 1; i <= 20; i++) {
+                          document.write(`<option value="${i}">${i}名</option>`);
+                        }
+                      </script>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- 日付と時間の選択フィールド -->
+                <div class="row g-2 mb-3">
+                  <div class="col">
+                    <div class="input-group">
+                      <input type="date" id="date" class="form-control" value="" min="" />
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="input-group">
+                      <span class="input-group-text" id="time-icon"><i class="bi bi-clock-fill"></i></span>
+                      <select id="time" class="form-select">
+                        <!---時刻の選択肢は動的に作成する-->
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- メッセージ表示部分 -->
+                <div id="availabilityMessage" class="message d-flex justify-content-center alert alert-info">
+                  <i class="bi bi-info-circle"></i> 予約可能か確認中です...
+                </div>
+
+                <!-- 本予約ボタン -->
+                <div class="d-flex justify-content-center">
+                  <button
+                    type="button"
+                    id="confirmReservation"
+                    class="btn btn-submit mt-2 mb-2"
+                    style="display: none"
+                    data-bs-target="#confirmReservationModal"
+                  >
+                    本予約する</button
+                  ><!--todo:モーダルが開いて、本予約できるようにする。-->
+                </div>
+
+                <!-- 予約確認モーダル -->
+                <div
+                  class="modal fade"
+                  id="confirmReservationModal"
+                  tabindex="-1"
+                  aria-labelledby="confirmReservationLabel"
+                  aria-hidden="true"
+                >
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="confirmReservationLabel">予約の確認</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="mb-3">
+                          <label for="reservationComment" class="form-label">コメント</label>
+                          <textarea
+                            class="form-control"
+                            id="reservationComment"
+                            rows="3"
+                            placeholder="コメントを入力してください"
+                          ></textarea>
+                        </div>
+                        <p id="reservationDetails"></p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                        <button type="button" class="btn btn-submit" id="finalizeReservation">予約を確定する</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!--レビューの表示部分-->
+          <div class="container my-4">
+            <div th:replace="~{fragment::reviewAndModalForRestaurant}"></div>
+          </div>
         </div>
       </div>
-      <!--レビューの表示部分-->
-      <div class="container my-4">
-        <div th:replace="~{fragment::reviewAndModalForRestaurant}"></div>
-      </div>
+    </main>
 
-    </div>
-  </div>
-</main>
-
-  <!-- フッター -->
-<div th:replace="~{fragment::footer}"></div>
-
-</body>
+    <!-- フッター -->
+    <div th:replace="~{fragment::footer}"></div>
+  </body>
 </html>
