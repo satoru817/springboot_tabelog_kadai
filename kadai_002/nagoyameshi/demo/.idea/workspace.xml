@@ -52,6 +52,18 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "satoru817"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:satoru817/springboot_tabelog_kadai.git",
+    "accountId": "a036fdde-e30c-4fc0-8e4c-8b760aee7f78"
+  }
+}]]></component>
   <component name="HighlightingSettingsPerFile">
     <setting file="jar://$MAVEN_REPOSITORY$/org/springframework/data/spring-data-commons/3.3.4/spring-data-commons-3.3.4.jar!/org/springframework/data/domain/Page.class" root0="SKIP_INSPECTION" />
     <setting file="jar://$MAVEN_REPOSITORY$/org/springframework/data/spring-data-commons/3.3.4/spring-data-commons-3.3.4.jar!/org/springframework/data/domain/PageImpl.class" root0="SKIP_INSPECTION" />
@@ -88,7 +100,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "b4",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/satoru/document/kadai",
+    "last_opened_file_path": "/home/satoru/shoeiApplication/cramSchool",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",

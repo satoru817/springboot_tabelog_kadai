@@ -1,0 +1,87 @@
+/* カラー定義 */
+:root {
+  /* プライマリーカラー */
+  --color-primary: #ff6b6b; /* 明るく楽しげな赤 */
+  --color-primary-light: #ffb4b4; /* ソフトなアクセント */
+  --color-primary-dark: #ff4444; /* 強調用 */
+
+  /* セカンダリーカラー */
+  --color-secondary: #ffd93d; /* 明るい黄色 */
+  --color-secondary-light: #ffe869; /* パステル調 */
+  --color-secondary-dark: #ffb302; /* アクセント */
+
+  /* ニュートラル */
+  --color-neutral-light: #ffffff; /* 白背景 */
+  --color-neutral: #f8f9fa; /* うすいグレー */
+  --color-neutral-dark: #495057; /* テキスト */
+
+  /* アクセントカラー - ミントグリーン系 */
+  --color-accent-mint: #4ecdc4; /* ミントグリーン（オリジナル） */
+  --color-accent-mint-medium: #3bb1a9; /* 深いミント */
+  --color-accent-mint-dark: #2a8e87; /* 濃いミント */
+
+  /* アクセントカラー - パステルピンク系 */
+  --color-accent-pink: #ffb6b9; /* パステルピンク（オリジナル） */
+  --color-accent-pink-medium: #ff9a9e; /* 深いピンク */
+  --color-accent-pink-dark: #ff7e83; /* 濃いピンク */
+
+  /* アクセントカラー - ターコイズ系 */
+  --color-accent-turquoise: #95e1d3; /* ペールターコイズ（オリジナル） */
+  --color-accent-turquoise-medium: #7bc5b7; /* 深いターコイズ */
+  --color-accent-turquoise-dark: #62a99c; /* 濃いターコイズ */
+
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* より繊細な影 */
+}
+
+.pagination_nextArrow{
+    background-image:url(//cdn.macaro-ni.jp/assets/img/v4/page_icon_active4.svg);
+    transform:scaleX(-1);
+
+}
+
+.pagination_prevArrow{
+    background-image:url(//cdn.macaro-ni.jp/assets/img/v4/page_icon_active4.svg);
+}
+
+
+.pagination_nextArrow,.pagination_prevArrow{
+    background-size:contain;
+    bottom: 0;
+    content: "";
+    height: 14px;
+    left:0;
+    margin:auto;
+    position: absolute;
+    right:0;
+    top:0;
+    width:12px;
+}
+
+.pagination_itemBox{
+    border-radius:25px!important;
+    align-items:center;
+    border : 1px solid #ddd;
+    display:flex;
+    font-size:13px;
+    font-weight:700;
+    height:47px;
+    justify-content:center;
+    margin:0 5px;
+    position:relative;
+    width:47px;
+}
+
+
+.page-link {
+  color: var(--color-neutral-dark)!important;
+}
+
+.page-link:hover {
+  background-color: var(--color-accent-pink)!important;
+  color:var(--color-neutral-light);
+}
+
+.page-link.active{
+  background-color: var(--color-accent-pink)!important;
+  border-color: var(--color-accent-pink-dark)!important;
+}

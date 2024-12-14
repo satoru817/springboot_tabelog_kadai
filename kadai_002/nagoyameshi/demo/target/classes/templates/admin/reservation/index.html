@@ -116,10 +116,10 @@
           <ul class="pagination">
             <!-- Previous Button -->
             <li class="page-item">
-              <span th:if="${reservations.isFirst()}" class="page-link rounded-circle text-muted">&laquo;</span>
+              <span th:if="${reservations.isFirst()}" class="page-link pagination_itemBox rounded-circle text-muted">&laquo;</span>
               <a
                 th:unless="${reservations.isFirst()}"
-                class="page-link rounded-circle"
+                class="page-link pagination_itemBox rounded-circle"
                 th:href="@{/admin/reservation/index(page=${reservations.number-1},searchQuery=${searchQuery})}"
               >
                 &laquo;
@@ -131,10 +131,10 @@
               th:each="i : ${#numbers.sequence(0, reservations.totalPages-1)}"
               th:class="${'page-item' + (i == reservations.number ? ' active' : '')}"
             >
-              <span th:if="${i == reservations.number}" class="page-link rounded-circle" th:text="${i+1}">1</span>
+              <span th:if="${i == reservations.number}" class="page-link pagination_itemBox rounded-circle" th:text="${i+1}">1</span>
               <a
                 th:unless="${i == reservations.number}"
-                class="page-link rounded-circle"
+                class="page-link pagination_itemBox rounded-circle"
                 th:href="@{/admin/reservation/index(page=${i},searchQuery=${searchQuery})}"
                 th:text="${i+1}"
                 >1</a
@@ -143,10 +143,10 @@
 
             <!-- Next Button -->
             <li class="page-item">
-              <span th:if="${reservations.isLast()}" class="page-link rounded-circle text-muted">&raquo;</span>
+              <span th:if="${reservations.isLast()}" class="page-link pagination_itemBox rounded-circle text-muted">&raquo;</span>
               <a
                 th:unless="${reservations.isLast()}"
-                class="page-link rounded-circle"
+                class="page-link pagination_itemBox rounded-circle"
                 th:href="@{/admin/reservation/index(page=${reservations.number+1},searchQuery=${searchQuery})}"
               >
                 &raquo;

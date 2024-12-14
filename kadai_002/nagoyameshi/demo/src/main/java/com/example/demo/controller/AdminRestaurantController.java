@@ -95,6 +95,25 @@ public class AdminRestaurantController {
         return  categories;
     }
 
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable("id")Integer restaurantId,
+                         RedirectAttributes redirectAttributes){
+        Restaurant restaurant = restaurantService.findById(restaurantId);
+        String name = restaurant.getName();
+        String message;
+        if(restaurantService.delete(restaurant)){
+            message = String.format("名前:%s,ID:%sのレストランを削除しました。",
+                    name,restaurantId);
+        }else{
+            message = String.format("名前:%s,ID:%sのレストランの削除に失敗しました。",
+                    name,restaurantId);
+        }
+
+        redirectAttributes.addFlashAttribute("message",message);
+        return "redirect:/admin/restaurant";
+
+    }
+
     private List<Integer> getCategoryIds(List<CategoryRestaurant> categoryRestaurants){
         List<Integer> categoryIds = new ArrayList<>();
         for(CategoryRestaurant categoryRestaurant:categoryRestaurants){
@@ -131,7 +150,7 @@ public class AdminRestaurantController {
 
     @GetMapping("/register")
     public String restaurantRegister(Model model){
-        if(!model.containsAttribute("restaurantCrudForm")){
+        if(!(model.containsAttribute("restaurantCrudForm"))){
             RestaurantCrudForm restaurantCrudForm = new RestaurantCrudForm();
             model.addAttribute("restaurantCrudForm",restaurantCrudForm);
         }
@@ -163,6 +182,7 @@ public class AdminRestaurantController {
             );
 
             if (existingRestaurant.isPresent()) {
+                redirectAttributes.addFlashAttribute("restaurantCrudForm",restaurantCrudForm);
                 result.rejectValue("email", "error.email", "このメールアドレスまたは電話番号は既に使用されています。");
                 redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
                         + Conventions.getVariableName(restaurantCrudForm), result);
@@ -180,7 +200,7 @@ public class AdminRestaurantController {
             List<MultipartFile> images = restaurantCrudForm.getImages();
             imageService.saveImagesOfRestaurant(restaurantImageRepository,images,newRestaurant);
 
-            return "ユーザーの見る詳細画面へのパス";
+            return "redirect:/restaurant/"+newRestaurant.getRestaurantId();
         }
     }
 

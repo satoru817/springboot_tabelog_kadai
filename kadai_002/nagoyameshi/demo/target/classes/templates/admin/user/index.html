@@ -77,34 +77,34 @@
               <nav aria-label="ユーザー一覧ページ">
                 <ul class="pagination">
                   <li class="page-item">
-                    <span th:if="${users.isFirst()}" class="page-link rounded-circle disabled">前</span>
+                    <span th:if="${users.isFirst()}" class="page-link pagination_itemBox rounded-circle disabled"><span class="pagination_prevArrow"></span></span>
                     <a
                       th:unless="${users.isFirst()}"
                       th:href="@{/admin/user/(page=${users.getNumber()-1},keyword=${keyword})}"
-                      class="page-link rounded-circle page-link rounded-circle"
-                      >前</a
+                      class="page-link pagination_itemBox rounded-circle page-link pagination_itemBox rounded-circle"
+                      ><span class="pagination_prevArrow"></span></a
                     >
                   </li>
                   <li th:each="i:${#numbers.sequence(0,users.getTotalPages()-1)}" class="page-item">
                     <span
                       th:if="${i == users.getNumber()}"
-                      class="page-link rounded-circle active active"
+                      class="page-link pagination_itemBox rounded-circle active active"
                       th:text="${i + 1}"
                     ></span>
                     <a
                       th:unless="${i == users.getNumber()}"
                       th:href="@{/admin/user/(page=${i},keyword=${keyword})}"
-                      class="page-link rounded-circle page-link rounded-circle"
+                      class="page-link pagination_itemBox rounded-circle page-link pagination_itemBox rounded-circle"
                       th:text="${i+1}"
                     ></a>
                   </li>
                   <li class="page-item">
-                    <span th:if="${users.isLast()}" class="page-link rounded-circle disabled">次</span>
+                    <span th:if="${users.isLast()}" class="page-link pagination_itemBox rounded-circle disabled"><span class="pagination_nextArrow"></span></span>
                     <a
                       th:unless="${users.isLast()}"
                       th:href="@{/admin/user/(page=${users.getNumber()+1},keyword=${keyword})}"
-                      class="page-link rounded-circle page-link rounded-circle"
-                      >次</a
+                      class="page-link pagination_itemBox rounded-circle page-link pagination_itemBox rounded-circle"
+                      ><span class="pagination_nextArrow"></span></a
                     >
                   </li>
                 </ul>

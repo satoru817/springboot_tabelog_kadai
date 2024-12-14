@@ -25,6 +25,7 @@
 
       <!-- Custom CSS -->
       <link th:href="@{/css/style.css}" rel="stylesheet" />
+      <link th:href="@{/css/pagination.css}" rel="stylesheet"/>
 
       <!--    &lt;!&ndash;cropper.js 画像トリミング用&ndash;&gt;-->
       <!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">-->
@@ -266,7 +267,7 @@
             </button>
             <ul class="dropdown-menu">
               <li class="dropdown_submenu">
-                <a class="dropdown-item" href="#"> レストラン関連 </a>
+                <a class="dropdown-custom"> レストラン関連 </a>
                 <ul class="dropdown-menu">
                   <li sec:authorize="hasRole('ROLE_ADMIN')">
                     <a class="dropdown-custom" th:href="@{/admin/restaurant}"

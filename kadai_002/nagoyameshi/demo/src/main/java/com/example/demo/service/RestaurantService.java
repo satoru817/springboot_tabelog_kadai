@@ -4,15 +4,19 @@ import com.example.demo.dto.OpeningHours;
 import com.example.demo.entity.Reservation;
 import com.example.demo.entity.Restaurant;
 import com.example.demo.entity.User;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.RestaurantRepository;
+import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.DayOfWeek;
@@ -25,6 +29,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
 
@@ -250,5 +255,23 @@ public class RestaurantService {
         }
     }
 
+    @Transactional
+    public Restaurant findById(Integer restaurantId) {
+        return restaurantRepository.findById(restaurantId)
+                .orElseThrow(()->new ResourceNotFoundException("該当のレストランは見つかりませんでした"));
+    }
 
+
+    @Transactional
+    public boolean delete(Restaurant restaurant) {
+        try {
+            // 削除実行
+            restaurantRepository.delete(restaurant);
+            return true;  // 削除成功
+
+        } catch (Exception e) {
+            log.error("レストランの削除に失敗しました。ID: " + restaurant.getRestaurantId(), e);
+            return false;  // 削除失敗
+        }
+    }
 }

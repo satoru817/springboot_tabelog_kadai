@@ -274,34 +274,34 @@
                 <nav aria-label="レストラン一覧ページ" class="p-0 rounded-3">
                   <ul class="pagination m-0 p-0">
                     <li class="page-item">
-                      <span th:if="${restaurantPage.isFirst()}" class="page-link rounded-circle disabled">前</span>
+                      <span th:if="${restaurantPage.isFirst()}" class="page-link pagination_itemBox rounded-circle disabled"><span class="pagination_prevArrow"></span></span>
                       <a
                         th:unless="${restaurantPage.isFirst()}"
                         th:href="@{/restaurant(page=${restaurantPage.getNumber()-1},restaurantName=${restaurantName},ward=${wards},categoryId=${categoryIds},num=${num},logic=${logic})}"
-                        class="page-link rounded-circle page-link rounded-circle"
-                        >前</a
+                        class="page-link pagination_itemBox rounded-circle page-link pagination_itemBox rounded-circle"
+                        ><span class="pagination_prevArrow"></span></a
                       >
                     </li>
                     <li th:each="i:${#numbers.sequence(0,restaurantPage.getTotalPages()-1)}" class="page-item">
                       <span
                         th:if="${i==restaurantPage.getNumber()}"
-                        class="page-link rounded-circle active active"
+                        class="page-link pagination_itemBox rounded-circle active active"
                         th:text="${i+1}"
                       ></span>
                       <a
                         th:unless="${i==restaurantPage.getNumber()}"
                         th:href="@{/restaurant(page=${i},restaurantName=${restaurantName},ward=${wards},categoryId=${categoryIds},num=${num},logic=${logic})}"
-                        class="page-link rounded-circle page-link rounded-circle"
+                        class="page-link pagination_itemBox rounded-circle page-link pagination_itemBox rounded-circle"
                         th:text="${i+1}"
                       ></a>
                     </li>
                     <li class="page-item">
-                      <span th:if="${restaurantPage.isLast()}" class="page-link rounded-circle disabled">次</span>
+                      <span th:if="${restaurantPage.isLast()}" class="page-link pagination_itemBox rounded-circle disabled"><span class="pagination_nextArrow"></span></span>
                       <a
                         th:unless="${restaurantPage.isLast()}"
                         th:href="@{/restaurant(page=${restaurantPage.getNumber()+1},restaurantName=${restaurantName},ward=${wards},categoryId=${categoryIds},num=${num},logic=${logic})}"
-                        class="page-link rounded-circle page-link rounded-circle"
-                        >次</a
+                        class="page-link pagination_itemBox rounded-circle page-link pagination_itemBox rounded-circle"
+                        ><span class="pagination_nextArrow"></span></a
                       >
                     </li>
                   </ul>

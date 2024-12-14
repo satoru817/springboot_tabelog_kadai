@@ -136,7 +136,7 @@
               <ul class="pagination">
                 <li class="page-item" th:classappend="${payments.isFirst()} ? 'disabled'">
                   <a
-                    class="page-link rounded-circle rounded-circle"
+                    class="page-link pagination_itemBox rounded-circle rounded-circle"
                     th:href="@{/admin/payment/index(page=${payments.getNumber()-1},userName=${userName},paymentDate=${paymentDate},email=${email})}"
                   >
                     <i class="bi bi-chevron-left"></i>
@@ -148,7 +148,7 @@
                   th:classappend="${i == payments.getNumber()} ? 'active'"
                 >
                   <a
-                    class="page-link rounded-circle rounded-circle"
+                    class="page-link pagination_itemBox rounded-circle rounded-circle"
                     th:href="@{/admin/payment/index(page=${i},userName=${userName},paymentDate=${paymentDate},email=${email})}"
                     th:text="${i+1}"
                   >
@@ -156,7 +156,7 @@
                 </li>
                 <li class="page-item" th:classappend="${payments.isLast()} ? 'disabled'">
                   <a
-                    class="page-link rounded-circle rounded-circle"
+                    class="page-link pagination_itemBox rounded-circle rounded-circle"
                     th:href="@{/admin/payment/index(page=${payments.getNumber()+1},userName=${userName},paymentDate=${paymentDate},email=${email})}"
                   >
                     <i class="bi bi-chevron-right"></i>

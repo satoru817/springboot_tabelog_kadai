@@ -50,9 +50,9 @@
               <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${!reviews.hasPrevious()} ? 'disabled'">
                   <a
-                    class="page-link rounded-circle"
+                    class="page-link pagination_itemBox rounded-circle"
                     th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number - 1})}"
-                    >前へ</a
+                    ><span class="pagination_prevArrow"></span></a
                   >
                 </li>
                 <li
@@ -61,7 +61,7 @@
                   th:classappend="${pageNumber == reviews.number} ? 'active'"
                 >
                   <a
-                    class="page-link rounded-circle"
+                    class="page-link pagination_itemBox rounded-circle"
                     th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${pageNumber})}"
                     th:text="${pageNumber + 1}"
                     >1</a
@@ -69,9 +69,9 @@
                 </li>
                 <li class="page-item" th:classappend="${!reviews.hasNext()} ? 'disabled'">
                   <a
-                    class="page-link rounded-circle"
+                    class="page-link pagination_itemBox rounded-circle"
                     th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number + 1})}"
-                    >次へ</a
+                    ><span class="pagination_nextArrow"></span></a
                   >
                 </li>
               </ul>

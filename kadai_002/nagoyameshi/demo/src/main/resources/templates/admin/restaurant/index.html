@@ -31,11 +31,12 @@
                   </div>
                 </form>
 
-                <a th:href="@{/admin/restaurant/register}" class="btn shadow-sm mb-3">登録</a>
+                <a th:href="@{/admin/restaurant/register}" class="btn btn-secondary shadow-sm mb-3">新規登録</a>
               </div>
 
-              <div th:if="${successMessage}" class="alert alert-info">
-                <span th:text="${successMessage}"></span>
+              <div th:if="${message}" class="alert alert-info alert-dismissible fade show">
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
 
               <table class="table">
@@ -111,34 +112,35 @@
                 <nav class="p-0 m-0 rounded-3" aria-label="レストラン一覧ページ">
                   <ul class="pagination p-0 m-0">
                     <li class="page-item">
-                      <span th:if="${restaurantsPage.isFirst()}" class="page-link rounded-circle disabled">前</span>
+                      <span th:if="${restaurantsPage.isFirst()}" class="page-link pagination_itemBox  disabled"><span class="pagination_prevArrow"></span></span>
                       <a
                         th:unless="${restaurantsPage.isFirst()}"
                         th:href="@{/admin/restaurant(page=${restaurantsPage.number - 1}, keyword=${keyword})}"
-                        class="page-link rounded-circle"
-                        >前</a
+                        class="page-link pagination_itemBox "
+                        ><span class="pagination_prevArrow"></span></a
                       >
                     </li>
                     <li th:each="page : ${#numbers.sequence(0, restaurantsPage.totalPages - 1)}" class="page-item">
                       <span
                         th:if="${page == restaurantsPage.number}"
-                        class="page-link rounded-circle active"
+                        class="page-link pagination_itemBox  active"
                         th:text="${page + 1}"
                       ></span>
                       <a
                         th:unless="${page == restaurantsPage.number}"
                         th:href="@{/admin/restaurant(page=${page}, keyword=${keyword})}"
-                        class="page-link rounded-circle"
+                        class="page-link pagination_itemBox "
                         th:text="${page + 1}"
                       ></a>
                     </li>
                     <li class="page-item">
-                      <span th:if="${restaurantsPage.isLast()}" class="page-link rounded-circle disabled">次</span>
+                      <span th:if="${restaurantsPage.isLast()}" class="page-link pagination_itemBox  disabled"><span class="pagination_nextArrow"></span></span>
                       <a
                         th:unless="${restaurantsPage.isLast()}"
                         th:href="@{/admin/restaurant(page=${restaurantsPage.number+1},keyword=${keyword})}"
-                        class="page-link rounded-circle"
-                        >次</a
+                        class="page-link pagination_itemBox pagination_itemBox"
+                        aria-label="next page 次のページへ"
+                        ><span class="pagination_nextArrow"></span></a
                       >
                     </li>
                   </ul>

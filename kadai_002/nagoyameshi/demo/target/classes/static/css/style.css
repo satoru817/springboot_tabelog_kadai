@@ -42,16 +42,22 @@ body {
 }
 
 /* ヘッダー */
+/*
 header {
   background-color: var(--color-primary);
   color: var(--color-neutral-light);
   padding: 1rem;
   text-align: center;
 }
-
+*/
 /* ナビゲーションバー */
 .navbar-red {
-  background-color: var(--color-primary);
+  background: linear-gradient(
+    90deg,
+    var(--color-primary-dark) 0%,
+    var(--color-primary) 30%,
+    var(--color-primary-light) 100%
+  );
   padding: 0.5rem;
 }
 
@@ -79,8 +85,6 @@ nav a {
 button,
 .btn {
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -97,29 +101,45 @@ button,
 }
 
 .modal-footer .btn-submit {
-  background-color: var(--color-accent-mint-medium);
+  background-color: var(--color-accent-mint);
+  border: 1px solid var(--color-accent-mint-medium);
   color: var(--color-neutral-dark);
 }
 
 .modal-footer .btn-submit:hover {
   background-color: #e0b800;
+  border: 1px solid var(--color-accent-mint-dark);
+  color: var(--color-neutral-light);
 }
 
 .btn-secondary {
-  background-color: white;
-  border: 1px solid var(--color-primary-turquoise);
+  background: linear-gradient(
+    45deg,
+    var(--color-accent-turquoise-dark) 0%,
+    var(--color-accent-turquoise-medium) 10%,
+    var(--color-accent-turquoise) 50%,
+    var(--color-accent-turquoise-medium) 90%,
+    var(--color-accent-turquoise-dark) 100%
+  );
+  border: 1px solid var(--color-accent-turquoise-medium);
   color: var(--color-neutral-dark);
 }
 
 .btn-secondary:hover {
-  background-color: var(--color-neutral); /* 黒の濃いバリエーション */
-  border-color: var(--color-neutral);
+  background: linear-gradient(
+    45deg,
+    var(--color-accent-turquoise) 0%,
+    var(--color-accent-turquoise-medium) 10%,
+    var(--color-accent-turquoise-dark) 50%,
+    var(--color-accent-turquoise-medium) 90%,
+    var(--color-accent-turquoise) 100%
+  );
+  border-color: var(--color-accent-turquoise-dark);
   color: var(--color-neutral-light);
 }
-
 .btn-submit {
   background-color: var(--color-accent-mint) !important;
-  color: var(--color-neutral-light) !important;
+  color: var(--color-neutral-light);
 }
 
 .btn-submit:hover {
@@ -155,7 +175,13 @@ button,
 }
 /* フッター */
 footer {
-  background-color: var(--color-accent-mint-dark);
+  /* 現在の設定を保持しながらグラデーションを追加 */
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-mint) 0%,
+    var(--color-accent-turquoise) 50%,
+    var(--color-accent-mint-dark) 100%
+  );
   color: var(--color-neutral-light);
   text-align: center;
   padding: 1rem;
@@ -210,32 +236,14 @@ footer {
   background-color: var(--color-neutral-light);
   border: none;
 }
-
-.dropdown-item {
+/*
+.dropdown-item,
+ .dropdown-item:hover,
+ .dropdown-item:focus{
+  background-color: var(--color-accent-pink);
   color: var(--color-neutral-dark);
 }
-
-.dropdown-item:hover,
-.dropdown-item:focus {
-  background-color: var(--color-accent-turquoise);
-  color: var(--color-neutral-dark);
-}
-
-/* ページネーション */
-.page-link rounded-circle {
-  background-color: var(--color-accent-turquoise);
-  color: var(--color-neutral-dark);
-}
-
-.page-link rounded-circle:hover {
-  background-color: #e0b800;
-}
-
-.page-item.active .page-link rounded-circle {
-  background-color: var(--color-primary);
-  color: var(--color-neutral-light);
-  border-color: var(--color-primary);
-}
+*/
 
 /* モーダル */
 .modal-content {
@@ -286,49 +294,56 @@ footer {
   margin-bottom: 10px;
 }
 
-.category-button {
+.category_label,
+.category_button {
   display: flex;
   align-items: center;
-  box-shadow: var(--box-shadow);
   border-radius: 5px;
-  background-color: var(--color-primary);
-  color: var(--color-neutral-light);
+  background-color: var(--color-accent-pink);
+  color: var(--color-neutral-dark);
   cursor: pointer;
   flex: 0 1 auto; /* ボタンが横に並ぶ */
 }
 
-.category-name {
-  margin-right: 2mm; /* カテゴリ名とボタンの間に隙間を追加 */
-  padding: 8px;
+.category_label:hover,
+.category_button:hover {
+  background-color: var(--color-accent-pink-medium);
 }
 
-.category-button .btn {
-  padding: 3px 8px; /* ボタンを小さくする */
-  margin: 0 2px; /* ボタン間のスペースを少し追加 */
-  font-size: 0.8rem; /* ボタンのフォントサイズを小さく */
-  border-radius: 8px !important; /* ボタンの角を丸く */
-  background-color: var(--color-accent-turquoise);
-  color: var(--color-neutral-light); /* テキスト色を落ち着いたトーンに */
+.category_button input:checked + .category_label {
+  background: linear-gradient(
+    45deg,
+    var(--color-primary-dark) 0%,
+    var(--color-primary) 30%,
+    var(--color-primary-light) 100%
+  );
+  color: var(--color-neutral-light);
+  box-shadow: var(--box-shadow);
+}
+
+.icon-button-top-right {
+  background-color: var(--color-accent-turquoise-medium);
+}
+
+.icon-button-top-right-second {
+  background-color: var(--color-primary);
 }
 
 .round-btn {
   border-radius: 8px !important;
 }
 
-.category-button .btn:hover {
-  background-color: var(--color-primary-light); /* 和風カラーでのホバー時の色変更 */
-}
-
+/*
 #category_label {
-  padding: 10px 20px; /* パディングを追加 */
-  border: 1px solid var(--color-accent-turquoise); /* 抹茶の濃い色のボーダー */
-  border-radius: 5px; /* 角を丸める */
-  cursor: pointer; /* ポインタを表示 */
+  padding: 10px 20px;
+  border: 1px solid var(--color-accent-turquoise);
+  border-radius: 5px;
+  cursor: pointer;
   background-color: var(--color-neutral-dark);
   color: var(--color-neutral-light);
   transition:
     background-color 0.3s,
-    color 0.3s; /* 背景色と文字色の変化をスムーズに */
+    color 0.3s;
 }
 
 #category_label:hover {
@@ -336,10 +351,11 @@ footer {
   color: var(--color-neutral-light);
 }
 
-.category-button input:checked + #category_label {
+.category_button input:checked + #category_label {
   background-color: var(--color-secondary-light);
   color: var(--color-neutral-dark);
 }
+*/
 .hidden-btn {
   opacity: 0; /* 初期状態は透明 */
   width: 0; /* 幅を0にする */
@@ -425,9 +441,6 @@ footer {
   margin-bottom: 0 !important;
 }
 
-.page-link rounded-circle {
-  margin: 0;
-}
 
 @media screen and (min-width: 1400px) {
   .container {
@@ -441,12 +454,12 @@ footer {
   gap: 10px; /* ボタンの間隔 */
 }
 
-.category-button {
+.category_button {
   display: flex;
   align-items: center;
 }
 
-.category-button input {
+.category_button input {
   display: none; /* チェックボックスを隠す */
 }
 
@@ -479,9 +492,7 @@ footer {
   background-color: var(--color-accent-turquoise);
 }
 
-.pagination {
-  box-shadow: var(--box-shadow);
-}
+
 
 .card-img-show {
   height: 350px !important;
@@ -681,15 +692,14 @@ img:hover {
   opacity: 1;
   transform: translateX(0);
 }
-
-.dropdown_submenu > .dropdown-item:after {
-  display: inline-block;
-  float: right;
-  margin-left: 0.5em;
-  vertical-align: middle;
+/*ボーダーが角で斜めに交わることを利用した矢印表示*/
+.dropdown_submenu > .dropdown-custom:after {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 10px;
   content: '';
   border-top: 0.3em solid transparent;
-  border-right: 0;
   border-bottom: 0.3em solid transparent;
   border-left: 0.3em solid;
 }
@@ -702,3 +712,33 @@ img:hover {
 .transition_opacity {
   transition: opacity 0.3s ease-in-out;
 }
+
+/*カテゴリ編集ボタン*/
+.icon-button-top-right {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  font-size: 10px;
+  line-height: 1;
+}
+.icon-button-top-right-second {
+  position: absolute;
+  top: -5px;
+  right: 15px;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  font-size: 10px;
+  line-height: 1;
+}
+/* アイコンボタンのホバー時のスタイル */
+.icon-button-top-right:hover,
+.icon-button-top-right-second:hover {
+  transform: scale(1.1);
+}
+
