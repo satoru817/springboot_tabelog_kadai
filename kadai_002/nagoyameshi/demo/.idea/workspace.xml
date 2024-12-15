@@ -52,18 +52,18 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "satoru817"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;satoru817&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "git@github.com:satoru817/springboot_tabelog_kadai.git",
-    "accountId": "a036fdde-e30c-4fc0-8e4c-8b760aee7f78"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:satoru817/springboot_tabelog_kadai.git&quot;,
+    &quot;accountId&quot;: &quot;a036fdde-e30c-4fc0-8e4c-8b760aee7f78&quot;
   }
-}]]></component>
+}</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="jar://$MAVEN_REPOSITORY$/org/springframework/data/spring-data-commons/3.3.4/spring-data-commons-3.3.4.jar!/org/springframework/data/domain/Page.class" root0="SKIP_INSPECTION" />
     <setting file="jar://$MAVEN_REPOSITORY$/org/springframework/data/spring-data-commons/3.3.4/spring-data-commons-3.3.4.jar!/org/springframework/data/domain/PageImpl.class" root0="SKIP_INSPECTION" />
@@ -92,29 +92,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.DemoApplication.executor": "Run",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "b4",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/satoru/shoeiApplication/cramSchool",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2",
-    "settings.build.tools.auto.reload": "ALL",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.grazie"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.DemoApplication.executor&quot;: &quot;Run&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;b4&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/satoru/shoeiApplication/cramSchool&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.build.tools.auto.reload&quot;: &quot;ALL&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.grazie&quot;
   },
-  "keyToStringList": {
-    "GitStage.ChangesTree.GroupingKeys": [
-      "directory",
-      "module",
-      "repository"
+  &quot;keyToStringList&quot;: {
+    &quot;GitStage.ChangesTree.GroupingKeys&quot;: [
+      &quot;directory&quot;,
+      &quot;module&quot;,
+      &quot;repository&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/resources/static/images" />
@@ -127,11 +127,14 @@
   </component>
   <component name="RunManager">
     <configuration name="DemoApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="17" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <envs>
         <env name="MAIL_PASSWORD" value="oxyc vkrw ggio oqkp" />
         <env name="STRIPE_API_KEY" value="sk_test_51Pv9EXRopxX1etdHpOX9I6LFcIL8fasUHAo3TzizLPhSpZ3IQCrN1h0QIIf4hFL00kFfDCleOEKetmtzj1U6rG0d001LdbyHaO" />
-        <env name="STRIPE_WEBHOOK_SECRET" value="whsec_2af17faa199ced9981a12b3d514d4ca45bcdf118626e4f2248b1a9ab17137f57" />
         <env name="STRIPE_PRICE_ID" value="price_1Q6keRRopxX1etdHX2ADJHI6" />
+        <env name="STRIPE_WEBHOOK_SECRET" value="whsec_2af17faa199ced9981a12b3d514d4ca45bcdf118626e4f2248b1a9ab17137f57" />
+        <env name="SPRING_PROFILES_ACTIVE" value="development" />
       </envs>
       <option name="MAIN_CLASS_NAME" value="com.example.demo.DemoApplication" />
       <module name="demo" />
