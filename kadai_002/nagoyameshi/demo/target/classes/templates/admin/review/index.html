@@ -44,39 +44,50 @@
         <div th:replace="~{fragment::reviewAndModal}"></div>
 
         <!-- ページネーション -->
-        <div th:if="${reviews.totalPages > 1}" class="row">
-          <div class="col-12">
-            <nav aria-label="Page navigation">
-              <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${!reviews.hasPrevious()} ? 'disabled'">
-                  <a
-                    class="page-link pagination_itemBox rounded-circle"
-                    th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number - 1})}"
-                    ><span class="pagination_prevArrow"></span></a
-                  >
-                </li>
-                <li
-                  class="page-item"
-                  th:each="pageNumber : ${#numbers.sequence(0, reviews.totalPages - 1)}"
-                  th:classappend="${pageNumber == reviews.number} ? 'active'"
+        <div th:if="${reviews.totalPages > 1}" class="d-flex justify-content-center mt-4">
+          <nav class="p-0 m-0 rounded-3" aria-label="レビュー一覧ページ">
+            <ul class="pagination p-0 m-0">
+              <li class="page-item">
+        <span th:if="${reviews.isFirst()}" class="page-link pagination_itemBox disabled">
+          <span class="pagination_prevArrow"></span>
+        </span>
+
+                th:unless="${reviews.isFirst()}"
+                th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number - 1})}"
+                class="page-link pagination_itemBox"
                 >
-                  <a
-                    class="page-link pagination_itemBox rounded-circle"
-                    th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${pageNumber})}"
-                    th:text="${pageNumber + 1}"
-                    >1</a
-                  >
-                </li>
-                <li class="page-item" th:classappend="${!reviews.hasNext()} ? 'disabled'">
-                  <a
-                    class="page-link pagination_itemBox rounded-circle"
-                    th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number + 1})}"
-                    ><span class="pagination_nextArrow"></span></a
-                  >
-                </li>
-              </ul>
-            </nav>
-          </div>
+                <span class="pagination_prevArrow"></span>
+                </a>
+              </li>
+
+              <li th:each="page : ${#numbers.sequence(0, reviews.totalPages - 1)}" class="page-item">
+        <span
+                th:if="${page == reviews.number}"
+                class="page-link pagination_itemBox active"
+                th:text="${page + 1}"
+        ></span>
+
+                th:unless="${page == reviews.number}"
+                th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${page})}"
+                class="page-link pagination_itemBox"
+                th:text="${page + 1}"
+                ></a>
+              </li>
+
+              <li class="page-item">
+        <span th:if="${reviews.isLast()}" class="page-link pagination_itemBox disabled">
+          <span class="pagination_nextArrow"></span>
+        </span>
+
+                th:unless="${reviews.isLast()}"
+                th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number + 1})}"
+                class="page-link pagination_itemBox"
+                >
+                <span class="pagination_nextArrow"></span>
+                </a>
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
     </main>

@@ -77,13 +77,15 @@
               <nav aria-label="ユーザー一覧ページ">
                 <ul class="pagination">
                   <li class="page-item">
-                    <span th:if="${users.isFirst()}" class="page-link pagination_itemBox rounded-circle disabled"><span class="pagination_prevArrow"></span></span>
+                    <span th:if="${users.isFirst()}" class="page-link pagination_itemBox rounded-circle disabled"
+                      ><span class="pagination_prevArrow"></span
+                    ></span>
                     <a
                       th:unless="${users.isFirst()}"
                       th:href="@{/admin/user/(page=${users.getNumber()-1},keyword=${keyword})}"
                       class="page-link pagination_itemBox rounded-circle page-link pagination_itemBox rounded-circle"
-                      ><span class="pagination_prevArrow"></span></a
-                    >
+                      ><span class="pagination_prevArrow"></span
+                    ></a>
                   </li>
                   <li th:each="i:${#numbers.sequence(0,users.getTotalPages()-1)}" class="page-item">
                     <span
@@ -99,13 +101,15 @@
                     ></a>
                   </li>
                   <li class="page-item">
-                    <span th:if="${users.isLast()}" class="page-link pagination_itemBox rounded-circle disabled"><span class="pagination_nextArrow"></span></span>
+                    <span th:if="${users.isLast()}" class="page-link pagination_itemBox rounded-circle disabled"
+                      ><span class="pagination_nextArrow"></span
+                    ></span>
                     <a
                       th:unless="${users.isLast()}"
                       th:href="@{/admin/user/(page=${users.getNumber()+1},keyword=${keyword})}"
                       class="page-link pagination_itemBox rounded-circle page-link pagination_itemBox rounded-circle"
-                      ><span class="pagination_nextArrow"></span></a
-                    >
+                      ><span class="pagination_nextArrow"></span
+                    ></a>
                   </li>
                 </ul>
               </nav>

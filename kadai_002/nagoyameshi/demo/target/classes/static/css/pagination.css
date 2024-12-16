@@ -1,54 +1,50 @@
-
-
-.pagination_nextArrow{
-    background-image:url(//cdn.macaro-ni.jp/assets/img/v4/page_icon_active4.svg);
-    transform:scaleX(-1);
-
+.pagination_nextArrow {
+  background-image: url(//cdn.macaro-ni.jp/assets/img/v4/page_icon_active4.svg);
+  transform: scaleX(-1);
 }
 
-.pagination_prevArrow{
-    background-image:url(//cdn.macaro-ni.jp/assets/img/v4/page_icon_active4.svg);
+.pagination_prevArrow {
+  background-image: url(//cdn.macaro-ni.jp/assets/img/v4/page_icon_active4.svg);
 }
 
-
-.pagination_nextArrow,.pagination_prevArrow{
-    background-size:contain;
-    bottom: 0;
-    content: "";
-    height: 14px;
-    left:0;
-    margin:auto;
-    position: absolute;
-    right:0;
-    top:0;
-    width:12px;
+.pagination_nextArrow,
+.pagination_prevArrow {
+  background-size: contain;
+  bottom: 0;
+  content: '';
+  height: 14px;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 12px;
 }
 
-.pagination_itemBox{
-    border-radius:25px!important;
-    align-items:center;
-    border : 1px solid #ddd;
-    display:flex;
-    font-size:13px;
-    font-weight:700;
-    height:47px;
-    justify-content:center;
-    margin:0 5px;
-    position:relative;
-    width:47px;
+.pagination_itemBox {
+  border-radius: 25px !important;
+  align-items: center;
+  border: 1px solid #ddd;
+  display: flex;
+  font-size: 13px;
+  font-weight: 700;
+  height: 47px;
+  justify-content: center;
+  margin: 0 5px;
+  position: relative;
+  width: 47px;
 }
-
 
 .page-link {
-  color: var(--color-neutral-dark)!important;
+  color: var(--color-neutral-dark) !important;
 }
 
 .page-link:hover {
-  background-color: var(--color-accent-pink)!important;
-  color:var(--color-neutral-light);
+  background-color: var(--color-accent-pink) !important;
+  color: var(--color-neutral-light);
 }
 
-.page-link.active{
-  background-color: var(--color-accent-pink)!important;
-  border-color: var(--color-accent-pink-dark)!important;
+.page-link.active {
+  background-color: var(--color-accent-pink) !important;
+  border-color: var(--color-accent-pink-dark) !important;
 }

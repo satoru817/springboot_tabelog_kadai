@@ -19,6 +19,7 @@
   --color-accent-mint: #4ecdc4; /* ミントグリーン（オリジナル） */
   --color-accent-mint-medium: #3bb1a9; /* 深いミント */
   --color-accent-mint-dark: #2a8e87; /* 濃いミント */
+  --color-accent-mint-link: #65dbd3; /*リンク用*/
 
   /* アクセントカラー - パステルピンク系 */
   --color-accent-pink: #ffb6b9; /* パステルピンク（オリジナル） */
@@ -441,7 +442,6 @@ footer {
   margin-bottom: 0 !important;
 }
 
-
 @media screen and (min-width: 1400px) {
   .container {
     max-width: 1200px;
@@ -491,8 +491,6 @@ footer {
 .btn-group input:checked + label {
   background-color: var(--color-accent-turquoise);
 }
-
-
 
 .card-img-show {
   height: 350px !important;
@@ -741,4 +739,3 @@ img:hover {
 .icon-button-top-right-second:hover {
   transform: scale(1.1);
 }
-

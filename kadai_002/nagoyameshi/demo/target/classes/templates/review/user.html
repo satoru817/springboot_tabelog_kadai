@@ -46,8 +46,8 @@
                   <a
                     class="page-link pagination_itemBox rounded-circle"
                     th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number - 1})}"
-                    ><span class="pagination_prevArrow"></span></a
-                  >
+                    ><span class="pagination_prevArrow"></span
+                  ></a>
                 </li>
                 <li
                   class="page-item"
@@ -65,8 +65,8 @@
                   <a
                     class="page-link pagination_itemBox rounded-circle"
                     th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number + 1})}"
-                    ><span class="pagination_nextArrow"></span></a
-                  >
+                    ><span class="pagination_nextArrow"></span
+                  ></a>
                 </li>
               </ul>
             </nav>

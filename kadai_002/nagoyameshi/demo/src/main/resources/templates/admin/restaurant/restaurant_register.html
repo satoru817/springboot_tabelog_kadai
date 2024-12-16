@@ -3,8 +3,8 @@
   <head>
     <meta th:replace="~{fragment::headResources}" />
     <script th:src="@{/js/category_num_count.js}" defer></script>
-    <script th:src="@{/js/image_upload.js}" ></script>
-    <link rel="stylesheet" th:href="@{/css/image_upload.css}">
+    <script th:src="@{/js/image_upload.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/image_upload.css}" />
     <title>レストラン登録</title>
   </head>
   <body class="d-flex flex-column min-vh-100">
@@ -188,11 +188,11 @@
                           <label class="form-label fw-bold">月曜日</label>
                         </div>
                         <div class="col-md-4">
-                          <input type="time" class="form-control" th:field="*{mondayOpeningTime}">
+                          <input type="time" class="form-control" th:field="*{mondayOpeningTime}" />
                         </div>
                         <div class="col-md-1 text-center">~</div>
                         <div class="col-md-4">
-                          <input type="time" class="form-control" th:field="*{mondayClosingTime}">
+                          <input type="time" class="form-control" th:field="*{mondayClosingTime}" />
                         </div>
                       </div>
                     </div>
@@ -204,11 +204,11 @@
                           <label class="form-label fw-bold">火曜日</label>
                         </div>
                         <div class="col-md-4">
-                          <input type="time" class="form-control" th:field="*{tuesdayOpeningTime}">
+                          <input type="time" class="form-control" th:field="*{tuesdayOpeningTime}" />
                         </div>
                         <div class="col-md-1 text-center">~</div>
                         <div class="col-md-4">
-                          <input type="time" class="form-control" th:field="*{tuesdayClosingTime}">
+                          <input type="time" class="form-control" th:field="*{tuesdayClosingTime}" />
                         </div>
                       </div>
                     </div>
@@ -220,11 +220,11 @@
                           <label class="form-label fw-bold">水曜日</label>
                         </div>
                         <div class="col-md-4">
-                          <input type="time" class="form-control" th:field="*{wednesdayOpeningTime}">
+                          <input type="time" class="form-control" th:field="*{wednesdayOpeningTime}" />
                         </div>
                         <div class="col-md-1 text-center">~</div>
                         <div class="col-md-4">
-                          <input type="time" class="form-control" th:field="*{wednesdayClosingTime}">
+                          <input type="time" class="form-control" th:field="*{wednesdayClosingTime}" />
                         </div>
                       </div>
                     </div>
@@ -236,11 +236,11 @@
                           <label class="form-label fw-bold">木曜日</label>
                         </div>
                         <div class="col-md-4">
-                          <input type="time" class="form-control" th:field="*{thursdayOpeningTime}">
+                          <input type="time" class="form-control" th:field="*{thursdayOpeningTime}" />
                         </div>
                         <div class="col-md-1 text-center">~</div>
                         <div class="col-md-4">
-                          <input type="time" class="form-control" th:field="*{thursdayClosingTime}">
+                          <input type="time" class="form-control" th:field="*{thursdayClosingTime}" />
                         </div>
                       </div>
                     </div>
@@ -252,11 +252,11 @@
                           <label class="form-label fw-bold">金曜日</label>
                         </div>
                         <div class="col-md-4">
-                          <input type="time" class="form-control" th:field="*{fridayOpeningTime}">
+                          <input type="time" class="form-control" th:field="*{fridayOpeningTime}" />
                         </div>
                         <div class="col-md-1 text-center">~</div>
                         <div class="col-md-4">
-                          <input type="time" class="form-control" th:field="*{fridayClosingTime}">
+                          <input type="time" class="form-control" th:field="*{fridayClosingTime}" />
                         </div>
                       </div>
                     </div>
@@ -268,11 +268,11 @@
                           <label class="form-label fw-bold">土曜日</label>
                         </div>
                         <div class="col-md-4">
-                          <input type="time" class="form-control" th:field="*{saturdayOpeningTime}">
+                          <input type="time" class="form-control" th:field="*{saturdayOpeningTime}" />
                         </div>
                         <div class="col-md-1 text-center">~</div>
                         <div class="col-md-4">
-                          <input type="time" class="form-control" th:field="*{saturdayClosingTime}">
+                          <input type="time" class="form-control" th:field="*{saturdayClosingTime}" />
                         </div>
                       </div>
                     </div>
@@ -284,11 +284,11 @@
                           <label class="form-label fw-bold">日曜日</label>
                         </div>
                         <div class="col-md-4">
-                          <input type="time" class="form-control" th:field="*{sundayOpeningTime}">
+                          <input type="time" class="form-control" th:field="*{sundayOpeningTime}" />
                         </div>
                         <div class="col-md-1 text-center">~</div>
                         <div class="col-md-4">
-                          <input type="time" class="form-control" th:field="*{sundayClosingTime}">
+                          <input type="time" class="form-control" th:field="*{sundayClosingTime}" />
                         </div>
                       </div>
                     </div>
@@ -360,6 +360,5 @@
 
       <div th:replace="~{fragment::footer}"></div>
     </div>
-
   </body>
 </html>

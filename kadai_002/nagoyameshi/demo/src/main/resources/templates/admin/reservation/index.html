@@ -112,44 +112,45 @@
 
       <!-- Pagination -->
       <div th:if="${reservations.totalPages > 1}" class="d-flex justify-content-center mt-4">
-        <nav aria-label="予約一覧ページ">
-          <ul class="pagination">
-            <!-- Previous Button -->
+        <nav class="p-0 m-0 rounded-3" aria-label="予約一覧ページ">
+          <ul class="pagination p-0 m-0">
             <li class="page-item">
-              <span th:if="${reservations.isFirst()}" class="page-link pagination_itemBox rounded-circle text-muted">&laquo;</span>
+              <span th:if="${reservations.isFirst()}" class="page-link pagination_itemBox disabled">
+                <span class="pagination_prevArrow"></span>
+              </span>
               <a
                 th:unless="${reservations.isFirst()}"
-                class="page-link pagination_itemBox rounded-circle"
                 th:href="@{/admin/reservation/index(page=${reservations.number-1},searchQuery=${searchQuery})}"
+                class="page-link pagination_itemBox"
               >
-                &laquo;
+                <span class="pagination_prevArrow"></span>
               </a>
             </li>
 
-            <!-- Page Numbers -->
-            <li
-              th:each="i : ${#numbers.sequence(0, reservations.totalPages-1)}"
-              th:class="${'page-item' + (i == reservations.number ? ' active' : '')}"
-            >
-              <span th:if="${i == reservations.number}" class="page-link pagination_itemBox rounded-circle" th:text="${i+1}">1</span>
+            <li th:each="page : ${#numbers.sequence(0, reservations.totalPages - 1)}" class="page-item">
+              <span
+                th:if="${page == reservations.number}"
+                class="page-link pagination_itemBox active"
+                th:text="${page + 1}"
+              ></span>
               <a
-                th:unless="${i == reservations.number}"
-                class="page-link pagination_itemBox rounded-circle"
-                th:href="@{/admin/reservation/index(page=${i},searchQuery=${searchQuery})}"
-                th:text="${i+1}"
-                >1</a
-              >
+                th:unless="${page == reservations.number}"
+                th:href="@{/admin/reservation/index(page=${page},searchQuery=${searchQuery})}"
+                class="page-link pagination_itemBox"
+                th:text="${page + 1}"
+              ></a>
             </li>
 
-            <!-- Next Button -->
             <li class="page-item">
-              <span th:if="${reservations.isLast()}" class="page-link pagination_itemBox rounded-circle text-muted">&raquo;</span>
+              <span th:if="${reservations.isLast()}" class="page-link pagination_itemBox disabled">
+                <span class="pagination_nextArrow"></span>
+              </span>
               <a
                 th:unless="${reservations.isLast()}"
-                class="page-link pagination_itemBox rounded-circle"
                 th:href="@{/admin/reservation/index(page=${reservations.number+1},searchQuery=${searchQuery})}"
+                class="page-link pagination_itemBox"
               >
-                &raquo;
+                <span class="pagination_nextArrow"></span>
               </a>
             </li>
           </ul>

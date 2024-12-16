@@ -274,13 +274,17 @@
                 <nav aria-label="レストラン一覧ページ" class="p-0 rounded-3">
                   <ul class="pagination m-0 p-0">
                     <li class="page-item">
-                      <span th:if="${restaurantPage.isFirst()}" class="page-link pagination_itemBox rounded-circle disabled"><span class="pagination_prevArrow"></span></span>
+                      <span
+                        th:if="${restaurantPage.isFirst()}"
+                        class="page-link pagination_itemBox rounded-circle disabled"
+                        ><span class="pagination_prevArrow"></span
+                      ></span>
                       <a
                         th:unless="${restaurantPage.isFirst()}"
                         th:href="@{/restaurant(page=${restaurantPage.getNumber()-1},restaurantName=${restaurantName},ward=${wards},categoryId=${categoryIds},num=${num},logic=${logic})}"
                         class="page-link pagination_itemBox rounded-circle page-link pagination_itemBox rounded-circle"
-                        ><span class="pagination_prevArrow"></span></a
-                      >
+                        ><span class="pagination_prevArrow"></span
+                      ></a>
                     </li>
                     <li th:each="i:${#numbers.sequence(0,restaurantPage.getTotalPages()-1)}" class="page-item">
                       <span
@@ -296,13 +300,17 @@
                       ></a>
                     </li>
                     <li class="page-item">
-                      <span th:if="${restaurantPage.isLast()}" class="page-link pagination_itemBox rounded-circle disabled"><span class="pagination_nextArrow"></span></span>
+                      <span
+                        th:if="${restaurantPage.isLast()}"
+                        class="page-link pagination_itemBox rounded-circle disabled"
+                        ><span class="pagination_nextArrow"></span
+                      ></span>
                       <a
                         th:unless="${restaurantPage.isLast()}"
                         th:href="@{/restaurant(page=${restaurantPage.getNumber()+1},restaurantName=${restaurantName},ward=${wards},categoryId=${categoryIds},num=${num},logic=${logic})}"
                         class="page-link pagination_itemBox rounded-circle page-link pagination_itemBox rounded-circle"
-                        ><span class="pagination_nextArrow"></span></a
-                      >
+                        ><span class="pagination_nextArrow"></span
+                      ></a>
                     </li>
                   </ul>
                 </nav>
