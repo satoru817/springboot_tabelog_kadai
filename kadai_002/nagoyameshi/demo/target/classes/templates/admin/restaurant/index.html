@@ -4,33 +4,8 @@
     <div th:replace="~{fragment::headResources}"></div>
     <!-- Bootstrap Icons の追加 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <script th:src="@{/js/table.js}" defer></script>
     <title>レストラン一覧</title>
-    <style>
-      /* ホバー時のスタイル */
-      .clickable-row {
-        cursor: pointer;
-        transition: background-color 0.2s;
-      }
-      .clickable-row:hover > * {
-        background-color: var(--color-accent-mint-link);
-      }
-      .clickable-row:hover {
-        outline: 1px solid var(--color-accent-mint-dark);
-      }
-      /* 削除アイコンのセルはホバー対象外に */
-      .no-hover {
-        background-color: var(--color-neutral-light);
-      }
-      /* 削除アイコンのスタイル */
-      .delete-icon {
-        color: #dc3545;
-        cursor: pointer;
-        transition: color 0.2s;
-      }
-      .delete-icon:hover {
-        color: #bb2d3b;
-      }
-    </style>
   </head>
   <body class="d-flex flex-column min-vh-100">
     <div class="wrapper">
@@ -64,7 +39,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
 
-              <table class="table">
+              <table class="table table-striped">
                 <thead>
                   <tr>
                     <th scope="col">ID</th>
@@ -72,7 +47,6 @@
                     <th scope="col">郵便番号</th>
                     <th scope="col">住所</th>
                     <th scope="col">電話番号</th>
-                    <th scope="col"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -86,48 +60,7 @@
                     <td th:text="${restaurant.getPostalCode()}"></td>
                     <td th:text="${restaurant.getAddress()}"></td>
                     <td th:text="${restaurant.getPhoneNumber()}"></td>
-                    <td class="text-center no-hover" onclick="event.stopPropagation();">
-                      <i
-                        class="bi bi-trash delete-icon"
-                        data-bs-toggle="modal"
-                        th:data-bs-target="${'#deleteRestaurantModal'+restaurant.getRestaurantId()}"
-                        title="削除"
-                      ></i>
 
-                      <!-- 削除用モーダル -->
-                      <div
-                        class="modal fade"
-                        th:id="${'deleteRestaurantModal'+restaurant.getRestaurantId()}"
-                        tabindex="-1"
-                        th:aria-labelledby="${'deleteRestaurantModalLabel'+restaurant.getRestaurantId()}"
-                      >
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5
-                                class="modal-title"
-                                th:id="${'deleteRestaurantModalLabel'+restaurant.getRestaurantId()}"
-                                th:text="${restaurant.getName()+'を削除してもよろしいですか？'}"
-                              ></h5>
-                              <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="閉じる"
-                              ></button>
-                            </div>
-                            <div class="modal-footer">
-                              <form
-                                method="post"
-                                th:action="@{/admin/restaurant/__${restaurant.getRestaurantId()}__/delete}"
-                              >
-                                <button type="submit" class="btn btn-danger shadow-sm">削除</button>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -184,17 +117,5 @@
     </div>
 
     <div th:replace="~{fragment::footer}"></div>
-
-    <!-- 行クリック用のJavaScript -->
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const rows = document.querySelectorAll('.clickable-row');
-        rows.forEach((row) => {
-          row.addEventListener('click', function () {
-            window.location.href = this.dataset.href;
-          });
-        });
-      });
-    </script>
   </body>
 </html>

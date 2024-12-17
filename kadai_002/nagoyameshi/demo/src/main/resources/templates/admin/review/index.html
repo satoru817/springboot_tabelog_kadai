@@ -48,42 +48,42 @@
           <nav class="p-0 m-0 rounded-3" aria-label="レビュー一覧ページ">
             <ul class="pagination p-0 m-0">
               <li class="page-item">
-        <span th:if="${reviews.isFirst()}" class="page-link pagination_itemBox disabled">
-          <span class="pagination_prevArrow"></span>
-        </span>
-
-                th:unless="${reviews.isFirst()}"
-                th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number - 1})}"
-                class="page-link pagination_itemBox"
+                <span th:if="${reviews.isFirst()}" class="page-link pagination_itemBox disabled">
+                  <span class="pagination_prevArrow"></span>
+                </span>
+                <a
+                  th:unless="${reviews.isFirst()}"
+                  th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number - 1})}"
+                  class="page-link pagination_itemBox"
                 >
-                <span class="pagination_prevArrow"></span>
+                  <span class="pagination_prevArrow"></span>
                 </a>
               </li>
 
               <li th:each="page : ${#numbers.sequence(0, reviews.totalPages - 1)}" class="page-item">
-        <span
-                th:if="${page == reviews.number}"
-                class="page-link pagination_itemBox active"
-                th:text="${page + 1}"
-        ></span>
-
-                th:unless="${page == reviews.number}"
-                th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${page})}"
-                class="page-link pagination_itemBox"
-                th:text="${page + 1}"
+                <span
+                  th:if="${page == reviews.number}"
+                  class="page-link pagination_itemBox active"
+                  th:text="${page + 1}"
+                ></span>
+                <a
+                  th:unless="${page == reviews.number}"
+                  th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${page})}"
+                  class="page-link pagination_itemBox"
+                  th:text="${page + 1}"
                 ></a>
               </li>
 
               <li class="page-item">
-        <span th:if="${reviews.isLast()}" class="page-link pagination_itemBox disabled">
-          <span class="pagination_nextArrow"></span>
-        </span>
-
-                th:unless="${reviews.isLast()}"
-                th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number + 1})}"
-                class="page-link pagination_itemBox"
+                <span th:if="${reviews.isLast()}" class="page-link pagination_itemBox disabled">
+                  <span class="pagination_nextArrow"></span>
+                </span>
+                <a
+                  th:unless="${reviews.isLast()}"
+                  th:href="@{/user/{id}(id=${reviews.getContent().get(0).user.reviewId}, page=${reviews.number + 1})}"
+                  class="page-link pagination_itemBox"
                 >
-                <span class="pagination_nextArrow"></span>
+                  <span class="pagination_nextArrow"></span>
                 </a>
               </li>
             </ul>

@@ -66,7 +66,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public void updateUserRolesAndSession(UserDetailsImpl userDetails, HttpServletRequest request) {
-        String roleName = null;
+        String roleName;
         Optional<User> optionalUser = userRepository.findByName(userDetails.getUsername());
         if (optionalUser.isPresent()) {
             roleName = optionalUser.get().getRole().getName(); // DBからロールを取得

@@ -1044,6 +1044,91 @@
         </div>
       </div>
     </div>
+
+    <!-- ページネーションのフラグメント -->
+    <div th:fragment="searchPagination(page, baseUrl, params)"
+         th:if="${page.getTotalPages() > 1}"
+         class="d-flex justify-content-center">
+      <nav aria-label="ページネーション" class="p-0 rounded-3">
+        <ul class="pagination m-0 p-0">
+          <!-- 前へボタン -->
+          <li class="page-item">
+        <span th:if="${page.isFirst()}"
+              class="page-link pagination_itemBox rounded-circle disabled">
+          <span class="pagination_prevArrow"></span>
+        </span>
+            <a th:unless="${page.isFirst()}"
+               th:href="@{${baseUrl}(page=${page.getNumber()-1}, ${params})}"
+               class="page-link pagination_itemBox rounded-circle">
+              <span class="pagination_prevArrow"></span>
+            </a>
+          </li>
+
+          <!-- ページ番号 -->
+          <li th:each="i : ${#numbers.sequence(0, page.getTotalPages()-1)}"
+              class="page-item">
+        <span th:if="${i == page.getNumber()}"
+              class="page-link pagination_itemBox rounded-circle active"
+              th:text="${i+1}">
+        </span>
+            <a th:unless="${i == page.getNumber()}"
+               th:href="@{${baseUrl}(page=${i}, ${params})}"
+               class="page-link pagination_itemBox rounded-circle"
+               th:text="${i+1}">
+            </a>
+          </li>
+
+          <!-- 次へボタン -->
+          <li class="page-item">
+        <span th:if="${page.isLast()}"
+              class="page-link pagination_itemBox rounded-circle disabled">
+          <span class="pagination_nextArrow"></span>
+        </span>
+            <a th:unless="${page.isLast()}"
+               th:href="@{${baseUrl}(page=${page.getNumber()+1}, ${params})}"
+               class="page-link pagination_itemBox rounded-circle">
+              <span class="pagination_nextArrow"></span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <div th:fragment="restaurantDeleteModal" th:remove="tag">
+      <!-- 削除用モーダル -->
+      <div
+              class="modal fade"
+              id="restaurantDeleteConfirmModal"
+              tabindex="-1"
+              th:aria-labelledby="${'deleteRestaurantModalLabel'+restaurant.getRestaurantId()}"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5
+                      class="modal-title"
+                      th:id="${'deleteRestaurantModalLabel'+restaurant.getRestaurantId()}"
+                      th:text="${restaurant.getName()+'を削除してもよろしいですか？'}"
+              ></h5>
+              <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="閉じる"
+              ></button>
+            </div>
+            <div class="modal-footer">
+              <form
+                      method="post"
+                      th:action="@{/admin/restaurant/__${restaurant.getRestaurantId()}__/delete}"
+              >
+                <button type="submit" class="btn btn-danger shadow-sm">削除</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- フッターの部品化 -->
     <div th:fragment="footer" th:remove="tag">
       <footer class="footer mt-auto py-3">

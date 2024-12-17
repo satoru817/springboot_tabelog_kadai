@@ -190,6 +190,72 @@
                       <span th:text="${user.email}"></span>
                     </div>
                   </div>
+                  <!-- 基本情報の最後の行の後に追加 -->
+                  <div class="row">
+                    <div class="col">
+                      <hr class="my-4">
+                      <div class="d-flex gap-2 justify-content-end">
+                        <!-- 編集ボタン -->
+                        <a th:href="@{/auth/update(userId=${user.userId})}"
+                           class="btn btn-outline-primary">
+                          <i class="bi bi-pencil"></i> 編集
+                        </a>
+
+                        <!-- 有効/無効切り替えボタン -->
+                        <button type="button"
+                                class="btn"
+                                th:classappend="${user.enabled ? 'btn-outline-danger' : 'btn-outline-success'}"
+                                data-bs-toggle="modal"
+                                th:data-bs-target="${user.enabled ? '#disableModal' : '#enableModal'}">
+                          <i class="bi" th:classappend="${user.enabled ? 'bi-person-x' : 'bi-person-check'}"></i>
+                          <span th:text="${user.enabled ? '無効化' : '有効化'}"></span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 無効化確認モーダル -->
+                  <div class="modal fade" id="disableModal" tabindex="-1" aria-labelledby="disableModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="disableModalLabel">ユーザーの無効化確認</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <p><span th:text="${user.name}"></span>さんのアカウントを無効化してもよろしいですか？</p>
+                          <p>無効化されたユーザーはログインできなくなります。</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                          <form th:action="@{/admin/user/disable/{id}(id=${user.userId})}" method="post">
+                            <button type="submit" class="btn btn-danger">無効化する</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 有効化確認モーダル -->
+                  <div class="modal fade" id="enableModal" tabindex="-1" aria-labelledby="enableModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="enableModalLabel">ユーザーの有効化確認</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <p><span th:text="${user.name}"></span>さんのアカウントを有効化してもよろしいですか？</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                          <form th:action="@{/admin/user/enable/{id}(id=${user.userId})}" method="post">
+                            <button type="submit" class="btn btn-success">有効化する</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

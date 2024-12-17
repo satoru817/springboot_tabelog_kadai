@@ -8,186 +8,179 @@
   <body class="d-flex flex-column min-vh-100">
     <div th:replace="~{fragment::header}"></div>
 
-    <div class="container mt-5 flex-grow-1">
+    <div class="container mt-5 mb-5 flex-grow-1">
       <h1 class="text-center mb-4" th:text="${user.name}+'さんの予約一覧'"></h1>
       <div th:if="${message}" class="alert alert-success m-2 text-center" role="alert" th:text="${message}"></div>
-      <div class="row justify-content-center">
-        <div class="col-xl-3 col-lg-4 col-md-12">
-          <form
-            method="get"
-            th:with="userRole=${#authentication.principal.user.role.name}"
-            th:action="${userRole == 'ROLE_ADMIN'?
+
+
+
+          <div class="row justify-content-center">
+            <div class="col-xl-3 col-lg-4 col-md-12">
+              <form
+                      method="get"
+                      th:with="userRole=${#authentication.principal.user.role.name}"
+                      th:action="${userRole == 'ROLE_ADMIN'?
                   '/admin/reservation/show/'+user.userId:
                   '/reservation/show'
                    }"
-            class="w-100 mb-3"
-          >
-            <div class="input-group mb-3">
-              <input
-                type="text"
-                class="form-control"
-                name="searchQuery"
-                th:value="${searchQuery}"
-                placeholder="検索キーワード"
-              />
-              <button type="submit" class="btn shadow-sm btn">検索</button>
-            </div>
-          </form>
-        </div>
-
-        <div class="col">
-          <ul class="list-group">
-            <li
-              th:each="reservation : ${reservations}"
-              th:class="${reservation.date.isBefore(currentDateTime)} ? 'list-group-item mb-3 shadow-sm rounded bg-light container' : 'list-group-item mb-3 shadow-sm rounded container'"
-            >
-              <div class="row">
-                <div class="col col-md-7">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 mt-2" th:text="${reservation.restaurant.name}">Restaurant Name</h5>
-                  </div>
-                  <p class="mb-1">
-                    <strong>日時:</strong> <span th:text="${reservation.formattedDate}">Reservation Date</span>
-                  </p>
-                  <p class="mb-1">
-                    <strong>人数:</strong> <span th:text="${reservation.numberOfPeople}+'人'">Number of People</span>
-                  </p>
-                  <p class="mb-1">
-                    <strong>コメント:</strong> <span th:text="${reservation.comment ?: 'No comments'}">Comment</span>
-                  </p>
-                  <p class="text-muted mt-2">
-                    <small>予約作成日時: <span th:text="${reservation.formattedCreatedAt}">Created Date</span></small>
-                  </p>
+                      class="w-100 mb-3"
+              >
+                <div class="input-group mb-3">
+                  <input
+                          type="text"
+                          class="form-control"
+                          name="searchQuery"
+                          th:value="${searchQuery}"
+                          placeholder="検索キーワード"
+                  />
+                  <button type="submit" class="btn shadow-sm btn">検索</button>
                 </div>
-                <div class="col col-md-5">
-                  <div class="mt-3 d-flex flex-column">
-                    <!-- 日付によるボタン表示 -->
-                    <a
-                      class="btn btn-submit mt-2 shadow"
-                      th:if="${reservation.date.isBefore(currentDateTime)}"
-                      th:href="@{/review/create/__${reservation.reservationId}__}"
-                      >レビュー</a
-                    >
+              </form>
+            </div>
 
-                    <a
-                      th:href="@{/restaurant/__${reservation.restaurant.restaurantId}__}"
-                      class="btn btn-link shadow mt-2"
-                      th:if="${reservation.date.isBefore(currentDateTime)}"
-                      >再予約</a
-                    >
-                    <button
-                      data-bs-toggle="modal"
-                      th:data-bs-target="'#cancel'+${reservation.reservationId}"
-                      class="btn btn-danger mt-2 shadow"
-                      th:if="${reservation.date.isAfter(currentDateTime)}"
-                    >
-                      予約キャンセル
-                    </button>
+            <div class="row justify-content-center">
+              <ul class="list-group col-xl-6 col-lg-6 col-md-7" >
+                <li
+                        th:each="reservation : ${reservations}"
+                        th:class="${reservation.date.isBefore(currentDateTime)} ? 'list-group-item mb-3 shadow-sm rounded bg-light container' : 'list-group-item mb-3 shadow-sm rounded container'"
+                >
+                  <div class="row">
+                    <div class="col col-md-7">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 mt-2" th:text="${reservation.restaurant.name}">Restaurant Name</h5>
+                      </div>
+                      <p class="mb-1">
+                        <strong>日時:</strong> <span th:text="${reservation.formattedDate}">Reservation Date</span>
+                      </p>
+                      <p class="mb-1">
+                        <strong>人数:</strong> <span th:text="${reservation.numberOfPeople}+'人'">Number of People</span>
+                      </p>
+                      <p class="mb-1">
+                        <strong>コメント:</strong> <span th:text="${reservation.comment ?: 'No comments'}">Comment</span>
+                      </p>
+                      <p class="text-muted mt-2">
+                        <small>予約作成日時: <span th:text="${reservation.formattedCreatedAt}">Created Date</span></small>
+                      </p>
+                    </div>
+                    <div class="col col-md-5">
+                      <div class="mt-3 d-flex flex-column">
+                        <!-- 日付によるボタン表示 -->
+                        <a
+                                class="btn btn-submit mt-2 shadow"
+                                th:if="${reservation.date.isBefore(currentDateTime)}"
+                                th:href="@{/review/create/__${reservation.reservationId}__}"
+                        >レビュー</a
+                        >
 
-                    <!--キャンセルモーダル-->
-                    <div
-                      class="modal fade"
-                      th:id="'cancel'+${reservation.reservationId}"
-                      tabindex="-1"
-                      aria-labelledby="exampleModalLabel"
-                      aria-hidden="true"
-                    >
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h1 class="modal-title fs-5">キャンセルモーダル</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body">
-                            <div
-                              class="alert alert-danger"
-                              th:text="${reservation.restaurant.name}+'の予約を本当にキャンセルしますか？'"
-                            ></div>
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary shadow" data-bs-dismiss="modal">
-                              閉じる
-                            </button>
-                            <!-- リンクでGETメソッドを呼び出す -->
-                            <a
-                              th:href="@{/reservation/delete/{id}(id=${reservation.reservationId})}"
-                              class="btn btn-danger shadow"
-                              >キャンセルする</a
-                            >
+                        <a
+                                th:href="@{/restaurant/__${reservation.restaurant.restaurantId}__}"
+                                class="btn btn-link shadow mt-2"
+                                th:if="${reservation.date.isBefore(currentDateTime)}"
+                        >再予約</a
+                        >
+                        <button
+                                data-bs-toggle="modal"
+                                th:data-bs-target="'#cancel'+${reservation.reservationId}"
+                                class="btn btn-danger mt-2 shadow"
+                                th:if="${reservation.date.isAfter(currentDateTime)}"
+                        >
+                          予約キャンセル
+                        </button>
+
+                        <!--キャンセルモーダル-->
+                        <div
+                                class="modal fade"
+                                th:id="'cancel'+${reservation.reservationId}"
+                                tabindex="-1"
+                                aria-labelledby="exampleModalLabel"
+                                aria-hidden="true"
+                        >
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h1 class="modal-title fs-5">キャンセルモーダル</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                <div
+                                        class="alert alert-danger"
+                                        th:text="${reservation.restaurant.name}+'の予約を本当にキャンセルしますか？'"
+                                ></div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary shadow" data-bs-dismiss="modal">
+                                  閉じる
+                                </button>
+                                <!-- リンクでGETメソッドを呼び出す -->
+                                <a
+                                        th:href="@{/reservation/delete/{id}(id=${reservation.reservationId})}"
+                                        class="btn btn-danger shadow"
+                                >キャンセルする</a
+                                >
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
+                </li>
+              </ul>
+            </div>
       </div>
 
       <!-- Flash メッセージを表示する部分 -->
 
       <!--pagination-->
       <div th:if="${reservations.totalPages > 1}" class="d-flex justify-content-center mt-4">
-        <nav aria-label="予約一覧ページ">
-          <ul class="pagination">
+        <nav aria-label="予約一覧ページ" class="p-0 rounded-3">
+          <ul class="pagination m-0 p-0">
             <li class="page-item">
-              <span th:if="${reservations.isFirst()}" class="page-link pagination_itemBox rounded-circle disabled"
-                >&laquo;</span
-              >
-              <a
-                th:unless="${reservations.isFirst()}"
-                class="page-link pagination_itemBox rounded-circle"
-                th:with="userRole=${#authentication.principal.user.role.name}"
-                th:href="@{${userRole == 'ROLE_ADMIN' ?
-                       '/admin/reservation/show/' + user.userId:
-                       '/reservation/show'}
-                       (page=${reservations.number-1},searchQuery = ${searchQuery})}"
-                aria-label="Previous"
-              >
-                <span aria-hidden="true">&laquo;</span>
+        <span th:if="${reservations.isFirst()}"
+              class="page-link pagination_itemBox rounded-circle disabled">
+          <span class="pagination_prevArrow"></span>
+        </span>
+              <a th:unless="${reservations.isFirst()}"
+                 class="page-link pagination_itemBox rounded-circle"
+                 th:with="userRole=${#authentication.principal.user.role.name}"
+                 th:href="@{${userRole == 'ROLE_ADMIN' ?
+                   '/admin/reservation/show/' + user.userId:
+                   '/reservation/show'}
+                   (page=${reservations.number-1},searchQuery = ${searchQuery})}">
+                <span class="pagination_prevArrow"></span>
               </a>
             </li>
 
-            <li
-              th:each="i : ${#numbers.sequence(0, reservations.totalPages-1)}"
-              th:class="${'page-item' + (i == reservations.number ? ' active' : '')}"
-            >
-              <span
-                th:if="${i == reservations.number}"
-                class="page-link pagination_itemBox rounded-circle"
-                th:text="${i+1}"
-              >
-              </span>
-              <a
-                th:unless="${i == reservations.number}"
-                class="page-link pagination_itemBox rounded-circle"
-                th:with="userRole=${#authentication.principal.user.role.name}"
-                th:href="@{${userRole == 'ROLE_ADMIN' ?
-                                    '/admin/reservation/show/' + user.userId :
-                                    '/reservation/show'}
-                                    (page=${i},searchQuery=${searchQuery})}"
-                th:text="${i+1}"
-              >
-              </a>
-            </li>
-
-            <li class="page-item">
-              <span th:if="${reservations.isLast()}" class="page-link pagination_itemBox rounded-circle disabled"
-                >&raquo;</span
-              >
-              <a
-                th:unless="${reservations.isLast()}"
-                class="page-link pagination_itemBox rounded-circle"
-                th:with="userRole=${#authentication.principal.user.role.name}"
-                th:href="@{${userRole == 'ROLE_ADMIN' ?
-                                '/admin/reservation/show/' + user.userId:
+            <li th:each="i : ${#numbers.sequence(0, reservations.totalPages-1)}"
+                class="page-item">
+        <span th:if="${i == reservations.number}"
+              class="page-link pagination_itemBox rounded-circle active"
+              th:text="${i+1}">
+        </span>
+              <a th:unless="${i == reservations.number}"
+                 class="page-link pagination_itemBox rounded-circle"
+                 th:with="userRole=${#authentication.principal.user.role.name}"
+                 th:href="@{${userRole == 'ROLE_ADMIN' ?
+                                '/admin/reservation/show/' + user.userId :
                                 '/reservation/show'}
-                                (page=${reservations.number + 1},searchQuery=${searchQuery})}"
-                aria-label="Next"
-              >
-                <span aria-hidden="true">&raquo;</span>
+                                (page=${i},searchQuery=${searchQuery})}"
+                 th:text="${i+1}">
+              </a>
+            </li>
+
+            <li class="page-item">
+        <span th:if="${reservations.isLast()}"
+              class="page-link pagination_itemBox rounded-circle disabled">
+          <span class="pagination_nextArrow"></span>
+        </span>
+              <a th:unless="${reservations.isLast()}"
+                 class="page-link pagination_itemBox rounded-circle"
+                 th:with="userRole=${#authentication.principal.user.role.name}"
+                 th:href="@{${userRole == 'ROLE_ADMIN' ?
+                            '/admin/reservation/show/' + user.userId:
+                            '/reservation/show'}
+                            (page=${reservations.number + 1},searchQuery=${searchQuery})}">
+                <span class="pagination_nextArrow"></span>
               </a>
             </li>
           </ul>

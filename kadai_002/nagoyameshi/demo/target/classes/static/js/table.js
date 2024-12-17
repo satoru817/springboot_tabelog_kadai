@@ -1,3 +1,4 @@
+//todo:改修する必要がある（tdに反応するようにする。deleteBtnには反応しないようにする)
 const tbody = document.querySelector('tbody');
 const rows = tbody.querySelectorAll('tr');
 

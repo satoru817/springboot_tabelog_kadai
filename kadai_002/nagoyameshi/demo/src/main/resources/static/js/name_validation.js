@@ -2,6 +2,7 @@ const nameInput = document.querySelector('input[id="name"]');
 const nameValidation = document.getElementById('name_validation');
 const validationSuccess = document.getElementById('successValidate');
 const nonBlank = document.getElementById('name_exist_validation');
+const userId = document.getElementById('userId')?.value ?? '';
 
 nameInput.addEventListener('input', nameValidator);
 
@@ -32,6 +33,7 @@ async function validateNameAjax() {
 
     const data = {
       name: name,
+      userId: userId,
     };
 
     const response = await fetch(`/auth/validateName`, {

@@ -4,17 +4,6 @@
     <div th:replace="~{fragment::headResources}"></div>
     <title>ユーザー一覧</title>
     <script th:src="@{/js/table.js}" defer></script>
-    <style>
-      tbody > tr {
-        transition: background-color 0.3s;
-      }
-      tbody > tr:hover {
-        --bs-table-striped-bg: rgba(255, 0, 0, 0.1) !important;
-        --bs-table-bg: rgba(255, 0, 0, 0.1) !important;
-        outline: 1px solid var(--bs-info) !important;
-        cursor: pointer;
-      }
-    </style>
   </head>
   <body class="d-flex flex-column min-vh-100">
     <div class="wrapper">

@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 @RequiredArgsConstructor
 @Configuration
@@ -20,6 +21,10 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+        // Set the name of the attribute the CsrfToken will be populated on
+        requestHandler.setCsrfRequestAttributeName("_csrf");
+
         http
                 // Authorize requests based on the URL patterns
                 .authorizeHttpRequests(authz -> authz
@@ -45,9 +50,11 @@ public class WebSecurityConfig {
                         .logoutSuccessUrl("/auth/login") // Redirect after successful logout
                         .permitAll() // Allow logout for all authenticated users
                 )
-                .csrf().ignoringRequestMatchers("/stripe/webhook");
-
-
+                // Updated CSRF configuration
+                .csrf(csrf -> csrf
+                        .csrfTokenRequestHandler(requestHandler)
+                        .ignoringRequestMatchers("/stripe/webhook")
+                );
 
         return http.build(); // Build the security filter chain
     }
@@ -58,4 +65,3 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
-
