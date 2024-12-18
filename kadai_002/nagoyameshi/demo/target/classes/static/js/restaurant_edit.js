@@ -34,32 +34,32 @@ function deleteImage(restaurantImageId) {
       .catch((error) => console.error('エラー:', error));
   }
 }
-
-const imagePreview = document.getElementById('imagePreview');
-const fileCountDisplay = document.getElementById('fileCountDisplay');
-const imageInput = document.getElementById('images');
-
-imageInput.addEventListener('change', function (event) {
-  const files = Array.from(this.files);
-  const validFiles = files.filter((file) => file.size <= 1 * 1024 * 1024);
-  const existingImagesCount = document.getElementsByClassName('existingImage').length;
-
-  if (validFiles.length + existingImagesCount > 10) {
-    alert('登録できる画像は合計10枚です');
-    imageInput.value = ''; //リセット
-    fileCountDisplay.textContent = 'アップロードされるファイル数:0';
-    return;
-  }
-
-  imagePreview.innerHTML = '';
-  fileCountDisplay.textContent = `アップロードされるファイル数: ${validFiles.length}`;
-  validFiles.forEach((file) => {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const imgElement = document.createElement('img');
-      imgElement.src = e.target.result;
-      imagePreview.appendChild(imgElement);
-    };
-    reader.readAsDataURL(file);
-  });
-});
+//
+//const imagePreview = document.getElementById('imagePreview');
+//const fileCountDisplay = document.getElementById('fileCountDisplay');
+//const imageInput = document.getElementById('images');
+//
+//imageInput.addEventListener('change', function (event) {
+//  const files = Array.from(this.files);
+//  const validFiles = files.filter((file) => file.size <= 1 * 1024 * 1024);
+//  const existingImagesCount = document.getElementsByClassName('existingImage').length;
+//
+//  if (validFiles.length + existingImagesCount > 10) {
+//    alert('登録できる画像は合計10枚です');
+//    imageInput.value = ''; //リセット
+//    fileCountDisplay.textContent = 'アップロードされるファイル数:0';
+//    return;
+//  }
+//
+//  imagePreview.innerHTML = '';
+//  fileCountDisplay.textContent = `アップロードされるファイル数: ${validFiles.length}`;
+//  validFiles.forEach((file) => {
+//    const reader = new FileReader();
+//    reader.onload = function (e) {
+//      const imgElement = document.createElement('img');
+//      imgElement.src = e.target.result;
+//      imagePreview.appendChild(imgElement);
+//    };
+//    reader.readAsDataURL(file);
+//  });
+//});

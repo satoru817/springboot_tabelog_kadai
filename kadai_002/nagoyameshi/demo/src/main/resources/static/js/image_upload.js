@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const imageUpload = document.getElementById('imageUpload');
   const imagePreview = document.getElementById('imagePreview');
   const fileCount = document.getElementById('fileCount');
+
   const MAX_FILES = 10;
   let currentFiles = [];
 
@@ -27,16 +28,18 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   imageUpload.addEventListener('change', (e) => {
-    const files = Array.from(e.target.files).filter((file) => file.type.startsWith('image/'));
-    handleFiles(files);
+    const files = Array.from(e.target.files).filter((file) => file.type.startsWith('image/'));//imageのみに絞る
+    const validFiles = files.filter((file) => file.size <= 1 * 1024 * 1024);//1MB以下のファイルに絞る（application.propertiesの設定とここは合わせる必要がある。)
+    handleFiles(validFiles);
   });
 
   function handleFiles(files) {
-    const remainingSlots = MAX_FILES - currentFiles.length;
+    const existingImage = document.querySelectorAll('.existingImage');//editの場合のみこれも考慮する必要がある。
+    const remainingSlots = MAX_FILES - currentFiles.length - existingImage.length;
     const filesToAdd = files.slice(0, remainingSlots);
 
     if (files.length > remainingSlots) {
-      alert(`最大${MAX_FILES}枚までしかアップロードできません`);
+      alert(`最大${MAX_FILES}枚までしか保存できません`);
     }
 
     filesToAdd.forEach((file) => {

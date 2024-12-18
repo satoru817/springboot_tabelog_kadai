@@ -1094,6 +1094,343 @@
       </nav>
     </div>
 
+    <div th:fragment="restaurant-upsert-basic-information">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header">
+          <h3 class="mb-0 h5">基本情報</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group row mb-3">
+            <div class="col-md-4">
+              <label for="name" class="col-form-label text-md-left fw-bold">名前:</label>
+            </div>
+            <div class="col-md-8">
+              <div
+                      th:if="${#fields.hasErrors('name')}"
+                      class="text-danger small mb-2"
+                      th:errors="*{name}"
+              ></div>
+              <input
+                      type="text"
+                      id="name"
+                      class="form-control"
+                      th:field="*{name}"
+                      required
+                      placeholder="レストラン名を入力してください"
+              />
+            </div>
+          </div>
+
+          <div class="form-group row mb-3">
+            <div class="col-md-4">
+              <label for="description" class="col-form-label text-md-left fw-bold">説明:</label>
+            </div>
+            <div class="col-md-8">
+              <div
+                      th:if="${#fields.hasErrors('description')}"
+                      class="text-danger small mb-2"
+                      th:errors="*{description}"
+              ></div>
+              <textarea
+                      id="description"
+                      class="form-control"
+                      th:field="*{description}"
+                      required
+                      placeholder="レストランについての説明を入力してください"
+                      rows="3"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="form-group row mb-3">
+            <div class="col-md-4">
+              <label for="capacity" class="col-form-label text-md-left fw-bold">収容人数:</label>
+            </div>
+            <div class="col-md-8">
+              <div
+                      th:if="${#fields.hasErrors('capacity')}"
+                      class="text-danger small mb-2"
+                      th:errors="*{capacity}"
+              ></div>
+              <input
+                      type="number"
+                      id="capacity"
+                      class="form-control"
+                      th:field="*{capacity}"
+                      required
+                      placeholder="収容人数を入力してください"
+              />
+            </div>
+          </div>
+
+          <div class="form-group row mb-3">
+            <div class="col-md-4">
+              <label for="email" class="col-form-label text-md-left fw-bold">メール:</label>
+            </div>
+            <div class="col-md-8">
+              <div
+                      th:if="${#fields.hasErrors('email')}"
+                      class="text-danger small mb-2"
+                      th:errors="*{email}"
+              ></div>
+              <input
+                      type="email"
+                      id="email"
+                      class="form-control"
+                      th:field="*{email}"
+                      required
+                      placeholder="メールアドレスを入力してください"
+              />
+            </div>
+          </div>
+
+          <div class="form-group row mb-3">
+            <div class="col-md-4">
+              <label for="postalCode" class="col-form-label text-md-left fw-bold">郵便番号:</label>
+            </div>
+            <div class="col-md-8">
+              <div
+                      th:if="${#fields.hasErrors('postalCode')}"
+                      class="text-danger small mb-2"
+                      th:errors="*{postalCode}"
+              ></div>
+              <input
+                      type="text"
+                      id="postalCode"
+                      class="form-control"
+                      th:field="*{postalCode}"
+                      required
+                      placeholder="郵便番号を入力してください"
+              />
+            </div>
+          </div>
+
+          <div class="form-group row mb-3">
+            <div class="col-md-4">
+              <label for="address" class="col-form-label text-md-left fw-bold">住所:</label>
+            </div>
+            <div class="col-md-8">
+              <div
+                      th:if="${#fields.hasErrors('address')}"
+                      class="text-danger small mb-2"
+                      th:errors="*{address}"
+              ></div>
+              <input
+                      type="text"
+                      id="address"
+                      class="form-control"
+                      th:field="*{address}"
+                      required
+                      placeholder="住所を入力してください"
+              />
+            </div>
+          </div>
+
+          <div class="form-group row mb-3">
+            <div class="col-md-4">
+              <label for="phoneNumber" class="col-form-label text-md-left fw-bold">電話番号:</label>
+            </div>
+            <div class="col-md-8">
+              <div
+                      th:if="${#fields.hasErrors('phoneNumber')}"
+                      class="text-danger small mb-2"
+                      th:errors="*{phoneNumber}"
+              ></div>
+              <input
+                      type="text"
+                      id="phoneNumber"
+                      class="form-control"
+                      th:field="*{phoneNumber}"
+                      required
+                      placeholder="電話番号を入力してください"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <div th:fragment="restaurant-upsert-opening-hours">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header">
+          <h3 class="mb-0 h5">営業時間</h3>
+        </div>
+        <div class="card-body">
+          <!-- 月曜日 -->
+          <div class="form-group mb-3">
+            <div class="d-flex align-items-center gap-3 m-3">
+              <div class="col-md-2">
+                <label class="form-label fw-bold">月曜日</label>
+              </div>
+              <div class="col-md-4">
+                <input type="time" class="form-control" th:field="*{mondayOpeningTime}" />
+              </div>
+              <div class="col-md-1 text-center">~</div>
+              <div class="col-md-4">
+                <input type="time" class="form-control" th:field="*{mondayClosingTime}" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 火曜日 -->
+          <div class="form-group mb-3">
+            <div class="d-flex align-items-center gap-3 m-3">
+              <div class="col-md-2">
+                <label class="form-label fw-bold">火曜日</label>
+              </div>
+              <div class="col-md-4">
+                <input type="time" class="form-control" th:field="*{tuesdayOpeningTime}" />
+              </div>
+              <div class="col-md-1 text-center">~</div>
+              <div class="col-md-4">
+                <input type="time" class="form-control" th:field="*{tuesdayClosingTime}" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 水曜日 -->
+          <div class="form-group mb-3">
+            <div class="d-flex align-items-center gap-3 m-3">
+              <div class="col-md-2">
+                <label class="form-label fw-bold">水曜日</label>
+              </div>
+              <div class="col-md-4">
+                <input type="time" class="form-control" th:field="*{wednesdayOpeningTime}" />
+              </div>
+              <div class="col-md-1 text-center">~</div>
+              <div class="col-md-4">
+                <input type="time" class="form-control" th:field="*{wednesdayClosingTime}" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 木曜日 -->
+          <div class="form-group mb-3">
+            <div class="d-flex align-items-center gap-3 m-3">
+              <div class="col-md-2">
+                <label class="form-label fw-bold">木曜日</label>
+              </div>
+              <div class="col-md-4">
+                <input type="time" class="form-control" th:field="*{thursdayOpeningTime}" />
+              </div>
+              <div class="col-md-1 text-center">~</div>
+              <div class="col-md-4">
+                <input type="time" class="form-control" th:field="*{thursdayClosingTime}" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 金曜日 -->
+          <div class="form-group mb-3">
+            <div class="d-flex align-items-center gap-3 m-3">
+              <div class="col-md-2">
+                <label class="form-label fw-bold">金曜日</label>
+              </div>
+              <div class="col-md-4">
+                <input type="time" class="form-control" th:field="*{fridayOpeningTime}" />
+              </div>
+              <div class="col-md-1 text-center">~</div>
+              <div class="col-md-4">
+                <input type="time" class="form-control" th:field="*{fridayClosingTime}" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 土曜日 -->
+          <div class="form-group mb-3">
+            <div class="d-flex align-items-center gap-3 m-3">
+              <div class="col-md-2">
+                <label class="form-label fw-bold">土曜日</label>
+              </div>
+              <div class="col-md-4">
+                <input type="time" class="form-control" th:field="*{saturdayOpeningTime}" />
+              </div>
+              <div class="col-md-1 text-center">~</div>
+              <div class="col-md-4">
+                <input type="time" class="form-control" th:field="*{saturdayClosingTime}" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 日曜日 -->
+          <div class="form-group mb-3">
+            <div class="d-flex align-items-center gap-3 m-3">
+              <div class="col-md-2">
+                <label class="form-label fw-bold">日曜日</label>
+              </div>
+              <div class="col-md-4">
+                <input type="time" class="form-control" th:field="*{sundayOpeningTime}" />
+              </div>
+              <div class="col-md-1 text-center">~</div>
+              <div class="col-md-4">
+                <input type="time" class="form-control" th:field="*{sundayClosingTime}" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 新規登録用のフラグメント -->
+    <div th:fragment="restaurant-register-category-selection">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header">
+          <h3 class="mb-0 h5">カテゴリ選択</h3>
+        </div>
+        <div class="card-body">
+          <div class="category-selection mb-4">
+            <div class="alert alert-info"><i class="fas fa-info-circle"></i> 最大5個まで選択可能です</div>
+            <div class="category-grid">
+              <div th:each="category : ${categories}" class="category-item">
+                <input
+                        type="checkbox"
+                        name="categories"
+                        class="category-checkbox"
+                        th:id="'category-' + ${category.categoryId}"
+                        th:value="${category.categoryId}"
+                />
+                <label th:for="'category-' + ${category.categoryId}" class="category-label btn">
+                  <span th:text="${category.categoryName}"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 編集用のフラグメント -->
+    <div th:fragment="restaurant-edit-category-selection">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header">
+          <h3 class="mb-0 h5">カテゴリ選択</h3>
+        </div>
+        <div class="card-body">
+          <div class="category-selection mb-4">
+            <div class="alert alert-info"><i class="fas fa-info-circle"></i> 最大5個まで選択可能です</div>
+            <div class="category-grid">
+              <div th:each="category : ${categories}" class="category-item">
+                <input
+                        type="checkbox"
+                        name="categories"
+                        class="category-checkbox"
+                        th:id="'category-' + ${category.categoryId}"
+                        th:value="${category.categoryId}"
+                        th:checked="${registeredCategoryIds != null && registeredCategoryIds.contains(category.categoryId)}"
+                />
+                <label th:for="'category-' + ${category.categoryId}" class="category-label btn">
+                  <span th:text="${category.categoryName}"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
     <div th:fragment="restaurantDeleteModal" th:remove="tag">
       <!-- 削除用モーダル -->
       <div

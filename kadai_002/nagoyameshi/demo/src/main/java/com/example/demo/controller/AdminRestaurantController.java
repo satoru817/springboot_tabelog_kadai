@@ -215,8 +215,8 @@ public class AdminRestaurantController {
         List<RestaurantImage> restaurantImages = restaurantImageRepository.findAllByRestaurant(restaurant);
 
         model.addAttribute("restaurantCrudForm",restaurantCrudForm);
-        model.addAttribute("allCategories",allCategories);
-        model.addAttribute("selectedCategoryIds",selectedCategoryIds);
+        model.addAttribute("categories",allCategories);
+        model.addAttribute("registeredCategoryIds",selectedCategoryIds);
         model.addAttribute("restaurantImages",restaurantImages);
 
         return "admin/restaurant/restaurant_edit";
