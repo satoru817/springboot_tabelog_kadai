@@ -12,7 +12,8 @@
   background-color: rgba(0, 123, 255, 0.1);
 }
 
-.image-preview-grid {
+.image-preview-grid,
+.existing-images-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 10px;

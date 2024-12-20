@@ -36,7 +36,7 @@
               <span th:text="${successMessage}"></span>
             </div>
 
-            <table class="table table-striped">
+            <table class="table">
               <thead>
                 <tr>
                   <th scope="col">ID</th>
@@ -48,7 +48,11 @@
                 </tr>
               </thead>
               <tbody>
-                <tr th:each="user:${users}" th:data-href="@{/admin/user/show/__${user.userId}__}">
+                <tr
+                  th:each="user:${users}"
+                  th:data-href="@{/admin/user/show/__${user.userId}__}"
+                  th:classappend="${!user.enabled ? 'inactive_user' : ''}"
+                >
                   <td th:text="${user.userId}"></td>
                   <td class="align-middle">
                     <div th:replace="~{fragment::role_display}"></div>

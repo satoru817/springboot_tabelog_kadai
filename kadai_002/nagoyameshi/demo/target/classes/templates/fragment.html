@@ -90,7 +90,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <div class="btn-group me-2">
+          <div class="btn-group me-2" sec:authorize="isAuthenticated()">
             <button
               class="btn btn-custom dropdown-toggle"
               type="button"
@@ -228,7 +228,7 @@
               </li>
             </ul>
           </div>
-          <div class="btn-group me-2">
+          <div class="btn-group me-2" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_PAID')">
             <button
               class="btn btn-custom dropdown-toggle"
               type="button"
@@ -709,9 +709,9 @@
       <!-- レビュー一覧 -->
       <div class="row">
         <div
-          class="col-md-6 mb-4"
-          th:each="reservation : ${restaurant.reservations}"
-          th:unless="${(reservation.review == null) || ( (!reservation.review.isVisible) && (#authentication.principal.user.role.name != 'ROLE_ADMIN') && (#authentication.principal.user.userId != reservation.user.userId))}"
+                class="col-md-6 mb-4"
+                th:each="reservation : ${restaurant.reservations}"
+                th:if="${reservation.review != null && (reservation.review.isVisible || (#authentication != null && #authentication.principal != 'anonymousUser')  && (#authorization.expression('hasRole(''ROLE_ADMIN'')') || #authorization.principal.user.userId == reservation.user.userId))}"
         >
           <div class="card" th:classappend="${reservation.review.isVisible} == false ? 'bg-warning-subtle'">
             <div class="card-body">
@@ -743,7 +743,7 @@
                 <div th:if="${reservation.review.isVisible}" class="me-2">
                   <button
                     class="badge text-bg-info shadow-sm me-2"
-                    th:if="${reservation.user.name == #authentication.principal.user.name || #authentication.principal.user.role.name == 'ROLE_ADMIN'}"
+                    th:if="${((#authentication != null && #authentication.principal != 'anonymousUser') )&&(reservation.user.name == #authentication.principal.user.name || #authentication.principal.user.role.name == 'ROLE_ADMIN')}"
                   >
                     <a th:href="@{/review/create/__${reservation.reservationId}__}" class="text-decoration-none me-2"
                       >編集</a
@@ -761,7 +761,7 @@
                 <div th:unless="${reservation.review.isVisible}" class="me-2">
                   <button
                     class="badge text-bg-info shadow-sm me-2"
-                    th:if="${reservation.user.name == #authentication.principal.user.name || #authentication.principal.user.role.name == 'ROLE_ADMIN'}"
+                    th:if="${((#authentication != null && #authentication.principal != 'anonymousUser') )&&(reservation.user.name == #authentication.principal.user.name || #authentication.principal.user.role.name == 'ROLE_ADMIN')}"
                   >
                     <a th:href="@{/review/create/__${reservation.reservationId}__}" class="text-decoration-none"
                       >編集</a
@@ -1046,47 +1046,54 @@
     </div>
 
     <!-- ページネーションのフラグメント -->
-    <div th:fragment="searchPagination(page, baseUrl, params)"
-         th:if="${page.getTotalPages() > 1}"
-         class="d-flex justify-content-center">
+    <div
+      th:fragment="searchPagination(page, baseUrl, params)"
+      th:if="${page.getTotalPages() > 1}"
+      class="d-flex justify-content-center"
+    >
       <nav aria-label="ページネーション" class="p-0 rounded-3">
         <ul class="pagination m-0 p-0">
           <!-- 前へボタン -->
           <li class="page-item">
-        <span th:if="${page.isFirst()}"
-              class="page-link pagination_itemBox rounded-circle disabled">
-          <span class="pagination_prevArrow"></span>
-        </span>
-            <a th:unless="${page.isFirst()}"
-               th:href="@{${baseUrl}(page=${page.getNumber()-1}, ${params})}"
-               class="page-link pagination_itemBox rounded-circle">
+            <span th:if="${page.isFirst()}" class="page-link pagination_itemBox rounded-circle disabled">
+              <span class="pagination_prevArrow"></span>
+            </span>
+            <a
+              th:unless="${page.isFirst()}"
+              th:href="@{${baseUrl}(page=${page.getNumber()-1}, ${params})}"
+              class="page-link pagination_itemBox rounded-circle"
+            >
               <span class="pagination_prevArrow"></span>
             </a>
           </li>
 
           <!-- ページ番号 -->
-          <li th:each="i : ${#numbers.sequence(0, page.getTotalPages()-1)}"
-              class="page-item">
-        <span th:if="${i == page.getNumber()}"
+          <li th:each="i : ${#numbers.sequence(0, page.getTotalPages()-1)}" class="page-item">
+            <span
+              th:if="${i == page.getNumber()}"
               class="page-link pagination_itemBox rounded-circle active"
-              th:text="${i+1}">
-        </span>
-            <a th:unless="${i == page.getNumber()}"
-               th:href="@{${baseUrl}(page=${i}, ${params})}"
-               class="page-link pagination_itemBox rounded-circle"
-               th:text="${i+1}">
+              th:text="${i+1}"
+            >
+            </span>
+            <a
+              th:unless="${i == page.getNumber()}"
+              th:href="@{${baseUrl}(page=${i}, ${params})}"
+              class="page-link pagination_itemBox rounded-circle"
+              th:text="${i+1}"
+            >
             </a>
           </li>
 
           <!-- 次へボタン -->
           <li class="page-item">
-        <span th:if="${page.isLast()}"
-              class="page-link pagination_itemBox rounded-circle disabled">
-          <span class="pagination_nextArrow"></span>
-        </span>
-            <a th:unless="${page.isLast()}"
-               th:href="@{${baseUrl}(page=${page.getNumber()+1}, ${params})}"
-               class="page-link pagination_itemBox rounded-circle">
+            <span th:if="${page.isLast()}" class="page-link pagination_itemBox rounded-circle disabled">
+              <span class="pagination_nextArrow"></span>
+            </span>
+            <a
+              th:unless="${page.isLast()}"
+              th:href="@{${baseUrl}(page=${page.getNumber()+1}, ${params})}"
+              class="page-link pagination_itemBox rounded-circle"
+            >
               <span class="pagination_nextArrow"></span>
             </a>
           </li>
@@ -1105,18 +1112,14 @@
               <label for="name" class="col-form-label text-md-left fw-bold">名前:</label>
             </div>
             <div class="col-md-8">
-              <div
-                      th:if="${#fields.hasErrors('name')}"
-                      class="text-danger small mb-2"
-                      th:errors="*{name}"
-              ></div>
+              <div th:if="${#fields.hasErrors('name')}" class="text-danger small mb-2" th:errors="*{name}"></div>
               <input
-                      type="text"
-                      id="name"
-                      class="form-control"
-                      th:field="*{name}"
-                      required
-                      placeholder="レストラン名を入力してください"
+                type="text"
+                id="name"
+                class="form-control"
+                th:field="*{name}"
+                required
+                placeholder="レストラン名を入力してください"
               />
             </div>
           </div>
@@ -1127,17 +1130,17 @@
             </div>
             <div class="col-md-8">
               <div
-                      th:if="${#fields.hasErrors('description')}"
-                      class="text-danger small mb-2"
-                      th:errors="*{description}"
+                th:if="${#fields.hasErrors('description')}"
+                class="text-danger small mb-2"
+                th:errors="*{description}"
               ></div>
               <textarea
-                      id="description"
-                      class="form-control"
-                      th:field="*{description}"
-                      required
-                      placeholder="レストランについての説明を入力してください"
-                      rows="3"
+                id="description"
+                class="form-control"
+                th:field="*{description}"
+                required
+                placeholder="レストランについての説明を入力してください"
+                rows="3"
               ></textarea>
             </div>
           </div>
@@ -1148,17 +1151,17 @@
             </div>
             <div class="col-md-8">
               <div
-                      th:if="${#fields.hasErrors('capacity')}"
-                      class="text-danger small mb-2"
-                      th:errors="*{capacity}"
+                th:if="${#fields.hasErrors('capacity')}"
+                class="text-danger small mb-2"
+                th:errors="*{capacity}"
               ></div>
               <input
-                      type="number"
-                      id="capacity"
-                      class="form-control"
-                      th:field="*{capacity}"
-                      required
-                      placeholder="収容人数を入力してください"
+                type="number"
+                id="capacity"
+                class="form-control"
+                th:field="*{capacity}"
+                required
+                placeholder="収容人数を入力してください"
               />
             </div>
           </div>
@@ -1168,18 +1171,14 @@
               <label for="email" class="col-form-label text-md-left fw-bold">メール:</label>
             </div>
             <div class="col-md-8">
-              <div
-                      th:if="${#fields.hasErrors('email')}"
-                      class="text-danger small mb-2"
-                      th:errors="*{email}"
-              ></div>
+              <div th:if="${#fields.hasErrors('email')}" class="text-danger small mb-2" th:errors="*{email}"></div>
               <input
-                      type="email"
-                      id="email"
-                      class="form-control"
-                      th:field="*{email}"
-                      required
-                      placeholder="メールアドレスを入力してください"
+                type="email"
+                id="email"
+                class="form-control"
+                th:field="*{email}"
+                required
+                placeholder="メールアドレスを入力してください"
               />
             </div>
           </div>
@@ -1190,17 +1189,17 @@
             </div>
             <div class="col-md-8">
               <div
-                      th:if="${#fields.hasErrors('postalCode')}"
-                      class="text-danger small mb-2"
-                      th:errors="*{postalCode}"
+                th:if="${#fields.hasErrors('postalCode')}"
+                class="text-danger small mb-2"
+                th:errors="*{postalCode}"
               ></div>
               <input
-                      type="text"
-                      id="postalCode"
-                      class="form-control"
-                      th:field="*{postalCode}"
-                      required
-                      placeholder="郵便番号を入力してください"
+                type="text"
+                id="postalCode"
+                class="form-control"
+                th:field="*{postalCode}"
+                required
+                placeholder="郵便番号を入力してください"
               />
             </div>
           </div>
@@ -1210,18 +1209,14 @@
               <label for="address" class="col-form-label text-md-left fw-bold">住所:</label>
             </div>
             <div class="col-md-8">
-              <div
-                      th:if="${#fields.hasErrors('address')}"
-                      class="text-danger small mb-2"
-                      th:errors="*{address}"
-              ></div>
+              <div th:if="${#fields.hasErrors('address')}" class="text-danger small mb-2" th:errors="*{address}"></div>
               <input
-                      type="text"
-                      id="address"
-                      class="form-control"
-                      th:field="*{address}"
-                      required
-                      placeholder="住所を入力してください"
+                type="text"
+                id="address"
+                class="form-control"
+                th:field="*{address}"
+                required
+                placeholder="住所を入力してください"
               />
             </div>
           </div>
@@ -1232,25 +1227,23 @@
             </div>
             <div class="col-md-8">
               <div
-                      th:if="${#fields.hasErrors('phoneNumber')}"
-                      class="text-danger small mb-2"
-                      th:errors="*{phoneNumber}"
+                th:if="${#fields.hasErrors('phoneNumber')}"
+                class="text-danger small mb-2"
+                th:errors="*{phoneNumber}"
               ></div>
               <input
-                      type="text"
-                      id="phoneNumber"
-                      class="form-control"
-                      th:field="*{phoneNumber}"
-                      required
-                      placeholder="電話番号を入力してください"
+                type="text"
+                id="phoneNumber"
+                class="form-control"
+                th:field="*{phoneNumber}"
+                required
+                placeholder="電話番号を入力してください"
               />
             </div>
           </div>
         </div>
       </div>
-
     </div>
-
 
     <div th:fragment="restaurant-upsert-opening-hours">
       <div class="card shadow-sm mb-4">
@@ -1385,11 +1378,11 @@
             <div class="category-grid">
               <div th:each="category : ${categories}" class="category-item">
                 <input
-                        type="checkbox"
-                        name="categories"
-                        class="category-checkbox"
-                        th:id="'category-' + ${category.categoryId}"
-                        th:value="${category.categoryId}"
+                  type="checkbox"
+                  name="categories"
+                  class="category-checkbox"
+                  th:id="'category-' + ${category.categoryId}"
+                  th:value="${category.categoryId}"
                 />
                 <label th:for="'category-' + ${category.categoryId}" class="category-label btn">
                   <span th:text="${category.categoryName}"></span>
@@ -1413,12 +1406,12 @@
             <div class="category-grid">
               <div th:each="category : ${categories}" class="category-item">
                 <input
-                        type="checkbox"
-                        name="categories"
-                        class="category-checkbox"
-                        th:id="'category-' + ${category.categoryId}"
-                        th:value="${category.categoryId}"
-                        th:checked="${registeredCategoryIds != null && registeredCategoryIds.contains(category.categoryId)}"
+                  type="checkbox"
+                  name="categories"
+                  class="category-checkbox"
+                  th:id="'category-' + ${category.categoryId}"
+                  th:value="${category.categoryId}"
+                  th:checked="${registeredCategoryIds != null && registeredCategoryIds.contains(category.categoryId)}"
                 />
                 <label th:for="'category-' + ${category.categoryId}" class="category-label btn">
                   <span th:text="${category.categoryName}"></span>
@@ -1430,35 +1423,42 @@
       </div>
     </div>
 
+    <div th:fragment="welcome-ranking" th:remove="tag">
+          <div class="d-flex p-3 border-bottom">
+            <img th:if="${not #lists.isEmpty(restaurant.images)}"
+                 th:src="@{${restaurant.images[0].image}}"
+                 class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
+            <div class="ms-3">
+              <h6 class="mb-1" th:text="${restaurant.name}">店舗名</h6>
+              <div class="text-warning mb-1">
+                <span th:text="${restaurant.averageStar}">4.5</span>
+                <small class="text-muted">点</small>
+              </div>
+              <small class="text-muted" th:text="${restaurant.address}">住所</small>
+            </div>
+          </div>
+    </div>
 
     <div th:fragment="restaurantDeleteModal" th:remove="tag">
       <!-- 削除用モーダル -->
       <div
-              class="modal fade"
-              id="restaurantDeleteConfirmModal"
-              tabindex="-1"
-              th:aria-labelledby="${'deleteRestaurantModalLabel'+restaurant.getRestaurantId()}"
+        class="modal fade"
+        id="restaurantDeleteConfirmModal"
+        tabindex="-1"
+        th:aria-labelledby="${'deleteRestaurantModalLabel'+restaurant.getRestaurantId()}"
       >
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
               <h5
-                      class="modal-title"
-                      th:id="${'deleteRestaurantModalLabel'+restaurant.getRestaurantId()}"
-                      th:text="${restaurant.getName()+'を削除してもよろしいですか？'}"
+                class="modal-title"
+                th:id="${'deleteRestaurantModalLabel'+restaurant.getRestaurantId()}"
+                th:text="${restaurant.getName()+'を削除してもよろしいですか？'}"
               ></h5>
-              <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="閉じる"
-              ></button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
             </div>
             <div class="modal-footer">
-              <form
-                      method="post"
-                      th:action="@{/admin/restaurant/__${restaurant.getRestaurantId()}__/delete}"
-              >
+              <form method="post" th:action="@{/admin/restaurant/__${restaurant.getRestaurantId()}__/delete}">
                 <button type="submit" class="btn btn-danger shadow-sm">削除</button>
               </form>
             </div>

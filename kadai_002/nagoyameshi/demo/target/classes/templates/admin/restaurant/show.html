@@ -110,7 +110,13 @@
                   </div>
 
                   <div class="col">
-                    <span th:text="${restaurant.getAddress()}"></span>
+                    <a
+                      th:href="@{'https://www.google.com/maps/search/?api=1&query=' + ${#uriUtils.encode(restaurant.getAddress(), 'UTF-8')}}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-decoration-none text-blue"
+                      th:text="${restaurant.getAddress()}"
+                    ></a>
                   </div>
                 </div>
 

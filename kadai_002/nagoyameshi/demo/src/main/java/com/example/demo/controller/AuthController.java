@@ -128,7 +128,8 @@ public class AuthController {
     }
 
     @GetMapping("/auth/success")
-    public String success(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam(required = false) String subscription, HttpServletRequest request) {
+    public String success(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam(required = false) String subscription,
+                          HttpServletRequest request,RedirectAttributes redirectAttributes) {
         // subscription パラメータが存在する場合にのみ処理を行う（upgrade時の処理)
         if (subscription != null) {
             userDetailsService.updateUserRolesAndSession(userDetails, request);
@@ -136,7 +137,11 @@ public class AuthController {
             log.info("No subscription parameter found, skipping role update.");
         }
 
-        return "auth/success";
+        String message = String.format("Welcome %s ! You've successfully logged in.",userDetails.getUser().getName());
+
+        redirectAttributes.addFlashAttribute("message",message);
+
+        return "redirect:/";
     }
 
 

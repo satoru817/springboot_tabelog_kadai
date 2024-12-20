@@ -34,9 +34,8 @@
             <div class="col-xl-5 col-lg-6 col-md-8">
               <h1 class="mb-4 text-center">会員情報編集</h1>
 
-
               <form method="post" th:action="@{/userUpdate}" th:object="${user}" id="registration_form">
-                <input type="hidden" th:field="*{userId}">
+                <input type="hidden" th:field="*{userId}" />
                 <div th:replace="~{fragment::nameInput}"></div>
 
                 <div th:replace="~{fragment::nameForReservationInput}"></div>

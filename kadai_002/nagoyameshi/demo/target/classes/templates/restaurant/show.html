@@ -34,23 +34,33 @@
                 th:text="${restaurant.isFavorite ? '&#9829; Remove from Favorites' : '&#9825; Add to Favorites'}"
               ></button>
             </div>
-            <div class="d-flex ms-4" sec:authorize="hasRole('UNPAID_USER')">
-              <a
-                th:href="@{/upgrade}"
-                class="btn btn-outline-danger"
-                th:text="${restaurant.isFavorite ? '&#9829; Remove from Favorites' : '&#9825; Add to Favorites'}"
-              >
-              </a>
+            <div class="d-flex ms-4 align-items-center" sec:authorize="hasRole('UNPAID_USER')">
+              <a th:href="@{/upgrade}" class="btn btn-outline-danger"> <i class="bi bi-heart"></i> 有料会員登録 </a>
+              <span class="text-muted ms-2 small">
+                <i class="bi bi-info-circle-fill"></i>
+                お気に入りは有料会員限定機能です
+              </span>
+            </div>
+            <div class="d-flex ms-4 align-items-center" sec:authorize="isAnonymous()">
+              <a th:href="@{/signUp}" class="btn btn-outline-danger"> <i class="bi bi-heart"></i> 会員登録 </a>
+              <span class="text-muted ms-2 small">
+                <i class="bi bi-info-circle-fill"></i>
+                お気に入りには会員登録が必要です
+              </span>
             </div>
             <div class="d-flex ms-4" sec:authorize="hasRole('ADMIN')">
-              <a th:href="@{/admin/restaurant/{id}/edit(id=${restaurant.restaurantId})}"
-                 class="btn btn-outline-primary me-2">
+              <a
+                th:href="@{/admin/restaurant/{id}/edit(id=${restaurant.restaurantId})}"
+                class="btn btn-outline-primary me-2"
+              >
                 <i class="bi bi-pencil"></i> 編集
               </a>
-              <button type="button"
-                      class="btn btn-outline-danger"
-                      data-bs-toggle="modal"
-                      data-bs-target="#restaurantDeleteConfirmModal">
+              <button
+                type="button"
+                class="btn btn-outline-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#restaurantDeleteConfirmModal"
+              >
                 <i class="bi bi-trash"></i> 削除
               </button>
             </div>
@@ -211,7 +221,14 @@
                 </div>
 
                 <div class="col">
-                  <span th:text="${restaurant.getAddress()}"></span>
+                  <a
+                    th:href="@{https://www.google.com/maps/search/?api=1(query=${restaurant.address})}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-decoration-none"
+                    th:text="${restaurant.address}"
+                    title="クリックするとGoogle マップが別タブで開きます"
+                  ></a>
                 </div>
               </div>
 
@@ -226,14 +243,14 @@
               </div>
             </div>
 
-            <div sec:authorize="isAnonymous()" class="col-lg-4 px-0 ps-lg-4 mb-4">
-              <div class="card">
-                <div class="card-body">
-                  <p class="card-text">予約するには<a th:hreef="@{/login}">ログイン</a>が必要です。</p>
-                  <button type="submit" class="btn shadow-sm w-100" disabled>予約する</button>
-                </div>
-              </div>
-            </div>
+            <!--            <div sec:authorize="isAnonymous()" class="col-lg-4 px-0 ps-lg-4 mb-4">-->
+            <!--              <div class="card">-->
+            <!--                <div class="card-body">-->
+            <!--                  <p class="card-text">予約するには<a th:href="@{/login}">ログイン</a>が必要です。</p>-->
+            <!--                  <button type="submit" class="btn shadow-sm w-100" disabled>予約する</button>-->
+            <!--                </div>-->
+            <!--              </div>-->
+            <!--            </div>-->
 
             <div class="card col-md-4 reservation-card shadow bg-light">
               <h5 class="text-center mb-4 mt-3">レストランの予約</h5>
@@ -261,6 +278,9 @@
                 <div class="row g-2 mb-3">
                   <div class="col">
                     <div class="input-group">
+                      <span class="input-group-text bg-light">
+                        <i class="bi bi-calendar3"></i>
+                      </span>
                       <input type="date" id="date" class="form-control" value="" min="" />
                     </div>
                   </div>
@@ -275,12 +295,16 @@
                 </div>
 
                 <!-- メッセージ表示部分 -->
-                <div id="availabilityMessage" class="message d-flex justify-content-center alert alert-info">
+                <div
+                  sec:authorize="hasAnyRole('ADMIN','PAID_USER')"
+                  id="availabilityMessage"
+                  class="message d-flex justify-content-center alert alert-info"
+                >
                   <i class="bi bi-info-circle"></i> 予約可能か確認中です...
                 </div>
 
                 <!-- 本予約ボタン -->
-                <div class="d-flex justify-content-center">
+                <div class="d-flex justify-content-center" sec:authorize="hasAnyRole('ADMIN','PAID_USER')">
                   <button
                     type="button"
                     id="confirmReservation"
@@ -288,8 +312,30 @@
                     style="display: none"
                     data-bs-target="#confirmReservationModal"
                   >
-                    本予約する</button
-                  ><!--todo:モーダルが開いて、本予約できるようにする。-->
+                    本予約する
+                  </button>
+                </div>
+
+                <!-- 有料会員登録促進（無料会員向け） -->
+                <div sec:authorize="hasRole('ROLE_UNPAID_USER')" class="mt-4">
+                  <a th:href="@{/upgrade}" class="btn btn-primary btn-slide w-100 position-relative mb-3">
+                    <i class="bi bi-gem me-2"></i>
+                    有料会員になって予約
+                    <span class="position-absolute end-0 top-50 translate-middle-y me-3">
+                      <i class="bi bi-arrow-right"></i>
+                    </span>
+                  </a>
+                </div>
+
+                <!-- 会員登録促進（非会員向け） -->
+                <div sec:authorize="isAnonymous()" class="mt-4">
+                  <a th:href="@{/signUp}" class="btn btn-primary btn-slide w-100 position-relative mb-3">
+                    <i class="bi bi-person-plus me-2"></i>
+                    会員登録して予約
+                    <span class="position-absolute end-0 top-50 translate-middle-y me-3">
+                      <i class="bi bi-arrow-right"></i>
+                    </span>
+                  </a>
                 </div>
 
                 <!-- 予約確認モーダル -->

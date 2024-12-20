@@ -39,40 +39,41 @@
                   <div class="card-body">
                     <div class="d-flex justify-content-center flex-wrap gap-2">
                       <div th:each="category : ${categories}">
-                        <div class="btn-group d-flex align-items-center">
+                        <div class="btn-group category-pill">
                           <input
-                            type="checkbox"
-                            name="categoryId"
-                            class="categories"
-                            th:value="${category.categoryId}"
-                            th:id="'category-' + ${category.categoryId}"
-                            th:checked="${categoryIds != null && categoryIds.contains(category.categoryId)}"
+                                  type="checkbox"
+                                  name="categoryId"
+                                  class="category-input categories"
+                                  th:value="${category.categoryId}"
+                                  th:id="'category-' + ${category.categoryId}"
+                                  th:checked="${categoryIds != null && categoryIds.contains(category.categoryId)}"
                           />
                           <label
-                            th:for="'category-' + ${category.categoryId}"
-                            th:text="${category.categoryName}"
-                            class="shadow-sm"
+                                  th:for="'category-' + ${category.categoryId}"
+                                  th:text="${category.categoryName}"
+                                  class="category-label"
                           ></label>
                         </div>
                       </div>
-                      <div class="select-logic d-flex justify-content-center gap-2">
-                        <input
-                          type="radio"
-                          name="logic"
-                          value="and"
-                          id="AND"
-                          class="d-none"
-                          th:checked="${logic != null and logic == 'and'}"
-                        />
-                        <label for="AND">AND検索</label>
+                    </div>
 
+                    <!-- 検索ロジック選択部分の修正 -->
+                    <div
+                      class="select-logic d-flex justify-content-center align-items-center mt-2 mb-2"
+                      style="max-width: 300px; margin: auto"
+                    >
+                      <div class="me-3">
+                        <input type="radio" name="logic" value="and" id="AND" th:checked="${logic == 'and'}" />
+                        <label for="AND">AND検索</label>
+                      </div>
+
+                      <div>
                         <input
                           type="radio"
                           name="logic"
                           value="or"
                           id="OR"
-                          class="d-none"
-                          th:checked="${logic == null or (logic != null and logic == 'or')}"
+                          th:checked="${logic == null} or ${logic == 'or'}"
                         />
                         <label for="OR">OR検索</label>
                       </div>

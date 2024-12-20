@@ -51,6 +51,37 @@ header {
   text-align: center;
 }
 */
+
+/* トップページの背景*/
+.nagoya-gradient {
+    background: linear-gradient(
+        135deg,
+        var(--color-primary) 0%,
+        var(--color-secondary-dark) 20%,
+        var(--color-accent-turquoise-dark) 40%,
+        var(--color-accent-pink-dark) 60%,
+        var(--color-accent-mint-dark) 80%,
+        var(--color-primary-dark) 100%
+    );
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    animation: gradientText 20s ease infinite;
+}
+
+@keyframes gradientText {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 100% 100%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}
 /* ナビゲーションバー */
 .navbar-red {
   background: linear-gradient(
@@ -151,6 +182,45 @@ button,
   background-color: #3da8a0 !important; /* さらに暗めに */
 }
 
+/*スライドするボタン*/
+
+.btn-slide {
+  position: relative;
+  overflow: hidden;
+  color: var(--color-neutral-light);
+  background-color: var(--color-accent-mint);
+  border: none;
+  z-index: 1;
+  padding: 10px 20px;
+}
+
+.btn-slide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-mint-link) 0%,
+    var(--color-accent-mint) 33%,
+    var(--color-accent-mint-medium) 67%,
+    var(--color-accent-mint-dark) 100%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+  z-index: -1;
+}
+
+.btn-slide:hover {
+  color: black;
+}
+
+.btn-slide:hover::before {
+  transform: translateX(0);
+}
+
 .search_button {
   background-color: var(--color-accent-mint);
   color: var(--color-neutral-light);
@@ -164,6 +234,79 @@ button,
   background-color: var(--color-accent-mint-dark) !important;
 }
 
+.select-logic {
+  background: #f0f0f0;
+  padding: 4px;
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.select-logic input[type='radio'] {
+  display: none;
+}
+
+.select-logic label {
+  padding: 6px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.select-logic input[type='radio']:checked + label {
+  color: var(--color-neutral-light);
+  background: var(--color-accent-mint) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.select-logic label:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.category-pill {
+  position: relative;
+  display: inline-block;
+}
+/*
+.category-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.category-label {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #e0e0e0;
+  background-color: white;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-input:checked + .category-label {
+  background-color: #0066ff;
+  color: white;
+  border-color: #0066ff;
+}
+
+.category-label:hover {
+  background-color: #f5f5f5;
+}
+
+.category-input:checked + .category-label:hover {
+  background-color: #0052cc;
+}
+
+/* チェックマークアイコンを追加する場合 */
+.category-input:checked + .category-label::before ,
+.wards:checked + label::before{
+  content: '✓';
+  margin-right: 4px;
+}
 /*bootstrapバッジの上書き*/
 
 .bg-success {
@@ -377,21 +520,23 @@ footer {
 }
 
 /*レストラン登録時の画像プレビューの設定*/
+/*
 .image-preview {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.image-preview img {
+.image-preview img ,.existing-image{
   width: 100px;
   height: 100px;
   object-fit: cover;
   border: 1px solid var(--color-neutral);
   padding: 5px;
   border-radius: 5px;
+  position: relative;
 }
-
+*/
 /*カルーセルの矢印の設定*/
 
 .arrow_box {
@@ -480,7 +625,8 @@ footer {
 
 .btn-group > label {
   border-radius: 8px;
-  background-color: var(--bs-gray-300);
+  border: 0.1px solid;
+  background-color: var(--color-neutral-light);
   padding: 0 4px;
 }
 
@@ -489,26 +635,11 @@ footer {
 }
 
 .btn-group input:checked + label {
-  background-color: var(--color-accent-turquoise);
+  background-color: var(--color-accent-mint-link);
 }
 
 .card-img-show {
   height: 350px !important;
-}
-
-.select-logic label {
-  border-radius: 8px;
-  background-color: var(--color-accent-turquoise);
-  padding: 0 8px;
-  box-shadow: var(--box-shadow);
-}
-
-.select-logic input:checked + label {
-  background-color: var(--color-primary-light);
-}
-
-.select-logic label:hover {
-  background-color: var(--color-accent-mint);
 }
 
 .see-all-photos-btn {
@@ -751,3 +882,23 @@ tbody > tr:hover {
   outline: 1px solid var(--bs-info) !important;
   cursor: pointer;
 }
+
+.inactive_user td {
+  color: var(--color-accent-pink) !important;
+}
+
+
+.carousel-caption .btn-light {
+    padding: 8px 20px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.carousel-caption .btn-light:hover {
+    background-color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+

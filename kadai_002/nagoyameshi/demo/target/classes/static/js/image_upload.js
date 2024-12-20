@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const fileCount = document.getElementById('fileCount');
 
   const MAX_FILES = 10;
+  const MAX_FILE_SIZE = 1 * 1024 * 1024;
   let currentFiles = [];
 
   dropZone.addEventListener('dragover', (e) => {
@@ -19,8 +20,9 @@ document.addEventListener('DOMContentLoaded', function () {
   dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropZone.classList.remove('drag-over');
-    const files = Array.from(e.dataTransfer.files).filter((file) => file.type.startsWith('image/'));
-    handleFiles(files);
+
+    const validFiles = filterFiles(Array.from(e.dataTransfer.files));
+    handleFiles(validFiles);
   });
 
   dropZone.addEventListener('click', () => {
@@ -28,13 +30,19 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   imageUpload.addEventListener('change', (e) => {
-    const files = Array.from(e.target.files).filter((file) => file.type.startsWith('image/'));//imageのみに絞る
-    const validFiles = files.filter((file) => file.size <= 1 * 1024 * 1024);//1MB以下のファイルに絞る（application.propertiesの設定とここは合わせる必要がある。)
+    const validFiles = filterFiles(Array.from(e.target.files));
     handleFiles(validFiles);
   });
 
+  function filterFiles(files) {
+    const imageFiles = files.filter((file) => file.type.startsWith('image/')); // imageのみに絞る
+    const validFiles = imageFiles.filter((file) => file.size <= MAX_FILE_SIZE); // 1MB以下のファイルに絞る(application.propertiesの設定と合わせる必要がある）
+
+    return validFiles;
+  }
+
   function handleFiles(files) {
-    const existingImage = document.querySelectorAll('.existingImage');//editの場合のみこれも考慮する必要がある。
+    const existingImage = document.querySelectorAll('.existingImage'); //editの場合のみこれも考慮する必要がある。
     const remainingSlots = MAX_FILES - currentFiles.length - existingImage.length;
     const filesToAdd = files.slice(0, remainingSlots);
 

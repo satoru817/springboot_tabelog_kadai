@@ -27,13 +27,13 @@ public class WebSecurityConfig {
 
         http
                 // Authorize requests based on the URL patterns
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/auth/validateEmail","/auth/validateName","/userRegister**","/userRegister/**","/signUp**","/css/**", "/images/**", "/js/**", "/storage/**", "/","/passwordChange","/test","/auth/login**","/forgot_password**","/forgot_password/**","/doChangePassword","/auth/blocked","/stripe/webhook")
-                        .permitAll()  // Publicly accessible
+                .authorizeHttpRequests(authz -> authz// Publicly accessible
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN") // Only users with "ADMIN" role can access
-                        .requestMatchers("/paid/**")
+                        .requestMatchers("/paid/**","/restaurant/reservations","/restaurant/favorite")
                         .hasRole("PAID_USER")
+                        .requestMatchers("/restaurant","/restaurant/*","/CompanyInfo","/auth/validateEmail","/auth/validateName","/userRegister**","/userRegister/**","/signUp**","/css/**", "/images/**", "/js/**", "/storage/**", "/","/passwordChange","/test","/auth/login**","/forgot_password**","/forgot_password/**","/doChangePassword","/auth/blocked","/stripe/webhook")
+                        .permitAll()
                         .anyRequest()
                         .authenticated() // Any other request requires authentication
                 )
@@ -42,7 +42,7 @@ public class WebSecurityConfig {
                         .loginPage("/auth/login")// Custom login page
                         .loginProcessingUrl("/auth/login") // Form action URL for login submission
                         .failureHandler(failureHandler)
-                        .successHandler(successHandler)//Custom failure handler
+                        .successHandler(successHandler)
                         .permitAll() // Allow everyone to see the login page
                 )
                 // Logout configuration

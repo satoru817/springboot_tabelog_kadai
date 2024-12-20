@@ -96,10 +96,10 @@
               <button
                 sec:authorize="hasRole('UNPAID_USER')"
                 th:unless="${ifUserHasCancelledSubscription}"
-                class="btn btn-submit"
+                class="btn btn-submit btn-slide"
                 onclick="startSubscription()"
               >
-                Upgrade Now
+                <i class="bi bi-gem me-2"></i>Upgrade Now
               </button>
 
               <!-- Paid User の場合、Current Planとして表示 -->

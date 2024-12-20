@@ -3,7 +3,6 @@ const emailValidation = document.getElementById('email_validation');
 const emailValidationErrorAjax = document.getElementById('email_validate_error_ajax');
 const emailValidateSuccess = document.getElementById('email_validate_success');
 
-
 mailInput.addEventListener('input', mailValidator);
 
 async function mailValidator() {

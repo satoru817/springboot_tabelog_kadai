@@ -41,4 +41,28 @@ public interface RestaurantRepository extends JpaRepository<Restaurant,Integer> 
             WHERE f.user = :user
             """)
     Page<Restaurant> findAllFavoriteByUser(@Param("user")User user, Pageable pageable);
+
+    @Query("""
+    SELECT ret 
+    FROM Restaurant ret
+    LEFT JOIN Reservation res ON res.restaurant = ret
+    LEFT JOIN Review rev ON rev.reservation = res
+    WHERE res.date > CURRENT_DATE - 30
+    GROUP BY ret
+    ORDER BY COALESCE(AVG(rev.starCount), 0) DESC
+    LIMIT :i
+    """)
+    List<Restaurant> findTopRated(int i);
+    //直近30日のデータのみ利用する。レビューの星評価の平均が高い順で並べる。
+
+    @Query("""
+            SELECT ret
+            FROM Restaurant ret
+            LEFT JOIN Favorite f ON f.restaurant = ret
+            GROUP BY ret
+            
+            """)
+    List<Restaurant> findTopFavorited(int i);
+
+    List<Restaurant> findTopReviewed(int i);
 }
