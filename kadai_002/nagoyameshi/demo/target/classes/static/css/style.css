@@ -54,33 +54,33 @@ header {
 
 /* トップページの背景*/
 .nagoya-gradient {
-    background: linear-gradient(
-        135deg,
-        var(--color-primary) 0%,
-        var(--color-secondary-dark) 20%,
-        var(--color-accent-turquoise-dark) 40%,
-        var(--color-accent-pink-dark) 60%,
-        var(--color-accent-mint-dark) 80%,
-        var(--color-primary-dark) 100%
-    );
-    background-size: 200% 200%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: bold;
-    animation: gradientText 20s ease infinite;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-secondary-dark) 20%,
+    var(--color-accent-turquoise-dark) 40%,
+    var(--color-accent-pink-dark) 60%,
+    var(--color-accent-mint-dark) 80%,
+    var(--color-primary-dark) 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  animation: gradientText 20s ease infinite;
 }
 
 @keyframes gradientText {
-    0% {
-        background-position: 0% 0%;
-    }
-    50% {
-        background-position: 100% 100%;
-    }
-    100% {
-        background-position: 0% 0%;
-    }
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
 }
 /* ナビゲーションバー */
 .navbar-red {
@@ -302,8 +302,8 @@ button,
 }
 
 /* チェックマークアイコンを追加する場合 */
-.category-input:checked + .category-label::before ,
-.wards:checked + label::before{
+.category-input:checked + .category-label::before,
+.wards:checked + label::before {
   content: '✓';
   margin-right: 4px;
 }
@@ -887,18 +887,25 @@ tbody > tr:hover {
   color: var(--color-accent-pink) !important;
 }
 
-
 .carousel-caption .btn-light {
-    padding: 8px 20px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    background-color: rgba(255, 255, 255, 0.9);
+  padding: 8px 20px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
 .carousel-caption .btn-light:hover {
-    background-color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+.welcome-ranking-row:hover {
+  background-color: var(--color-neutral);
+  cursor: pointer;
+}
+
+.welcome-ranking-row:hover .bi-chevron-right {
+  opacity: 1 !important;
+}

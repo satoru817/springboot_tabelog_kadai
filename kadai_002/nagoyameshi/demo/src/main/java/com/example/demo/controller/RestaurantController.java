@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -49,7 +50,7 @@ public class RestaurantController {
     private final FavoriteRepository favoriteRepository;
 
     //トップページ。ログイン成功したときもここに案内
-    //todo:高評価上位10,最近のレビュー上位10、お気に入り数ランキング上位10を表示する。
+    //高評価上位10,最近のレビュー上位10、お気に入り数ランキング上位10を表示する。
     @GetMapping("/")
     public String showWelcomeScreen(Model model){
         Integer misokatsuId = categoryRepository.getIdByCategoryName("味噌カツ");
@@ -58,9 +59,15 @@ public class RestaurantController {
         Integer kishimenId = categoryRepository.getIdByCategoryName("きしめん");
         Integer tebasakiId = categoryRepository.getIdByCategoryName("手羽先");
 
-        List<Restaurant> topRated = restaurantRepository.findTopRated(5);
-        List<Restaurant> mostReviewed = restaurantRepository.findTopReviewed(5);
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+
+        List<Restaurant> topRated = restaurantRepository.findTopRated(5,oneMonthAgo);
+        List<Restaurant> mostReviewed = restaurantRepository.findTopReviewed(5,oneMonthAgo);
         List<Restaurant> mostFavorited = restaurantRepository.findTopFavorited(5);
+
+        setAverageStar(topRated);
+        setAverageStar(mostFavorited);
+        setAverageStar(mostReviewed);
 
         // モデルに全てのカテゴリーIDを追加
         model.addAttribute("misokatsuId", misokatsuId);
@@ -68,6 +75,11 @@ public class RestaurantController {
         model.addAttribute("taiwanRamenId", taiwanRamenId);
         model.addAttribute("kishimenId", kishimenId);
         model.addAttribute("tebasakiId", tebasakiId);
+
+        model.addAttribute("topRated",topRated);
+        model.addAttribute("mostReviewed",mostReviewed);
+        model.addAttribute("mostFavorited",mostFavorited);
+
         return "restaurant/welcome";
     }
 
@@ -138,20 +150,13 @@ public class RestaurantController {
         // ユーザーがログインしている場合のみ、お気に入りと評価の処理を行う
         if (userDetails != null) {
             User user = userDetails.getUser();
-            restaurantPage.forEach(restaurant -> {
-                float averageStar = reviewRepository.getAverageStarForRestaurant(restaurant)
-                        .orElse(0.0f);
-                restaurant.setAverageStar(averageStar);
-                restaurant.setIsFavorite(favoriteRepository.existsByUserAndRestaurant(user, restaurant));
-            });
+            setAverageStar(restaurantPage.getContent());
+            setIsFavorite(restaurantPage.getContent(),user);
+
         } else {
             // 未ログインユーザーの場合は、評価のみ設定（お気に入りはfalse）
-            restaurantPage.forEach(restaurant -> {
-                float averageStar = reviewRepository.getAverageStarForRestaurant(restaurant)
-                        .orElse(0.0f);
-                restaurant.setAverageStar(averageStar);
-                restaurant.setIsFavorite(false);
-            });
+            setAverageStar(restaurantPage.getContent());
+
         }
 
         List<Category> categories = categoryRepository.findAll();
@@ -166,6 +171,22 @@ public class RestaurantController {
         model.addAttribute("logic", logic);
 
         return "restaurant/index";
+    }
+
+    private void setAverageStar(Collection<Restaurant> restaurants){
+        restaurants.forEach(restaurant -> {
+            float averageStar = reviewRepository.getAverageStarForRestaurant(restaurant)
+                    .orElse(0.0f);
+            restaurant.setAverageStar(averageStar);
+            restaurant.setIsFavorite(false);
+        });
+    }
+
+    private void setIsFavorite(Collection<Restaurant> restaurants,User user){
+        restaurants.forEach(restaurant -> {
+
+            restaurant.setIsFavorite(favoriteRepository.existsByUserAndRestaurant(user, restaurant));
+        });
     }
 
     @GetMapping("/restaurant/{id}")

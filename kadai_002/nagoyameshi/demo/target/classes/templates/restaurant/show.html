@@ -85,6 +85,9 @@
                     th:if="${restaurant.images.size() > 0}"
                     th:src="@{/images/__${restaurant.images[0].imageName}__}"
                     class="card-img-show horizontal-card-image"
+                    loading="eager"
+                    decoding="async"
+                    fetchpriority="high"
                     alt="店舗画像"
                   />
                   <img
@@ -102,6 +105,8 @@
                   <img
                     th:src="@{/images/__${image.imageName}__}"
                     class="card-img-show horizontal-card-image"
+                    loading="lazy"
+                    decoding="async"
                     alt="店舗画像"
                   />
                 </div>

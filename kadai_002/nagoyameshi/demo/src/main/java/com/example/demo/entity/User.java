@@ -68,8 +68,7 @@ public class User {
     @Column(name="enabled",nullable = false)
     private Boolean enabled;
 
-    @CreationTimestamp
-    @Column(name="created_at")
+    @Column(name="created_at",insertable = false,updatable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
@@ -79,8 +78,8 @@ public class User {
     @OneToMany(mappedBy = "user" , fetch = FetchType.LAZY)
     private List<Subscription> subscriptions;
 
-    @UpdateTimestamp
-    @Column(name="updated_at")
+
+    @Column(name="updated_at",insertable = false,updatable = false)
     private LocalDateTime updatedAt;
 
     @Transient

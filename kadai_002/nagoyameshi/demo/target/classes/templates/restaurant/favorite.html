@@ -69,21 +69,24 @@
                         <div
                           th:id="carouselExampleIndicators__${restaurant.getRestaurantId()}__"
                           class="carousel slide"
-                          data-bs-ride="carousel"
                         >
+                          <!--自動再生にしたければdata-bs-ride="carousel"を追加-->
                           <div class="carousel-inner">
                             <div class="carousel-item active">
                               <img
                                 th:if="${restaurant.images.size() > 0}"
                                 th:src="@{/images/__${restaurant.images[0].imageName}__}"
                                 class="card-img-top horizontal-card-image"
-                                alt="店舗画像"
+                                loading="lazy"
+                                decoding="async"
+                                fetchpriority="high"
+                                th:alt="${restaurant.getName() + 'の画像'}"
                               />
                               <img
                                 th:unless="${restaurant.images.size() > 0}"
                                 th:src="@{/images/noImage.png}"
                                 class="card-img-top horizontal-card-image"
-                                alt="NO IMAGE"
+                                th:alt="${restaurant.getName() + 'の画像'}"
                               />
                             </div>
                             <div
@@ -94,7 +97,9 @@
                               <img
                                 th:src="@{/images/__${image.imageName}__}"
                                 class="card-img-top horizontal-card-image"
-                                alt="店舗画像"
+                                loading="lazy"
+                                decoding="async"
+                                th:alt="${restaurant.getName() + 'の画像'}"
                               />
                             </div>
                           </div>

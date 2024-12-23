@@ -307,6 +307,9 @@
             </ul>
           </div>
         </div>
+        <div>
+          <a th:href="@{/}" class="text-white mr-2"><i class="bi bi-house-door me-2"></i>トップページに戻る</a>
+        </div>
       </nav>
     </div>
 
@@ -709,9 +712,9 @@
       <!-- レビュー一覧 -->
       <div class="row">
         <div
-                class="col-md-6 mb-4"
-                th:each="reservation : ${restaurant.reservations}"
-                th:if="${reservation.review != null && (reservation.review.isVisible || (#authentication != null && #authentication.principal != 'anonymousUser')  && (#authorization.expression('hasRole(''ROLE_ADMIN'')') || #authorization.principal.user.userId == reservation.user.userId))}"
+          class="col-md-6 mb-4"
+          th:each="reservation : ${restaurant.reservations}"
+          th:if="${reservation.review != null && (reservation.review.isVisible || (#authentication != null && #authentication.principal != 'anonymousUser')  && (#authorization.expression('hasRole(''ROLE_ADMIN'')') || #authorization.principal.user.userId == reservation.user.userId))}"
         >
           <div class="card" th:classappend="${reservation.review.isVisible} == false ? 'bg-warning-subtle'">
             <div class="card-body">
@@ -1424,19 +1427,25 @@
     </div>
 
     <div th:fragment="welcome-ranking" th:remove="tag">
-          <div class="d-flex p-3 border-bottom">
-            <img th:if="${not #lists.isEmpty(restaurant.images)}"
-                 th:src="@{${restaurant.images[0].image}}"
-                 class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
-            <div class="ms-3">
-              <h6 class="mb-1" th:text="${restaurant.name}">店舗名</h6>
-              <div class="text-warning mb-1">
-                <span th:text="${restaurant.averageStar}">4.5</span>
-                <small class="text-muted">点</small>
-              </div>
-              <small class="text-muted" th:text="${restaurant.address}">住所</small>
+      <a th:href="@{/restaurant/__${restaurant.getRestaurantId()}__}" class="link-dark card-link">
+        <div class="d-flex p-3 border-bottom welcome-ranking-row">
+          <img
+            th:if="${restaurant.images.size() > 0}"
+            th:src="@{/images/__${restaurant.images[0].imageName}__}"
+            class="rounded"
+            style="width: 80px; height: 80px; object-fit: cover"
+            alt="店舗画像"
+          />
+          <div class="ms-3">
+            <h6 class="mb-1" th:text="${restaurant.name}">店舗名</h6>
+            <div class="text-warning mb-1">
+              <span th:text="${restaurant.averageStar}">4.5</span>
+              <small class="text-muted">点</small>
             </div>
+            <small class="text-muted" th:text="${restaurant.address}">住所</small>
           </div>
+        </div>
+      </a>
     </div>
 
     <div th:fragment="restaurantDeleteModal" th:remove="tag">
@@ -1469,7 +1478,9 @@
     <!-- フッターの部品化 -->
     <div th:fragment="footer" th:remove="tag">
       <footer class="footer mt-auto py-3">
-        <div class="container text-center">&copy; NAGOYAMESHI All rights reserved.</div>
+        <a th:href="@{/}" class="text-decoration-none">
+          <div class="container text-center text-white">&copy; NAGOYAMESHI All rights reserved.</div>
+        </a>
       </footer>
     </div>
 

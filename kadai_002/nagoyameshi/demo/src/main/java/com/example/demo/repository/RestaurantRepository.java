@@ -12,11 +12,12 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface RestaurantRepository extends JpaRepository<Restaurant,Integer> , JpaSpecificationExecutor<Restaurant> {
-    Optional<Restaurant> findByEmailOrPhoneNumber( String email, String phoneNumber);
+public interface RestaurantRepository extends JpaRepository<Restaurant, Integer>, JpaSpecificationExecutor<Restaurant> {
+    Optional<Restaurant> findByEmailOrPhoneNumber(String email, String phoneNumber);
 
     Page<Restaurant> findByNameLike(String s, Pageable pageable);
 
@@ -31,8 +32,8 @@ public interface RestaurantRepository extends JpaRepository<Restaurant,Integer> 
             OR ret.address LIKE %:searchQuery%
             OR c.categoryName LIKE %:searchQuery%)
             """)
-    Page<Restaurant> findAllFavoriteBySearchQueryAndUser(@Param("searchQuery")String searchQuery,
-                                                         @Param("user")User user,
+    Page<Restaurant> findAllFavoriteBySearchQueryAndUser(@Param("searchQuery") String searchQuery,
+                                                         @Param("user") User user,
                                                          Pageable pageable);
 
     @Query("""
@@ -40,19 +41,19 @@ public interface RestaurantRepository extends JpaRepository<Restaurant,Integer> 
             JOIN f.restaurant ret
             WHERE f.user = :user
             """)
-    Page<Restaurant> findAllFavoriteByUser(@Param("user")User user, Pageable pageable);
+    Page<Restaurant> findAllFavoriteByUser(@Param("user") User user, Pageable pageable);
 
     @Query("""
-    SELECT ret 
-    FROM Restaurant ret
-    LEFT JOIN Reservation res ON res.restaurant = ret
-    LEFT JOIN Review rev ON rev.reservation = res
-    WHERE res.date > CURRENT_DATE - 30
-    GROUP BY ret
-    ORDER BY COALESCE(AVG(rev.starCount), 0) DESC
-    LIMIT :i
-    """)
-    List<Restaurant> findTopRated(int i);
+            SELECT ret 
+            FROM Restaurant ret
+            LEFT JOIN Reservation res ON res.restaurant = ret
+            LEFT JOIN Review rev ON rev.reservation = res
+            WHERE res.date > :oneMonthAgo
+            GROUP BY ret
+            ORDER BY COALESCE(AVG(rev.starCount), 0) DESC
+            LIMIT :i
+            """)
+    List<Restaurant> findTopRated(@Param("i") Integer i, @Param("oneMonthAgo") LocalDateTime oneMonthAgo);
     //直近30日のデータのみ利用する。レビューの星評価の平均が高い順で並べる。
 
     @Query("""
@@ -60,9 +61,20 @@ public interface RestaurantRepository extends JpaRepository<Restaurant,Integer> 
             FROM Restaurant ret
             LEFT JOIN Favorite f ON f.restaurant = ret
             GROUP BY ret
-            
+            ORDER BY COALESCE(COUNT(DISTINCT f.favoriteId),0) DESC
+            LIMIT :i
             """)
-    List<Restaurant> findTopFavorited(int i);
+    List<Restaurant> findTopFavorited(@Param("i") Integer i);
 
-    List<Restaurant> findTopReviewed(int i);
+    @Query("""
+            SELECT ret
+            FROM Restaurant ret
+            LEFT JOIN Reservation res ON res.restaurant = ret
+            LEFT JOIN Review rev ON rev.reservation = res
+            WHERE res.date > :oneMonthAgo
+            GROUP BY ret
+            ORDER BY COALESCE(COUNT(DISTINCT rev.reviewId),0) DESC
+            LIMIT :i
+            """)
+    List<Restaurant> findTopReviewed(@Param("i") Integer i, @Param("oneMonthAgo") LocalDateTime oneMonthAgo);
 }

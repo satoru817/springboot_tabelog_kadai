@@ -84,8 +84,11 @@ public class StripeService {
                         .setQuantity(1L)
                         .build())
                 .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
-                .setSuccessUrl(requestUrl.replace("/api/create-checkout-session", "/auth/success?subscription"))//todo:この遷移先でuserDetailsの更新をかける必要がある。
-                .setCancelUrl(requestUrl.replace("/api/create-checkout-session", "/upgrade"))
+                .setSuccessUrl(requestUrl.replace(
+                        "/api/create-checkout-session",
+                        "/auth/success?subscription=true&session_id={CHECKOUT_SESSION_ID}"
+                ))
+                .setCancelUrl(requestUrl.replace("/api/create-checkout-session", "/logout"))
                 .setSubscriptionData(
                         SessionCreateParams.SubscriptionData.builder()
                                 .putMetadata("userId", userId)
@@ -188,7 +191,7 @@ public class StripeService {
     }
 
     private Card saveCardInformation(User user, String paymentMethodId) {
-        // まず既存のカードを検索・ここで引っかかるはずなんだけどね。
+
 
         Card existingCard = cardRepository.findByStripeCardId(paymentMethodId).orElse(null);
         if (existingCard != null) {
@@ -302,6 +305,7 @@ public class StripeService {
 
 
     // このメソッドはユーザー情報の更新のみを担当
+
     private void updateUserRole(User user, String stripeCustomerId) {
         roleRepository.findRoleByName("ROLE_PAID_USER").ifPresent(role -> {
             user.setRole(role);

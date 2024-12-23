@@ -1,5 +1,6 @@
 package com.example.demo.repository;
 
+import com.example.demo.dto.MonthlyPaymentSummaryDto;
 import com.example.demo.entity.Payment;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.domain.Page;
@@ -10,10 +11,12 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
-public interface PaymentRepository extends JpaRepository<Payment,Long> {
+public interface PaymentRepository extends JpaRepository<Payment, Long> {
     boolean existsByStripePaymentIntentId(String stripePaymentIntentId);
 
 
@@ -88,4 +91,21 @@ public interface PaymentRepository extends JpaRepository<Payment,Long> {
     Page<Payment> findAllByDate(
             @Param("date") LocalDate date,
             Pageable pageable);
+
+    @Query("""
+            SELECT new com.example.demo.dto.MonthlyPaymentSummaryDto(
+                FORMAT(p.createdAt,'%Y-%m') as yearMonth,
+                COUNT(p.paymentId) as numberOfPayments,
+                (SELECT COUNT(DISTINCT u2.userId) 
+                 FROM User u2 
+                 WHERE u2.createdAt <= DATE(CONCAT(FORMAT(p.createdAt,'%Y-%m'), '-01'))
+                   AND u2.enabled = true) as totalEffectiveUser
+            )
+            FROM Payment p
+            GROUP BY FORMAT(p.createdAt, '%Y-%m')
+            ORDER BY yearMonth ASC
+            """)
+    List<MonthlyPaymentSummaryDto> findMonthlyPaymentSummary();
+
+
 }

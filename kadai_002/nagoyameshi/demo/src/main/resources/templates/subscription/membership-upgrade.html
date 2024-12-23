@@ -7,46 +7,26 @@
   <head>
     <meta name="_csrf" th:content="${_csrf.token}" />
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-    <title>Membership Upgrade</title>
+    <title>会員プラン変更</title>
     <meta th:replace="~{fragment::headResources}" />
-    <!--    <style>-->
-    <!--        .card {-->
-    <!--            border-radius: 10px;-->
-    <!--            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);-->
-    <!--        }-->
-    <!--        .btn-upgrade {-->
-    <!--            background-color: #007bff;-->
-    <!--            color: white;-->
-    <!--        }-->
-    <!--        .btn-upgrade:hover {-->
-    <!--            background-color: #0056b3;-->
-    <!--        }-->
-    <!--        .btn-downgrade {-->
-    <!--            background-color: #dc3545;-->
-    <!--            color: white;-->
-    <!--        }-->
-    <!--        .btn-downgrade:hover {-->
-    <!--            background-color: #c82333;-->
-    <!--        }-->
-    <!--    </style>-->
   </head>
   <body class="d-flex flex-column min-vh-100">
     <div th:replace="~{fragment::header}"></div>
     <div class="container mt-5">
-      <h2 class="text-center mb-4">Choose Your Membership Plan</h2>
+      <h2 class="text-center mb-4">会員プランを選択してください</h2>
       <div class="row justify-content-center">
         <!-- Free Plan -->
         <div class="col-md-4">
           <div class="card text-center">
             <div class="card-header">
-              <h4>Free Plan</h4>
+              <h4>無料プラン</h4>
             </div>
             <div class="card-body">
-              <h5 class="card-title">¥0 / month</h5>
+              <h5 class="card-title">¥0 / 月</h5>
               <ul class="list-unstyled">
-                <li>Access to basic features</li>
-                <li>Community support</li>
-                <li>Limited usage</li>
+                <li>基本機能へのアクセス</li>
+                <li>コミュニティサポート</li>
+                <li>利用制限あり</li>
               </ul>
             </div>
             <div class="card-footer">
@@ -57,12 +37,12 @@
                 data-bs-toggle="modal"
                 data-bs-target="#cancelConfirmModal"
               >
-                Switch to Free Plan
+                無料プランに変更
               </button>
 
               <!-- Unpaid User の場合、Current Planとして表示 -->
               <button sec:authorize="hasRole('ROLE_UNPAID_USER')" class="btn btn-secondary" disabled>
-                Current Plan
+                現在のプラン
               </button>
             </div>
           </div>
@@ -72,14 +52,14 @@
         <div class="col-md-4">
           <div class="card text-center">
             <div class="card-header">
-              <h4>Paid Plan</h4>
+              <h4>有料プラン</h4>
             </div>
             <div class="card-body">
-              <h5 class="card-title">¥300 / month</h5>
+              <h5 class="card-title">¥300 / 月</h5>
               <ul class="list-unstyled">
-                <li>Booking system</li>
-                <li>Favorite feature</li>
-                <li>Review feature</li>
+                <li>予約システム</li>
+                <li>お気に入り機能</li>
+                <li>レビュー機能</li>
               </ul>
             </div>
             <div class="card-footer">
@@ -90,7 +70,7 @@
                 class="btn btn-submit"
                 onclick="resumeSubscription()"
               >
-                Resume Subscription
+                サブスクリプション再開
               </button>
               <!--以前サブスクを停止した人はすぐ再開できるようにする-->
               <button
@@ -99,11 +79,11 @@
                 class="btn btn-submit btn-slide"
                 onclick="startSubscription()"
               >
-                <i class="bi bi-gem me-2"></i>Upgrade Now
+                <i class="bi bi-gem me-2"></i>今すぐアップグレード
               </button>
 
               <!-- Paid User の場合、Current Planとして表示 -->
-              <button sec:authorize="hasRole('PAID_USER')" class="btn btn-secondary" disabled>Current Plan</button>
+              <button sec:authorize="hasRole('PAID_USER')" class="btn btn-secondary" disabled>現在のプラン</button>
             </div>
           </div>
         </div>

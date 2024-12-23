@@ -33,6 +33,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +63,7 @@ public class SubscriptionController {
 
     @Value("${stripe.webhook-secret}")
     private String webhookSecret;
+
 
 
     //fixme:このページはunpaid_userにしか見られないようにしないといけない。
@@ -331,7 +333,7 @@ public class SubscriptionController {
 
     @GetMapping("/add_card")
     public String addCard() {
-        return "/subscription/add_card";
+        return "subscription/add_card";
     }
 
     @GetMapping("/cardView")

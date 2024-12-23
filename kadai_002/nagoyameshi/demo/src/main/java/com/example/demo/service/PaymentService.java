@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.Util.UtilForString;
+import com.example.demo.dto.MonthlyPaymentSummaryDto;
 import com.example.demo.entity.Payment;
 import com.example.demo.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -50,5 +52,9 @@ public class PaymentService {
         else {
             return paymentRepository.findAll(pageable);
         }
+    }
+
+    public List<MonthlyPaymentSummaryDto> getMonthlyPaymentSummary(){
+        return paymentRepository.findMonthlyPaymentSummary();
     }
 }

@@ -1,223 +1,304 @@
 <!doctype html>
 <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
+  <head>
     <meta th:replace="~{fragment::headResources}" />
     <script th:src="@{/js/restaurant_show.js}" defer></script>
     <script th:src="@{/js/review_masking.js}" defer></script>
     <title>NAGOYAMESHI - 名古屋の味を楽しもう</title>
     <style>
-        .hero-section {
-            position: relative;
-            height: 60vh;
-            overflow: hidden;
-            background-color: rgba(0, 0, 0, 0.7);
-        }
+      .hero-section {
+        position: relative;
+        height: 60vh;
+        overflow: hidden;
+        background-color: rgba(0, 0, 0, 0.7);
+      }
 
-        .carousel {
-            height: 100%;
-        }
+      .carousel {
+        height: 100%;
+      }
 
-        .carousel-inner {
-            height: 100%;
-        }
+      .carousel-inner {
+        height: 100%;
+      }
 
-        .carousel-item {
-            height: 100%;
-        }
+      .carousel-item {
+        height: 100%;
+      }
 
-        .carousel-item img {
-            object-fit: cover;
-            height: 100%;
-            filter: brightness(0.7);
-        }
+      .carousel-item img {
+        object-fit: cover;
+        height: 100%;
+        filter: brightness(0.7);
+      }
 
-        .welcome-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: white;
-            z-index: 10;
-            width: 100%;
-            padding: 0 20px;
-        }
+      .welcome-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+        z-index: 10;
+        width: 100%;
+        padding: 0 20px;
+      }
 
-        .welcome-text h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            font-weight: bold;
-        }
+      .welcome-text h1 {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        font-weight: bold;
+      }
 
-        .welcome-text p {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-        }
+      .welcome-text p {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+      }
 
-        .featured-dishes {
-            padding: 4rem 0;
-            background-color: #f8f9fa;
-        }
+      .featured-dishes {
+        padding: 4rem 0;
+        background-color: #f8f9fa;
+      }
 
-        .featured-dishes h2 {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
+      .featured-dishes h2 {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
 
-        .card {
-            transition: transform 0.3s ease;
-            margin: 1rem;
-        }
+      .card {
+        transition: transform 0.3s ease;
+        margin: 1rem;
+      }
 
-        .card:hover {
-            transform: translateY(-5px);
-        }
+      .card:hover {
+        transform: translateY(-5px);
+      }
 
-        .carousel-control-prev,.carousel-control-next {
-            z-index: 20;
-        }
+      .carousel-control-prev,
+      .carousel-control-next {
+        z-index: 20;
+      }
     </style>
-</head>
-<body class="d-flex flex-column min-vh-100">
-<div th:replace="~{fragment::header}"></div>
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragment::header}"></div>
 
-<main>
-    <!-- ヒーローセクション -->
-    <section class="hero-section">
+    <main>
+      <!-- ヒーローセクション -->
+      <section class="hero-section">
         <div class="welcome-text">
-            <h1 class="nagoya-gradient">名古屋めしを極める</h1>
-            <p>伝統と革新が織りなす、まちの味わい</p>
+          <h1 class="nagoya-gradient">名古屋めしを極める</h1>
+          <p>伝統と革新が織りなす、まちの味わい</p>
         </div>
 
         <div id="carouselExampleCaptions" class="carousel slide">
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="3" aria-label="Slide 4"></button>
-                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="4" aria-label="Slide 5"></button>
+          <div class="carousel-indicators">
+            <button
+              type="button"
+              data-bs-target="#carouselExampleCaptions"
+              data-bs-slide-to="0"
+              class="active"
+              aria-current="true"
+              aria-label="Slide 1"
+            ></button>
+            <button
+              type="button"
+              data-bs-target="#carouselExampleCaptions"
+              data-bs-slide-to="1"
+              aria-label="Slide 2"
+            ></button>
+            <button
+              type="button"
+              data-bs-target="#carouselExampleCaptions"
+              data-bs-slide-to="2"
+              aria-label="Slide 3"
+            ></button>
+            <button
+              type="button"
+              data-bs-target="#carouselExampleCaptions"
+              data-bs-slide-to="3"
+              aria-label="Slide 4"
+            ></button>
+            <button
+              type="button"
+              data-bs-target="#carouselExampleCaptions"
+              data-bs-slide-to="4"
+              aria-label="Slide 5"
+            ></button>
+          </div>
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img
+                th:src="@{/images/misokatsu.jpg}"
+                class="d-block w-100"
+                alt="味噌カツの写真"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+              />
+              <div class="carousel-caption d-none d-md-block">
+                <h5><a th:href="@{/restaurant(categoryId=${misokatsuId})}" class="btn btn-light">味噌カツのお店</a></h5>
+                <p>甘みと旨味が詰まった八丁味噌だれ</p>
+              </div>
             </div>
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img th:src="@{/images/misokatsu.jpg}" class="d-block w-100" alt="味噌カツの写真">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5><a th:href="@{/restaurant(categoryId=${misokatsuId})}" class="btn btn-light">味噌カツのお店</a></h5>
-                        <p>甘みと旨味が詰まった八丁味噌だれ</p>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img th:src="@{/images/hitsumabushi.jpg}" class="d-block w-100" alt="ひつまぶしの写真">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5><a th:href="@{/restaurant(categoryId=${hitsumabushiId})}" class="btn btn-light">ひつまぶしのお店</a></h5>
-                        <p>三段階の食べ方で楽しむ名古屋の伝統</p>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img th:src="@{/images/taiwan-ramen.jpg}" class="d-block w-100" alt="台湾ラーメンの写真">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5><a th:href="@{/restaurant(categoryId=${taiwanRamenId})}" class="btn btn-light">台湾ラーメンのお店</a></h5>
-                        <p>名古屋生まれの痺れる辛さ</p>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img th:src="@{/images/kishimen.jpg}" class="d-block w-100" alt="きしめんの写真">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5><a th:href="@{/restaurant(categoryId=${kishimenId})}" class="btn btn-light">きしめんのお店</a></h5>
-                        <p>平打ち麺と優しい出汁の風味</p>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img th:src="@{/images/tebasaki.jpg}" class="d-block w-100" alt="手羽先の写真">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5><a th:href="@{/restaurant(categoryId=${tebasakiId})}" class="btn btn-light">手羽先のお店</a></h5>
-                        <p>カリッと揚がった手羽先と特製タレ</p>
-                    </div>
-                </div>
+            <div class="carousel-item">
+              <img
+                th:src="@{/images/hitsumabushi.jpg}"
+                class="d-block w-100"
+                alt="ひつまぶしの写真"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="carousel-caption d-none d-md-block">
+                <h5>
+                  <a th:href="@{/restaurant(categoryId=${hitsumabushiId})}" class="btn btn-light">ひつまぶしのお店</a>
+                </h5>
+                <p>三段階の食べ方で楽しむ名古屋の伝統</p>
+              </div>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+            <div class="carousel-item">
+              <img
+                th:src="@{/images/taiwan-ramen.jpg}"
+                class="d-block w-100"
+                alt="台湾ラーメンの写真"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="carousel-caption d-none d-md-block">
+                <h5>
+                  <a th:href="@{/restaurant(categoryId=${taiwanRamenId})}" class="btn btn-light">台湾ラーメンのお店</a>
+                </h5>
+                <p>名古屋生まれの痺れる辛さ</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img
+                th:src="@{/images/kishimen.jpg}"
+                class="d-block w-100"
+                alt="きしめんの写真"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="carousel-caption d-none d-md-block">
+                <h5><a th:href="@{/restaurant(categoryId=${kishimenId})}" class="btn btn-light">きしめんのお店</a></h5>
+                <p>平打ち麺と優しい出汁の風味</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img
+                th:src="@{/images/tebasaki.jpg}"
+                class="d-block w-100"
+                alt="手羽先の写真"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="carousel-caption d-none d-md-block">
+                <h5><a th:href="@{/restaurant(categoryId=${tebasakiId})}" class="btn btn-light">手羽先のお店</a></h5>
+                <p>カリッと揚がった手羽先と特製タレ</p>
+              </div>
+            </div>
+          </div>
+          <button
+            class="carousel-control-prev"
+            type="button"
+            data-bs-target="#carouselExampleCaptions"
+            data-bs-slide="prev"
+          >
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button
+            class="carousel-control-next"
+            type="button"
+            data-bs-target="#carouselExampleCaptions"
+            data-bs-slide="next"
+          >
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
         </div>
-    </section>
+      </section>
 
-    <!-- おすすめセクション -->
-    <section id="featured" class="featured-dishes ">
+      <!-- サクセスメッセージ -->
+      <div class="container mt-4" th:if="${message}">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <span th:text="${message}"></span>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      </div>
+
+      <!-- おすすめセクション -->
+      <section id="featured" class="featured-dishes">
         <div class="container mt-5">
-            <div class="row">
-                <!-- 評価の高い店 -->
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-star text-warning"></i>
-                                評価の高い店舗
-                            </h5>
-                        </div>
-                        <div class="card-body p-0">
-                            <div th:each="restaurant : ${topRated}" class="restaurant-card">
-                                <div th:replace="~{fragment::welcome-ranking}"></div>
-                            </div>
-                        </div>
-                    </div>
+          <div class="row">
+            <!-- 評価の高い店 -->
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">
+                    <i class="fas fa-star text-warning"></i>
+                    評価の高い店舗
+                  </h5>
                 </div>
-
-                <!-- 最近レビューの多い店 -->
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-comments text-primary"></i>
-                                話題の店舗
-                            </h5>
-                        </div>
-                        <div class="card-body p-0">
-                            <div th:each="restaurant : ${mostReviewed}" class="restaurant-card">
-                                <div th:replace="~{fragment::welcome-ranking}"></div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="card-body p-0">
+                  <div th:each="restaurant : ${topRated}" class="restaurant-card">
+                    <div th:replace="~{fragment::welcome-ranking}"></div>
+                  </div>
                 </div>
-
-                <!-- お気に入りの多い店 -->
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-heart text-danger"></i>
-                                人気の店舗
-                            </h5>
-                        </div>
-                        <div class="card-body p-0">
-                            <div th:each="restaurant : ${mostFavorited}" class="restaurant-card">
-                                <div th:replace="~{fragment::welcome-ranking}"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+              </div>
             </div>
-        </div>
-    </section>
-</main>
 
-<!-- 既存のフッター -->
-<footer class="footer mt-auto py-3">
-    <div class="container text-center">
+            <!-- 最近レビューの多い店 -->
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">
+                    <i class="fas fa-comments text-primary"></i>
+                    話題の店舗
+                  </h5>
+                </div>
+                <div class="card-body p-0">
+                  <div th:each="restaurant : ${mostReviewed}" class="restaurant-card">
+                    <div th:replace="~{fragment::welcome-ranking}"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- お気に入りの多い店 -->
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">
+                    <i class="fas fa-heart text-danger"></i>
+                    人気の店舗
+                  </h5>
+                </div>
+                <div class="card-body p-0">
+                  <div th:each="restaurant : ${mostFavorited}" class="restaurant-card">
+                    <div th:replace="~{fragment::welcome-ranking}"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 既存のフッター -->
+    <footer class="footer mt-auto py-3">
+      <div class="container text-center">
         <p>&copy; NAGOYAMESHI All rights reserved.</p>
-        <p>※このサイトはポートフォリオ用のデモサイトです</p>
+        <p>※このサイトはデモサイトです。画像は商用利用していません。</p>
         <p>画像クレジット：</p>
         <ul class="list-unstyled">
-            <li>味噌カツ画像 © 円周率3パーセント CC BY 4.0</li>
-            <li>ひつまぶし画像 © [pelican] CC BY-SA 4.0</li>
-            <li>台湾ラーメン画像 © [ekkun] CC BY-SA 4.0</li>
-            <li>きしめん画像 © [Kos88] CC BY-SA 4.0</li>
-            <li>手羽先画像 © [kawanet] CC BY-SA 4.0</li>
+          <li>味噌カツ画像 © 円周率3パーセント CC BY 4.0</li>
+          <li>ひつまぶし画像 © pelican CC BY-SA 4.0</li>
+          <li>台湾ラーメン画像 © ekkun CC BY-SA 4.0</li>
+          <li>きしめん画像 © Kos88 CC BY-SA 4.0</li>
+          <li>手羽先画像 © kawanet CC BY-SA 4.0</li>
         </ul>
-    </div>
-</footer>
-</body>
+      </div>
+    </footer>
+  </body>
 </html>

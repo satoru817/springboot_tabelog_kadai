@@ -15,6 +15,6 @@ public class CompanyController {
     public String showCompanyInfo(Model model){
         CompanyInfo companyInfo = companyInfoService.getCompanyInfo();
         model.addAttribute("companyInfo",companyInfo);
-        return "/company/show_company_info";
+        return "company/show_company_info";
     }
 }

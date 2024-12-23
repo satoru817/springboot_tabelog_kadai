@@ -66,6 +66,12 @@
                   </button>
                 </form>
               </div>
+              <div class="card shadow-sm p-3">
+                <h5 class="card-title mb-3">データ分析</h5>
+                <a th:href="@{/admin/payment/analysis}" class="btn btn-submit w-100">
+                  <i class="bi bi-graph-up me-2"></i>支払い分析
+                </a>
+              </div>
             </div>
 
             <div class="col-xxl-6 col-xl-6 col-lg-6">
@@ -131,35 +137,85 @@
             </div>
           </div>
           <!-- ページネーション -->
-          <div th:if="${payments.getTotalPages()>1}" class="d-flex justify-content-center mt-4">
+          <div th:if="${payments.getTotalPages() > 1}" class="d-flex justify-content-center mt-4">
             <nav aria-label="支払い一覧ページ">
               <ul class="pagination">
-                <li class="page-item" th:classappend="${payments.isFirst()} ? 'disabled'">
+                <!-- 前へボタン -->
+                <li class="page-item">
+                  <span th:if="${payments.isFirst()}" class="page-link pagination_itemBox rounded-circle disabled">
+                    <span class="pagination_prevArrow"></span>
+                  </span>
                   <a
-                    class="page-link pagination_itemBox rounded-circle rounded-circle"
-                    th:href="@{/admin/payment/index(page=${payments.getNumber()-1},userName=${userName},paymentDate=${paymentDate},email=${email})}"
+                    th:unless="${payments.isFirst()}"
+                    th:href="@{/admin/payment/index(page=${payments.getNumber() - 1},userName=${userName},paymentDate=${paymentDate},email=${email})}"
+                    class="page-link pagination_itemBox rounded-circle"
                   >
-                    <i class="bi bi-chevron-left"></i>
+                    <span class="pagination_prevArrow"></span>
                   </a>
                 </li>
-                <li
-                  th:each="i:${#numbers.sequence(0,payments.getTotalPages()-1)}"
-                  class="page-item"
-                  th:classappend="${i == payments.getNumber()} ? 'active'"
+
+                <!-- ページ番号（最初のページ） -->
+                <li class="page-item" th:if="${payments.getNumber() >= 3}">
+                  <a
+                    th:href="@{/admin/payment/index(page=0,userName=${userName},paymentDate=${paymentDate},email=${email})}"
+                    class="page-link pagination_itemBox rounded-circle"
+                    >1</a
+                  >
+                </li>
+
+                <!-- 省略記号（前） -->
+                <li class="page-item" th:if="${payments.getNumber() >= 4}">
+                  <span class="page-link pagination_itemBox rounded-circle">...</span>
+                </li>
+
+                <!-- ページ番号（中央部分） -->
+                <th:block
+                  th:with="start=${payments.getNumber() <= 2 ? 0 : payments.getNumber() - 2},
+                       end=${payments.getTotalPages() - payments.getNumber() <= 3 ? payments.getTotalPages() - 1 : payments.getNumber() + 2}"
                 >
+                  <li class="page-item" th:each="i : ${#numbers.sequence(start, end)}">
+                    <span
+                      th:if="${i == payments.getNumber()}"
+                      class="page-link pagination_itemBox rounded-circle active"
+                      th:text="${i + 1}"
+                    >
+                    </span>
+                    <a
+                      th:unless="${i == payments.getNumber()}"
+                      th:href="@{/admin/payment/index(page=${i},userName=${userName},paymentDate=${paymentDate},email=${email})}"
+                      class="page-link pagination_itemBox rounded-circle"
+                      th:text="${i + 1}"
+                    >
+                    </a>
+                  </li>
+                </th:block>
+
+                <!-- 省略記号（後） -->
+                <li class="page-item" th:if="${payments.getTotalPages() - payments.getNumber() > 4}">
+                  <span class="page-link pagination_itemBox rounded-circle">...</span>
+                </li>
+
+                <!-- 最後のページ -->
+                <li class="page-item" th:if="${payments.getTotalPages() - payments.getNumber() > 3}">
                   <a
-                    class="page-link pagination_itemBox rounded-circle rounded-circle"
-                    th:href="@{/admin/payment/index(page=${i},userName=${userName},paymentDate=${paymentDate},email=${email})}"
-                    th:text="${i+1}"
+                    th:href="@{/admin/payment/index(page=${payments.getTotalPages() - 1},userName=${userName},paymentDate=${paymentDate},email=${email})}"
+                    class="page-link pagination_itemBox rounded-circle"
+                    th:text="${payments.getTotalPages()}"
                   >
                   </a>
                 </li>
-                <li class="page-item" th:classappend="${payments.isLast()} ? 'disabled'">
+
+                <!-- 次へボタン -->
+                <li class="page-item">
+                  <span th:if="${payments.isLast()}" class="page-link pagination_itemBox rounded-circle disabled">
+                    <span class="pagination_nextArrow"></span>
+                  </span>
                   <a
-                    class="page-link pagination_itemBox rounded-circle rounded-circle"
-                    th:href="@{/admin/payment/index(page=${payments.getNumber()+1},userName=${userName},paymentDate=${paymentDate},email=${email})}"
+                    th:unless="${payments.isLast()}"
+                    th:href="@{/admin/payment/index(page=${payments.getNumber() + 1},userName=${userName},paymentDate=${paymentDate},email=${email})}"
+                    class="page-link pagination_itemBox rounded-circle"
                   >
-                    <i class="bi bi-chevron-right"></i>
+                    <span class="pagination_nextArrow"></span>
                   </a>
                 </li>
               </ul>

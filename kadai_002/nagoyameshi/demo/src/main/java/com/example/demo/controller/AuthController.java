@@ -14,9 +14,15 @@ import com.example.demo.security.UserDetailsImpl;
 import com.example.demo.security.UserDetailsServiceImpl;
 import com.example.demo.service.*;
 import com.example.demo.validation.EmailValidator;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Subscription;
+import com.stripe.model.checkout.Session;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Conventions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +35,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -39,6 +46,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 @Slf4j
@@ -127,19 +135,62 @@ public class AuthController {
         return "auth/password_change_request";
     }
 
+
     @GetMapping("/auth/success")
-    public String success(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam(required = false) String subscription,
-                          HttpServletRequest request,RedirectAttributes redirectAttributes) {
-        // subscription パラメータが存在する場合にのみ処理を行う（upgrade時の処理)
-        if (subscription != null) {
-            userDetailsService.updateUserRolesAndSession(userDetails, request);
-        } else {
-            log.info("No subscription parameter found, skipping role update.");
+    public String handleSubscriptionSuccess(
+            @RequestParam(name="subscription",required = false) String subscription,
+            @RequestParam(name="session_id",required = false) String session_id,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes
+    ) {
+        String message=String.format("%sさん、こんにちは。ログイン成功です。",userDetails.getUsername());
+
+        if (subscription != null && session_id != null) {
+            try {
+                // Stripeの支払いセッション確認
+                Session stripeSession = Session.retrieve(session_id);
+
+                // セッションの支払い状態を確認(本番環境では有効にすること）
+//                if (!"complete".equals(stripeSession.getPaymentStatus())) {
+//                    log.error("Payment not completed for session: {}", session_id);
+//                    return "redirect:/upgrade?error=payment_incomplete";
+//                }
+
+                // ユーザーIDの検証（Stripeセッションのmetadataから）
+                Subscription stripeSubscription = Subscription.retrieve(stripeSession.getSubscription());
+
+                // メタデータの取得（Stripe Subscriptionから）
+                Map<String, String> metadata = stripeSubscription.getMetadata();
+                String stripeUserId = metadata.get("userId");
+                if (stripeUserId == null || !stripeUserId.equals(userDetails.getUser().getUserId().toString())) {
+                    log.error("User ID mismatch. Expected: {}, Got: {}",
+                            userDetails.getUser().getUserId(), stripeUserId);
+                    return "redirect:/upgrade?error=user_mismatch";
+                }
+
+
+                // ユーザーロールの更新とセッションの更新
+                Thread.sleep(5000);//customer.subscription.createdを受け取ってuserのroleが更新されるのに時間がかかる。そのため待機する。
+                userDetailsService.updateUserRolesAndSession(userDetails, request);
+
+                log.info("Subscription successfully processed for user: {}", userDetails.getUsername());
+                message = String.format("%sさんは有料ユーザーに切り替わりました。\n" +
+                                "もし反映されていないようでしたらお手数ですが、再度ログインを試みてください。",
+                        userDetails.getUsername());
+                redirectAttributes.addFlashAttribute("message",message);
+                return "redirect:/?subscription=success";
+
+            } catch (StripeException e) {
+                log.error("Stripe session verification failed: {}", e.getMessage());
+                return "redirect:/upgrade?error=stripe_error";
+            } catch (Exception e) {
+                log.error("Unexpected error during subscription processing: {}", e.getMessage());
+                return "redirect:/upgrade?error=internal_error";
+            }
         }
-
-        String message = String.format("Welcome %s ! You've successfully logged in.",userDetails.getUser().getName());
-
         redirectAttributes.addFlashAttribute("message",message);
+        // subscriptionパラメータがない場合は通常のサクセスページへ
 
         return "redirect:/";
     }
@@ -393,17 +444,17 @@ public class AuthController {
         }
 
         //編集画面から遷移したばあいは、もとの名前と同じ時はエラーを出さないようにする。
-        if(referer.contains(UPDATE)){
+        if (referer.contains(UPDATE)) {
             Integer userId = Integer.valueOf(nameMap.get("userId"));
             User user = userService.findById(userId);
-            if(user.getName().equals(name)){
+            if (user.getName().equals(name)) {
                 return ResponseEntity.ok(true);
             }
 
             boolean isAvailable = !userRepository.existsByName(name);
             return ResponseEntity.ok(isAvailable);
-        }else{
-             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
         }
 
     }
@@ -509,7 +560,7 @@ public class AuthController {
         User exUser = userService.findById(user.getUserId());
         userService.replaceField(exUser, user);
         userRepository.save(exUser);//upsert
-        return "redirect:/auth/update?userId="+user.getUserId();//編集画面に戻る
+        return "redirect:/auth/update?userId=" + user.getUserId();//編集画面に戻る
     }
 
 }

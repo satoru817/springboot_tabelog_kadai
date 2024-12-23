@@ -31,7 +31,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN") // Only users with "ADMIN" role can access
                         .requestMatchers("/paid/**","/restaurant/reservations","/restaurant/favorite")
-                        .hasRole("PAID_USER")
+                        .hasAnyRole("PAID_USER","ADMIN")
                         .requestMatchers("/restaurant","/restaurant/*","/CompanyInfo","/auth/validateEmail","/auth/validateName","/userRegister**","/userRegister/**","/signUp**","/css/**", "/images/**", "/js/**", "/storage/**", "/","/passwordChange","/test","/auth/login**","/forgot_password**","/forgot_password/**","/doChangePassword","/auth/blocked","/stripe/webhook")
                         .permitAll()
                         .anyRequest()

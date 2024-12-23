@@ -39,11 +39,11 @@ public class Reservation {
     @Column(name="comment", length = 255)
     private String comment;
 
-    @Column(name="created_at", updatable = false)
+    @Column(name="created_at", updatable = false,insertable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name="updated_at")
+    @Column(name="updated_at",insertable = false,updatable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt = LocalDateTime.now();
 

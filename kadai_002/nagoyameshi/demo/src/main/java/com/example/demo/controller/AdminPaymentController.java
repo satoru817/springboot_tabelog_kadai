@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.Util.UtilForString;
+import com.example.demo.dto.MonthlyPaymentSummaryDto;
 import com.example.demo.entity.Payment;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.service.PaymentService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,5 +42,13 @@ public class AdminPaymentController {
 
         return "admin/payment/index";
 
+    }
+
+    @GetMapping("/analysis")
+    public String analyze(Model model){
+        List<MonthlyPaymentSummaryDto> monthlySummary = paymentService.getMonthlyPaymentSummary();
+        model.addAttribute("monthlySummary", monthlySummary);
+
+        return "admin/payment/analysis";
     }
 }
